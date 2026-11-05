@@ -96,12 +96,33 @@ say "Build và khởi động (lần đầu mất vài phút)…"
 docker compose up -d --build --remove-orphans
 
 say "Chờ server sẵn sàng…"
+# 1) app trong container đã chạy chưa (không phụ thuộc mạng của máy chủ)
 for _ in $(seq 1 30); do
-  if curl -fsS "http://127.0.0.1:$PORT/healthz" >/dev/null 2>&1; then OK=1; break; fi
+  if docker exec 3credit wget -qO- http://127.0.0.1:8080/healthz >/dev/null 2>&1; then OK=1; break; fi
   sleep 2
 done
-[ "${OK:-0}" = 1 ] || { docker compose logs --tail 50; fail "Server không phản hồi. Xem log ở trên."; }
+[ "${OK:-0}" = 1 ] || { docker compose logs --tail 50; fail "Ứng dụng không khởi động được. Xem log ở trên."; }
 docker image prune -f >/dev/null 2>&1 || true
+
+# 2) cổng trên máy chủ có thông vào container không
+HOST_OK=0
+for _ in $(seq 1 10); do
+  if curl -fsS --max-time 3 "http://127.0.0.1:$PORT/healthz" >/dev/null 2>&1 \
+     || curl -fsS --max-time 3 "http://$PUBLIC_IP:$PORT/healthz" >/dev/null 2>&1; then HOST_OK=1; break; fi
+  sleep 2
+done
+if [ "$HOST_OK" != 1 ]; then
+  echo
+  say "Ứng dụng đã chạy trong container, nhưng chưa gọi được qua cổng $PORT trên máy chủ."
+  echo "    Thông tin để kiểm tra (gửi phần này cho người hỗ trợ):"
+  echo "    --- docker ps ---";   docker ps --filter name=3credit --format '    {{.Names}}  {{.Status}}  {{.Ports}}'
+  echo "    --- cổng $PORT ---"; (ss -ltnp 2>/dev/null || netstat -ltnp 2>/dev/null) | grep -E "[:.]$PORT " | sed 's/^/    /' || echo "    (không thấy tiến trình nào lắng nghe cổng $PORT)"
+  echo "    --- curl ---";       curl -sS -o /dev/null -w "    127.0.0.1:$PORT -> HTTP %{http_code}\n" --max-time 3 "http://127.0.0.1:$PORT/healthz" 2>&1 | sed 's/^/    /'
+  echo "    --- .env ---";       grep -E '^(PORT|BASE_URL)=' .env | sed 's/^/    /'
+  echo
+  echo "    Hãy thử mở $BASE_URL bằng trình duyệt. Nếu không vào được, kiểm tra firewall"
+  echo "    của nhà cung cấp cloud đã mở cổng $PORT (TCP) chưa."
+fi
 
 URL="$BASE_URL"
 echo
