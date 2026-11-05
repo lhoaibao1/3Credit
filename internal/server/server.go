@@ -268,6 +268,7 @@ func (s *Server) funcs() template.FuncMap {
 			return t.Local().Format("2006-01-02T15:04")
 		},
 		"vi":   Label,
+		"seq":  func(n int) []int { return make([]int, n) },
 		"pair": func(a, b string) struct{ A, B string } { return struct{ A, B string }{a, b} },
 		"has": func(xs []string, v string) bool {
 			for _, x := range xs {

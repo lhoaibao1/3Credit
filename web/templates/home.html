@@ -8,25 +8,28 @@
       <h1>Tìm sản phẩm tài chính <span class="or">hợp với bạn</span>, và biết vì sao.</h1>
       <p class="lede">3Credit đọc điều kiện công bố của từng ngân hàng, công ty tài chính, rồi đối chiếu với hồ sơ bạn tự khai. Bạn thấy rõ điều kiện nào đã khớp, điều kiện nào còn cần kiểm tra.</p>
       <div class="needs" role="group" aria-label="Bạn cần gì">
-        <a class="need" href="/?need=cash_loan#tim"><i>💸</i><span>Tôi muốn vay tiền<small>Vay tiêu dùng, vay qua app</small></span></a>
-        <a class="need" href="/?need=credit_card#tim"><i>💳</i><span>Tìm thẻ tín dụng<small>Theo thu nhập, nhu cầu</small></span></a>
-        <a class="need" href="/?need=compare#tim"><i>⚖️</i><span>So sánh sản phẩm<small>Lãi, hạn mức, kỳ hạn, phí</small></span></a>
-        <a class="need" href="/?need=secured&amp;vehicle=motorbike#tim"><i>🏍️</i><span>Giải pháp khác<small>Vay bằng đăng ký xe</small></span></a>
+        <a class="need" href="/?need=cash_loan#tim"><i><svg width="22" height="22"><use href="#i-cash"/></svg></i><span>Tôi muốn vay tiền<small>Vay tiêu dùng, vay qua app</small></span></a>
+        <a class="need" href="/?need=credit_card#tim"><i><svg width="22" height="22"><use href="#i-card"/></svg></i><span>Tìm thẻ tín dụng<small>Theo thu nhập, nhu cầu</small></span></a>
+        <a class="need" href="/?need=compare#tim"><i><svg width="22" height="22"><use href="#i-scale"/></svg></i><span>So sánh sản phẩm<small>Lãi, hạn mức, kỳ hạn, phí</small></span></a>
+        <a class="need" href="/?need=secured&amp;vehicle=motorbike#tim"><i><svg width="22" height="22"><use href="#i-key"/></svg></i><span>Giải pháp khác<small>Vay bằng đăng ký xe</small></span></a>
       </div>
       <div class="trust"><span>Không cần CCCD để xem đề xuất</span><span>Không ảnh hưởng điểm tín dụng</span><span>Nguồn và ngày cập nhật trên từng sản phẩm</span></div>
     </div>
-    <div class="explain" aria-hidden="true">
-      <div class="ecard mini"><div class="row"><small>Hồ sơ của bạn</small><span class="st eligible">Đáp ứng điều kiện đã biết</span></div></div>
-      <div class="ecard">
-        <div><h4>Vay tín chấp theo lương</h4><small>Ví dụ cách 3Credit giải thích một đề xuất</small></div>
-        <ul class="chk">
-          <li class="y">Số tiền 50 triệu nằm trong hạn mức công bố</li>
-          <li class="y">Kỳ hạn 24 tháng trong khung cho phép</li>
-          <li class="y">Nhận lương chuyển khoản, đúng yêu cầu</li>
-          <li class="q">Điều kiện lịch sử tín dụng: đối tác chưa công bố</li>
-        </ul>
+    <div class="cardstack" aria-hidden="true">
+      <div class="ccard back"><span class="cc-stripe"></span><span class="cc-cvv">CVV ···</span></div>
+      <div class="ccard front">
+        <div class="cc-top"><span class="cc-brand"><svg width="30" height="20" style="color:#fff"><use href="#mark"/></svg><span>3<b>Credit</b></span></span><svg class="cc-nfc" width="26" height="26"><use href="#i-nfc"/></svg></div>
+        <svg class="cc-chip" width="44" height="34" viewBox="4 6 16 12"><use href="#i-chip"/></svg>
+        <div class="cc-num">3368&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;2026</div>
+        <div class="cc-bot"><span><small>CHỦ THẺ</small>KHÁCH HÀNG 3CREDIT</span><span><small>HIỆU LỰC</small>11/30</span></div>
       </div>
-      <div class="ecard mini mini2"><div class="row"><small>Không bao giờ hiển thị</small><b style="color:#D9434A">“Duyệt 100%”</b></div></div>
+      <div class="fchip f-score"><svg width="34" height="34"><use href="#i-gauge"/></svg><span><small>Điểm tín dụng</small><b>Khá</b> · minh họa</span></div>
+      <div class="fchip f-ok"><svg width="20" height="20"><use href="#i-shield"/></svg>Đáp ứng điều kiện đã biết</div>
+      <div class="fchip f-rate"><svg width="20" height="20"><use href="#i-percent"/></svg>So sánh lãi quy ra năm (APR)</div>
+      <div class="ecard fcheck">
+        <small>Vì sao đề xuất</small>
+        <ul class="chk"><li class="y">Hạn mức đủ cho 50 triệu</li><li class="y">Kỳ hạn 24 tháng phù hợp</li><li class="q">CIC: đối tác chưa công bố</li></ul>
+      </div>
     </div>
   </div>
   <div class="in partners" id="doi-tac">
@@ -35,14 +38,16 @@
   </div>
 </header>
 
+<div class="ticker" aria-hidden="true"><div class="track">{{range $i := seq 2}}<span><svg width="20" height="20"><use href="#i-cash"/></svg>Vay tiêu dùng</span><span><svg width="20" height="20"><use href="#i-card"/></svg>Thẻ tín dụng</span><span><svg width="20" height="20"><use href="#i-percent"/></svg>So sánh lãi suất</span><span><svg width="20" height="20"><use href="#i-key"/></svg>Vay bằng đăng ký xe</span><span><svg width="20" height="20"><use href="#i-doc"/></svg>Trả góp</span><span><svg width="20" height="20"><use href="#i-gauge"/></svg>Hiểu điểm tín dụng</span><span><svg width="20" height="20"><use href="#i-shield"/></svg>Chỉ đối tác có pháp nhân rõ ràng</span>{{end}}</div></div>
+
 <section class="sec" id="cach-hoat-dong">
   <div class="in">
     <div class="sh"><div class="t"><span class="eyebrow">Cách hoạt động</span><h2>Từ nhu cầu đến <span class="or">đăng ký đúng chỗ</span></h2></div></div>
     <div class="flow">
-      <div class="fs reveal"><i>1</i><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
-      <div class="fs reveal"><i>2</i><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
-      <div class="fs reveal"><i>3</i><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
-      <div class="fs reveal"><i>4</i><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
+      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-scale"/></svg></i><span class="stepn">Bước 1</span><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
+      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-doc"/></svg></i><span class="stepn">Bước 2</span><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
+      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-gauge"/></svg></i><span class="stepn">Bước 3</span><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
+      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-hand"/></svg></i><span class="stepn">Bước 4</span><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
     </div>
   </div>
 </section>

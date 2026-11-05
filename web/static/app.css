@@ -282,3 +282,43 @@ input[type=datetime-local],input[type=password],input[type=tel],input[type=file]
 .qs form{display:inline}
 @media (max-width:1000px){.consult{grid-template-columns:1fr}.posts{grid-template-columns:1fr 1fr}}
 @media (max-width:600px){.posts{grid-template-columns:1fr}.consult{padding:24px}}
+
+/* ---- credit motifs ---- */
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Crect x='14' y='20' width='76' height='48' rx='9'/%3E%3Cpath d='M14 34h76M24 56h18'/%3E%3Crect x='132' y='118' width='34' height='26' rx='6'/%3E%3Cpath d='M132 127h10M132 135h10M156 127h10M156 135h10M143 118v26M155 118v26'/%3E%3Cpath d='M150 40l-22 22'/%3E%3Ccircle cx='131' cy='43' r='5'/%3E%3Ccircle cx='147' cy='59' r='5'/%3E%3Cpath d='M30 178a22 22 0 0 1 44 0M52 178l11-13'/%3E%3Cpath d='M186 186a8 8 0 0 1 0 12M192 180a16 16 0 0 1 0 24'/%3E%3C/svg%3E");
+  background-size:220px 220px;-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 55%);mask-image:linear-gradient(90deg,transparent 0%,#000 55%)}
+.need i{color:#FFB08F}
+.cardstack{position:relative;height:430px;max-width:520px;width:100%;justify-self:center}
+.ccard{position:absolute;width:340px;max-width:78%;aspect-ratio:1.586;border-radius:20px;color:#fff;box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+.ccard.back{right:0;top:30px;transform:rotate(9deg);background:linear-gradient(135deg,#FF7A45,#E2501C);overflow:hidden}
+.cc-stripe{position:absolute;left:0;right:0;top:22%;height:18%;background:#1b1b1b}
+.cc-cvv{position:absolute;right:18px;bottom:22px;font:800 .7rem var(--num);background:#fff;color:#333;padding:3px 8px;border-radius:4px}
+.ccard.front{left:6%;top:70px;transform:rotate(-6deg);padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 140% at 0% 0%,#2B3E8F 0%,#16245E 45%,#0B1338 100%);border:1px solid rgba(255,255,255,.14);animation:float 8s ease-in-out infinite}
+.ccard.front::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.12) 45%,transparent 60%);pointer-events:none}
+.cc-top{display:flex;justify-content:space-between;align-items:center}
+.cc-brand{display:flex;align-items:center;gap:6px;font-weight:900;font-size:1.05rem;letter-spacing:-.02em}.cc-brand b{color:#FF642E}
+.cc-nfc{color:#C9D2F0}
+.cc-chip{color:#E9C27A;background:linear-gradient(135deg,#F5D78E,#C99A3E);border-radius:7px;padding:2px}
+.cc-num{font:800 1.08rem var(--num);letter-spacing:.06em;color:#EEF1FF;white-space:nowrap}
+.cc-bot{display:flex;justify-content:space-between;font-weight:800;font-size:.78rem;letter-spacing:.06em}
+.cc-bot small{display:block;font-size:.58rem;color:#9FAAD3;letter-spacing:.1em}
+.fchip{position:absolute;display:flex;align-items:center;gap:10px;background:#fff;color:#0B1E4F;border-radius:16px;padding:10px 14px;font-weight:800;font-size:.84rem;box-shadow:0 18px 40px -18px rgba(0,0,0,.6);animation:bob 7s ease-in-out infinite}
+.fchip svg{color:#FF642E;flex:none}.fchip small{display:block;font-size:.7rem;color:#5B6684}
+.f-score{left:0;top:0;animation-delay:-2s}.f-score svg{color:#12A97F}
+.f-ok{right:4%;top:255px;color:#12A97F;animation-delay:-4s}.f-ok svg{color:#12A97F}
+.f-rate{left:-2%;bottom:6px;animation-delay:-1s}
+.ecard.fcheck{position:absolute;right:0;bottom:0;width:250px;padding:14px 16px;animation:bob 9s ease-in-out infinite;animation-delay:-5s}
+.ecard.fcheck small{font-weight:800;color:#5B6684;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}
+.ecard.fcheck .chk{margin-top:8px;font-size:.8rem}
+@keyframes float{50%{transform:rotate(-6deg) translateY(-8px)}}
+.ticker{background:#0B1338;color:#D7DEF7;border-block:1px solid rgba(255,255,255,.06);overflow:hidden}
+.ticker .track{display:flex;gap:40px;width:max-content;padding-block:14px;animation:tick 40s linear infinite}
+.ticker span{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:.92rem;white-space:nowrap}
+.ticker svg{color:#FF642E}
+@keyframes tick{to{transform:translateX(-50%)}}
+.fs i{background:var(--or-soft);color:var(--or-ink)}
+.stepn{font:800 .74rem var(--num);color:var(--or-ink);letter-spacing:.06em;text-transform:uppercase}
+@media (max-width:1000px){.cardstack{height:380px;margin-top:10px}.ecard.fcheck{display:none}}
+@media (max-width:600px){.cardstack{height:300px}.ccard{width:250px}.cc-num{font-size:.82rem}.ccard.front{padding:14px 16px;top:56px}.f-ok{top:220px}.f-rate{display:none}.fchip{font-size:.76rem;padding:8px 11px}}
+@media (prefers-reduced-motion:reduce){.ticker .track{animation:none}}
