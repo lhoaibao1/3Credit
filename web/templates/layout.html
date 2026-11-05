@@ -33,13 +33,13 @@
 {{define "foot"}}
 <footer>
   <div class="in">
-    <div><a class="brand" href="/" aria-label="3Credit"><svg class="logo" width="154" height="40" style="color:var(--ink)" role="img"><title>3Credit</title><use href="#logo"/></svg></a><p style="margin-top:12px;max-width:38ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính thuộc hệ sinh thái 3RDVN, không trực tiếp cho vay.</p>
+    <div><span class="fbrand"><a class="brand" href="/" aria-label="3Credit"><svg class="logo" width="154" height="40" style="color:var(--ink)" role="img"><title>3Credit</title><use href="#logo"/></svg></a><a class="pwr" href="https://3rdvn.io.vn" target="_blank" rel="noopener">Powered by <b>3RDVN</b></a></span><p style="margin-top:12px;max-width:38ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính thuộc hệ sinh thái 3RDVN, không trực tiếp cho vay.</p>
       {{with .S}}<p style="margin-top:10px;font-size:.84rem">{{if .company_name}}{{.company_name}}{{if .tax_id}} · MST {{.tax_id}}{{end}}<br>{{end}}{{if .address}}{{.address}}<br>{{end}}{{if .hotline}}Hotline: {{.hotline}}{{end}}{{if .email}}{{if .hotline}} · {{end}}{{.email}}{{end}}</p>{{end}}
       <div class="sib"><small>Sản phẩm cùng công ty</small><div>{{template "siblogos"}}</div></div></div>
     <div><h4>Sản phẩm</h4><ul><li><a href="/?need=cash_loan#tim">Vay tiêu dùng</a></li><li><a href="/?need=credit_card#tim">Thẻ tín dụng</a></li><li><a href="/?need=secured&amp;vehicle=motorbike#tim">Vay bằng đăng ký xe</a></li><li><a href="/#tu-van">Nhờ 3Credit tư vấn</a></li></ul></div>
     <div><h4>Hệ sinh thái 3RDVN</h4><ul><li><a href="/gioi-thieu">Giới thiệu 3Credit</a></li><li><a href="https://3rdhubvietnam.tech" target="_blank" rel="noopener">3RDHub Vietnam</a></li><li><a href="https://3rdvn.io.vn" target="_blank" rel="noopener">3RDVN Technology</a></li><li><a href="/kien-thuc">Kiến thức tài chính</a></li><li><a href="/tieu-chi-doi-tac">Tiêu chí đối tác</a></li></ul></div>
     <div><h4>Pháp lý</h4><ul><li><a href="/dieu-khoan">Điều khoản sử dụng</a></li><li><a href="/bao-mat">Chính sách dữ liệu cá nhân</a></li><li><a href="/xoa-du-lieu">Yêu cầu xóa dữ liệu</a></li></ul></div>
-    <div class="legal"><span>© 2026 3Credit – sản phẩm của {{if .S.company_name}}{{.S.company_name}}{{else}}3RDVN Technology{{end}}. Logo đối tác thuộc quyền sở hữu của từng đối tác.</span><span>3Credit không phải tổ chức tín dụng và không cam kết duyệt vay.</span><a href="https://3rdvn.io.vn" target="_blank" rel="noopener" class="byparent">Sản phẩm của <img src="/static/eco/3rdvn-icon.webp" width="22" height="13" alt="" loading="lazy"> <b>3RDVN Technology</b></a></div>
+    <div class="legal"><span>© 2026 3Credit – sản phẩm của {{if .S.company_name}}{{.S.company_name}}{{else}}3RDVN Technology{{end}}. Logo đối tác thuộc quyền sở hữu của từng đối tác.</span><span>3Credit không phải tổ chức tín dụng và không cam kết duyệt vay.</span></div>
   </div>
 </footer>
 <script src="/static/app.js?v={{assetv}}" defer></script>

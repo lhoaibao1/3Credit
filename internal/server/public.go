@@ -14,7 +14,6 @@ import (
 	"github.com/threecredit/platform/internal/matching"
 	"github.com/threecredit/platform/internal/model"
 	"github.com/threecredit/platform/internal/rules"
-	"github.com/threecredit/platform/internal/store"
 	"github.com/threecredit/platform/internal/tracking"
 )
 
@@ -195,7 +194,6 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 	}
 	data["Partners"] = partners
 	data["Posts"], _ = s.st.Posts(true, 4)
-	data["Eco"], data["Parent"] = store.Ecosystem, store.Parent
 	data["Back"], data["Source"] = "/?"+profileQuery(p).Encode(), "trang-chu"
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		data["Flash"], data["FlashKind"] = msg, kind

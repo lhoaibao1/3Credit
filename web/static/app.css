@@ -353,7 +353,7 @@ input[type=datetime-local],input[type=password],input[type=tel],input[type=file]
 .eco{grid-template-columns:repeat(3,minmax(0,1fr))}
 .el{background:transparent;border:0;padding:0;border-radius:0}
 .em.cur .el{background:transparent}
-.byparent{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;opacity:.85}.byparent:hover{opacity:1}.byparent img{width:22px;height:auto}.byparent b{color:var(--ink)}
 @media (max-width:1000px){.parent{grid-template-columns:1fr}.eco{grid-template-columns:1fr}}
 .sib{margin-top:14px;display:grid;gap:8px}.sib small{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.75}
 .sib>div{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}.sib a{color:var(--ink);opacity:.9;transition:opacity .2s}.sib a:hover{opacity:1}.sib .sl{height:40px;width:auto;display:block;border-radius:10px}
+.fbrand{display:inline-grid;justify-items:end;gap:2px}.pwr{font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.02em}.pwr b{color:var(--ink);font-weight:900}.pwr:hover b{color:var(--or)}
