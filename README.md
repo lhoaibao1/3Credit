@@ -42,7 +42,7 @@ Script tự làm các bước:
 6. In ra địa chỉ `http://<IP-server>`, `http://<IP-server>/admin` và mật khẩu quản trị.
 
 - **Cập nhật** lên code mới nhất: chạy lại đúng lệnh trên. File `.env` và dữ liệu được giữ nguyên.
-- **Đổi cổng**: `curl -fsSL …/deploy.sh | sudo PORT=8080 bash`.
+- **Cổng**: mặc định 80. Nếu cổng 80 đã bị chương trình khác dùng (Nginx, Apache, web khác), script tự chọn cổng trống (8080, 8081…) và in ra địa chỉ đúng. Muốn chỉ định cổng: `curl -fsSL …/deploy.sh | sudo PORT=8080 bash`.
 - **Dữ liệu** (database, logo tải lên) nằm trong Docker volume `3credit_3credit-data`.
 - **Mất `.env`** thì không giải mã được lead cũ. Hãy sao lưu file này.
 

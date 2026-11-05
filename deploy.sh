@@ -10,7 +10,7 @@ set -euo pipefail
 REPO_URL="${REPO_URL:-https://github.com/lhoaibao1/3Credit.git}"
 BRANCH="${BRANCH:-main}"
 APP_DIR="${APP_DIR:-/opt/3credit}"
-PORT="${PORT:-80}"
+WANT_PORT="${PORT:-}"   # cổng bạn chỉ định (nếu có)
 
 say()  { printf '\033[1;38;5;208m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mLỗi:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -50,28 +50,48 @@ PUBLIC_IP="$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || hostnam
 if [ ! -f .env ]; then
   say "Tạo file cấu hình .env…"
   ADMIN_PASSWORD="$(rand 9)"
-  BASE="http://$PUBLIC_IP"; [ "$PORT" = "80" ] || BASE="$BASE:$PORT"
   umask 077
   cat > .env <<ENV
 APP_ENV=production
-BASE_URL=$BASE
+BASE_URL=http://$PUBLIC_IP
 SESSION_SECRET=$(rand 32)
 DATA_KEY=$(rand 32)
 ADMIN_USER=admin
 ADMIN_PASSWORD=$ADMIN_PASSWORD
-PORT=$PORT
+PORT=80
 ENV
   NEW_INSTALL=1
 fi
-# docker compose đọc PORT từ .env
 set -a; . ./.env; set +a
+[ -n "$WANT_PORT" ] && PORT="$WANT_PORT"
+PORT="${PORT:-80}"
 
-# 4. Mở cổng firewall nếu đang bật ufw
+# 4. Chọn cổng: nếu cổng đang bị chương trình khác chiếm thì tự chọn cổng trống
+docker compose stop >/dev/null 2>&1 || true   # nhả cổng của chính 3Credit (nếu đang chạy)
+port_busy() {
+  if command -v ss >/dev/null 2>&1 && ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]$1\$"; then return 0; fi
+  (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
+}
+if port_busy "$PORT"; then
+  OWNER="$(ss -ltnpH 2>/dev/null | grep -E "[:.]$PORT " | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2)"
+  say "Cổng $PORT đang được ${OWNER:-chương trình khác} dùng, tìm cổng trống khác…"
+  NEWP=""
+  for c in 8080 8081 8088 8888 3000 9000; do
+    if ! port_busy "$c"; then NEWP="$c"; break; fi
+  done
+  [ -n "$NEWP" ] || fail "Không tìm được cổng trống. Chạy lại với PORT=<số cổng>."
+  PORT="$NEWP"
+fi
+BASE_URL="http://$PUBLIC_IP"; [ "$PORT" = "80" ] || BASE_URL="$BASE_URL:$PORT"
+sed -i -e "s|^PORT=.*|PORT=$PORT|" -e "s|^BASE_URL=.*|BASE_URL=$BASE_URL|" .env
+export PORT BASE_URL
+
+# 5. Mở cổng firewall nếu đang bật ufw
 if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
   ufw allow "$PORT"/tcp >/dev/null && say "Đã mở cổng $PORT trên ufw."
 fi
 
-# 5. Build và chạy
+# 6. Build và chạy
 say "Build và khởi động (lần đầu mất vài phút)…"
 docker compose up -d --build --remove-orphans
 
