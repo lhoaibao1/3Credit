@@ -13,10 +13,10 @@
 <script src="/static/theme.js"></script>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mark" viewBox="8.8 14.8 46.4 34.4"><rect x="11" y="17" width="42" height="30" rx="13" fill="none" stroke="currentColor" stroke-width="4.4"/><rect x="22.5" y="25.5" width="5.6" height="13" rx="2.8" fill="currentColor"/><path d="M35.6 32.6l3.8 4l7-8" fill="none" stroke="#FF642E" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></symbol></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="mark" viewBox="5.8 13.8 52.4 34.4"><rect x="8" y="16" width="48" height="30" rx="9" fill="none" stroke="currentColor" stroke-width="4.4"/><path d="M10.2 23.6H53.8" stroke="currentColor" stroke-width="4"/><rect x="20" y="29.2" width="5.6" height="11" rx="2.8" fill="currentColor"/><path d="M34 35.2l3.6 3.8l7-8" fill="none" stroke="#FF642E" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></symbol></defs></svg>
 <nav class="nav" aria-label="Chính">
   <div class="in">
-    <a class="brand" href="/" aria-label="3Credit trang chủ"><svg width="35" height="26" style="color:#fff"><use href="#mark"/></svg><span class="wm">3<span class="or">Credit</span></span></a>
+    <a class="brand" href="/" aria-label="3Credit trang chủ"><svg width="40" height="26" style="color:#fff"><use href="#mark"/></svg><span class="wm">3<span class="or">Credit</span></span></a>
     {{if .Admin}}
     <ul><li><a href="/admin/inquiries">Khách tư vấn</a></li><li><a href="/admin/campaigns">Chiến dịch</a></li><li><a href="/admin/posts">Bài viết</a></li><li><a href="/" target="_blank" rel="noopener">Xem web</a></li></ul>
     {{else}}
@@ -33,7 +33,7 @@
 {{define "foot"}}
 <footer>
   <div class="in">
-    <div><a class="brand" href="/"><svg width="35" height="26" style="color:var(--ink)"><use href="#mark"/></svg><span class="wm" style="color:var(--ink)">3<span class="or">Credit</span></span></a><p style="margin-top:12px;max-width:38ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính, không trực tiếp cho vay.</p>
+    <div><a class="brand" href="/"><svg width="40" height="26" style="color:var(--ink)"><use href="#mark"/></svg><span class="wm" style="color:var(--ink)">3<span class="or">Credit</span></span></a><p style="margin-top:12px;max-width:38ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính, không trực tiếp cho vay.</p>
       {{with .S}}<p style="margin-top:10px;font-size:.84rem">{{if .company_name}}{{.company_name}}{{if .tax_id}} · MST {{.tax_id}}{{end}}<br>{{end}}{{if .address}}{{.address}}<br>{{end}}{{if .hotline}}Hotline: {{.hotline}}{{end}}{{if .email}}{{if .hotline}} · {{end}}{{.email}}{{end}}</p>{{end}}</div>
     <div><h4>Sản phẩm</h4><ul><li><a href="/?need=cash_loan#tim">Vay tiêu dùng</a></li><li><a href="/?need=credit_card#tim">Thẻ tín dụng</a></li><li><a href="/?need=secured&amp;vehicle=motorbike#tim">Vay bằng đăng ký xe</a></li><li><a href="/#tu-van">Nhờ 3Credit tư vấn</a></li></ul></div>
     <div><h4>Minh bạch</h4><ul><li><a href="/kien-thuc">Kiến thức tài chính</a></li><li><a href="/tieu-chi-doi-tac">Tiêu chí đối tác</a></li><li><a href="/#canh-bao">Báo lừa đảo</a></li></ul></div>

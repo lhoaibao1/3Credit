@@ -3,6 +3,17 @@
 **3Credit · Find Your Financial Fit**
 3Credit thuộc hệ sinh thái 3RDHub Vietnam. Logo kế thừa trực tiếp mascot và ngôn ngữ chữ của 3RDHub.
 
+## 0. Phiên bản 2 (05/11/2026): Thẻ-robot
+
+Biểu tượng được làm lại theo yêu cầu “giữ robot, thêm chất tín dụng”. Màn hình robot giờ có tỷ lệ của một **thẻ thanh toán** (~1,6 : 1) và có **dải từ** ngang phía trên. Khuôn mặt robot của 3RDHub giữ nguyên: mắt trái là viên dọc màu trắng, mắt phải là **dấu tick cam**.
+
+Đã thử 3 phương án (`brand/preview/concepts-v2.png`):
+- **D · Thẻ-robot (chọn):** đọc ra “thẻ tín dụng” ngay, vẫn rõ ở 16px.
+- **E · Robot cầm thẻ:** chiếc thẻ nhỏ ở góc bị rối khi thu nhỏ.
+- **F · Ăng-ten đo điểm:** vòng cung mất hẳn ở cỡ favicon.
+
+Các mục bên dưới (màu, chữ, khoảng cách, cấm kỵ) vẫn áp dụng. Phần “Ba concept” ở mục 2 là lịch sử của phiên bản 1.
+
 ## 1. Phân tích logo gốc 3RDHub Vietnam
 
 | Thành phần | 3RDHub Vietnam (đo từ favicon.svg và icon-512.png) |
