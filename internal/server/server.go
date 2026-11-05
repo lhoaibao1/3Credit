@@ -41,13 +41,13 @@ type Config struct {
 }
 
 type Server struct {
-	cfg     Config
-	st      *store.Store
-	tr      *tracking.Tracker
-	lr      *leads.Router
-	tpl     *template.Template
-	mux     *http.ServeMux
-	now     func() time.Time
+	cfg Config
+	st  *store.Store
+	tr  *tracking.Tracker
+	lr  *leads.Router
+	tpl *template.Template
+	mux *http.ServeMux
+	now func() time.Time
 }
 
 func New(cfg Config, st *store.Store, tr *tracking.Tracker, lr *leads.Router) (*Server, error) {
@@ -235,6 +235,7 @@ type cardData struct {
 func (s *Server) funcs() template.FuncMap {
 	return template.FuncMap{
 		"assetv": func() string { return assetVersion },
+		"eco":    func() []store.EcoMember { return store.Ecosystem },
 		"initials": func(n string) string {
 			var b strings.Builder
 			for _, w := range strings.Fields(n) {
@@ -259,10 +260,10 @@ func (s *Server) funcs() template.FuncMap {
 			}
 			return xs
 		},
-		"sub":  func(a, b int) int { return a - b },
-		"card": func(r matching.Result, q template.URL) cardData { return cardData{R: r, Q: q} },
+		"sub":      func(a, b int) int { return a - b },
+		"card":     func(r matching.Result, q template.URL) cardData { return cardData{R: r, Q: q} },
 		"verified": func(o model.Offer) int { return verifiedPct(o) },
-		"vnd": func(v float64) string { return vnd(v) },
+		"vnd":      func(v float64) string { return vnd(v) },
 		"dtlocal": func(t *time.Time) string {
 			if t == nil {
 				return ""
