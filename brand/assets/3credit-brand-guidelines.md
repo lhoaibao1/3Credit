@@ -16,13 +16,15 @@ Các mục bên dưới (màu, chữ, khoảng cách, cấm kỵ) vẫn áp dụ
 
 ### Chữ “Credit” (05/11/2026)
 
-Dấu chấm của chữ **i** trong “Credit” được thay bằng **dấu tick cùng màu cam**, lặp lại dấu tick ở mắt robot. Đã thử 4 kiểu (`brand/preview/wordmark-concepts.png`):
-- **Dải từ cắt ngang chữ**: bị loại vì đọc như chữ bị gạch bỏ (gợi “từ chối”).
-- **Dãy chấm số thẻ dưới chữ**: bị loại vì rối ở cỡ nhỏ.
-- **Dải từ + tick**: bị loại, cùng lý do với dải từ.
-- **Tick trên chữ i**: được chọn.
+Theo lựa chọn của chủ thương hiệu (kết hợp mẫu C và D trong `brand/preview/wordmark-concepts.png`), chữ “Credit” có 3 họa tiết thẻ:
+- **Dải từ**: một vệt trong suốt cắt ngang phần trên của chữ, giống dải từ trên mặt sau thẻ.
+- **Tick trên chữ i**: dấu chấm của chữ i thay bằng dấu tick cùng màu, lặp lại mắt robot.
+- **Dãy số thẻ**: các nhóm 4 chấm dưới chân chữ, như dãy số dập trên thẻ.
 
-Chữ được vẽ thành đường vector, dùng chữ ı (không chấm) của Nunito Black cộng thêm nét tick. Không gõ lại logo bằng font, luôn dùng file SVG.
+Lưu ý khi dùng:
+- Dải từ là phần trong suốt, nên màu nền phía sau sẽ lộ qua. Không đặt logo lên ảnh có nhiều chi tiết.
+- Ở chiều cao dưới 24px, hàng chấm và dải từ khó thấy. Khi đó dùng `3credit-icon.svg` hoặc favicon.
+- Luôn dùng file SVG, không gõ lại logo bằng font.
 
 ## 1. Phân tích logo gốc 3RDHub Vietnam
 
