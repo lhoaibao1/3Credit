@@ -3,6 +3,9 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo bash
 #
+# Chạy với domain qua Cloudflare (bản ghi A, proxy cam), chiếm cổng 80, tắt web cũ trên cổng 80:
+#   curl -fsSL …/deploy.sh | sudo DOMAIN=3credit.asia PORT=80 FREE_PORT=1 bash
+#
 # Chạy với domain qua Cloudflare Tunnel (HTTPS, không cần mở cổng):
 #   curl -fsSL …/deploy.sh | sudo DOMAIN=3credit.asia CF_TUNNEL_TOKEN=<token> bash
 #
@@ -16,6 +19,7 @@ APP_DIR="${APP_DIR:-/opt/3credit}"
 WANT_PORT="${PORT:-}"   # cổng bạn chỉ định (nếu có)
 WANT_DOMAIN="${DOMAIN:-}"
 WANT_TOKEN="${CF_TUNNEL_TOKEN:-}"
+FREE_PORT="${FREE_PORT:-0}"   # =1: tắt chương trình khác đang chiếm cổng (chỉ dùng khi bạn không cần nó nữa)
 
 say()  { printf '\033[1;38;5;208m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mLỗi:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -84,6 +88,29 @@ port_busy() {
   if command -v ss >/dev/null 2>&1 && ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]$1\$"; then return 0; fi
   (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
 }
+# Giải phóng cổng nếu được yêu cầu (FREE_PORT=1): tắt web server / container khác đang chiếm cổng
+if [ "$FREE_PORT" = 1 ] && port_busy "$PORT"; then
+  say "Giải phóng cổng $PORT theo yêu cầu (FREE_PORT=1)…"
+  # container Docker khác đang publish cổng này
+  for c in $(docker ps --format '{{.Names}} {{.Ports}}' | awk -v p=":$PORT->" 'index($0,p){print $1}'); do
+    [ "$c" = "3credit" ] && continue
+    say "Dừng container $c (và tắt tự khởi động lại)"
+    docker update --restart=no "$c" >/dev/null 2>&1 || true
+    docker stop "$c" >/dev/null
+  done
+  # web server cài trực tiếp trên máy
+  for svc in nginx apache2 httpd caddy lighttpd openresty; do
+    if systemctl is-active --quiet "$svc" 2>/dev/null; then
+      say "Dừng và tắt dịch vụ $svc"
+      systemctl disable --now "$svc" >/dev/null 2>&1 || true
+    fi
+  done
+  sleep 2
+  if port_busy "$PORT"; then
+    ss -ltnp 2>/dev/null | grep -E "[:.]$PORT " | sed 's/^/    /' || true
+    fail "Cổng $PORT vẫn bị chiếm bởi chương trình ở trên. Tắt nó thủ công rồi chạy lại."
+  fi
+fi
 if port_busy "$PORT"; then
   OWNER="$(ss -ltnpH 2>/dev/null | grep -E "[:.]$PORT " | grep -o 'users:(("[^"]*' | head -1 | cut -d'"' -f2)"
   say "Cổng $PORT đang được ${OWNER:-chương trình khác} dùng, tìm cổng trống khác…"

@@ -53,7 +53,18 @@ Script tự làm các bước:
 
 > Truy cập qua IP là HTTP, chưa mã hóa. Dùng để chạy thử. Trước khi nhận thông tin khách thật, hãy gắn domain và bật HTTPS.
 
-## Gắn domain qua Cloudflare (HTTPS, không cần mở cổng)
+## Gắn domain qua Cloudflare, cách đơn giản (bản ghi A)
+
+1. Cloudflare → **DNS → Records**, thêm 2 bản ghi, bật **Proxied** (đám mây màu cam):
+   - `A` · Name `@` · IPv4 = IP server
+   - `CNAME` · Name `www` · Target `3credit.asia`
+2. Cloudflare → **SSL/TLS → Overview**: chọn **Flexible**. **Edge Certificates**: bật **Always Use HTTPS**.
+3. Trên server (3Credit dùng cổng 80, tắt web cũ đang chiếm cổng 80):
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo DOMAIN=3credit.asia PORT=80 FREE_PORT=1 bash
+   ```
+
+## Gắn domain qua Cloudflare Tunnel (HTTPS, không cần mở cổng)
 
 Dùng Cloudflare Tunnel: server tự kết nối ra Cloudflare, không cần cổng 80/443, IP server được ẩn.
 
