@@ -1,0 +1,133 @@
+{{template "head" .}}
+<header class="hero">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="in">
+    <div>
+      <span class="pill"><b>Mới</b>Đề xuất có giải thích, không cam kết duyệt</span>
+      <h1>Tìm sản phẩm tài chính <span class="or">hợp với bạn</span>, và biết vì sao.</h1>
+      <p class="lede">3Credit đọc điều kiện công bố của từng ngân hàng, công ty tài chính, rồi đối chiếu với hồ sơ bạn tự khai. Bạn thấy rõ điều kiện nào đã khớp, điều kiện nào còn cần kiểm tra.</p>
+      <div class="needs" role="group" aria-label="Bạn cần gì">
+        <a class="need" href="/?need=cash_loan#tim"><i>💸</i><span>Tôi muốn vay tiền<small>Vay tiêu dùng, vay qua app</small></span></a>
+        <a class="need" href="/?need=credit_card#tim"><i>💳</i><span>Tìm thẻ tín dụng<small>Theo thu nhập, nhu cầu</small></span></a>
+        <a class="need" href="/?need=compare#tim"><i>⚖️</i><span>So sánh sản phẩm<small>Lãi, hạn mức, kỳ hạn, phí</small></span></a>
+        <a class="need" href="/?need=secured&amp;vehicle=motorbike#tim"><i>🏍️</i><span>Giải pháp khác<small>Vay bằng đăng ký xe</small></span></a>
+      </div>
+      <div class="trust"><span>Không cần CCCD để xem đề xuất</span><span>Không ảnh hưởng điểm tín dụng</span><span>Nguồn và ngày cập nhật trên từng sản phẩm</span></div>
+    </div>
+    <div class="explain" aria-hidden="true">
+      <div class="ecard mini"><div class="row"><small>Hồ sơ của bạn</small><span class="st eligible">Đáp ứng điều kiện đã biết</span></div></div>
+      <div class="ecard">
+        <div><h4>Vay tín chấp theo lương</h4><small>Ví dụ cách 3Credit giải thích một đề xuất</small></div>
+        <ul class="chk">
+          <li class="y">Số tiền 50 triệu nằm trong hạn mức công bố</li>
+          <li class="y">Kỳ hạn 24 tháng trong khung cho phép</li>
+          <li class="y">Nhận lương chuyển khoản, đúng yêu cầu</li>
+          <li class="q">Điều kiện lịch sử tín dụng: đối tác chưa công bố</li>
+        </ul>
+      </div>
+      <div class="ecard mini mini2"><div class="row"><small>Không bao giờ hiển thị</small><b style="color:#D9434A">“Duyệt 100%”</b></div></div>
+    </div>
+  </div>
+  <div class="in partners" id="doi-tac">
+    <p style="color:#9FAAD3;font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Sản phẩm đang được đối chiếu từ {{len .Partners}} đối tác</p>
+    <div class="logos">{{range .Partners}}{{if .LogoPath}}<span class="lchip" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy"></span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
+  </div>
+</header>
+
+<section class="sec" id="cach-hoat-dong">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Cách hoạt động</span><h2>Từ nhu cầu đến <span class="or">đăng ký đúng chỗ</span></h2></div></div>
+    <div class="flow">
+      <div class="fs reveal"><i>1</i><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
+      <div class="fs reveal"><i>2</i><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
+      <div class="fs reveal"><i>3</i><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
+      <div class="fs reveal"><i>4</i><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="tim">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Tìm sản phẩm</span><h2>Hồ sơ của bạn, <span class="or">đề xuất của bạn</span></h2><p>Đây là đánh giá theo điều kiện công bố, không phải kết quả duyệt vay.</p></div></div>
+    <div class="wiz">
+      <form class="wform" id="pf" method="get" action="/#tim">
+        <h3>Thông tin của bạn</h3>
+        <div class="fld"><span class="lb">Bạn cần</span><div class="seg">
+          {{range .Needs}}<label style="display:contents"><input type="radio" name="need" value="{{.V}}" {{if eq .V $.P.Need}}checked{{end}} hidden><button type="button" data-need="{{.V}}" aria-pressed="{{eq .V $.P.Need}}">{{.L}}</button></label>{{end}}
+        </div></div>
+        <div class="fld"><label for="fAmount">Số tiền <output id="oAmount">{{money .P.Amount}}</output></label><input type="range" id="fAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
+        <div class="fld"><label for="fTerm">Kỳ hạn <output id="oTerm">{{.P.Term}} tháng</output></label><input type="range" id="fTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>
+        <div class="two">
+          <div class="fld"><label for="fAge">Tuổi</label><input type="number" id="fAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
+          <div class="fld"><label for="fRegion">Nơi sống</label><select id="fRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        </div>
+        <div class="fld"><label for="fJob">Công việc</label><select id="fJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        <div class="two">
+          <div class="fld"><label for="fIncome">Thu nhập/tháng</label><select id="fIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+          <div class="fld"><label for="fChannel">Nhận lương</label><select id="fChannel" name="channel">{{range .Channels}}<option value="{{.V}}" {{if eq .V $.P.Channel}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        </div>
+        <div class="fld"><label for="fCredit">Lịch sử tín dụng (tự khai)</label><select id="fCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        <div class="two">
+          <div class="fld"><label for="fUrg">Mức gấp</label><select id="fUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+          <div class="fld"><label for="fVeh">Đăng ký xe</label><select id="fVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        </div>
+        <noscript><button class="btn btn-pri" type="submit">Xem đề xuất</button></noscript>
+        <p class="note">Hồ sơ không gồm thông tin định danh. 3Credit lưu ẩn danh để cải thiện đề xuất.</p>
+      </form>
+      <div class="res" id="results" aria-live="polite">{{template "results" .}}</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="nguon">
+  <div class="in">
+    <div class="comp">
+      <div>
+        <span class="eyebrow">Minh bạch dữ liệu</span>
+        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Mỗi con số đều có nguồn</h2>
+        <p>Chính sách sản phẩm được tổng hợp từ website chính thức và tài liệu công bố của đối tác, kèm ngày kiểm tra. Thông tin chưa xác minh được đánh dấu rõ và không dùng để kết luận bạn đủ điều kiện.</p>
+        <div class="legend">
+          <div><span class="conf A">A</span> Đọc trực tiếp trên website chính thức của đối tác</div>
+          <div><span class="conf B">B</span> Nguồn chính thức gián tiếp (Hiệp hội Ngân hàng, trang khác của đối tác)</div>
+          <div><span class="conf C">C</span> Báo chí, trang tổng hợp: chỉ để tham khảo</div>
+          <div><span class="conf U">?</span> Chưa xác minh</div>
+        </div>
+      </div>
+      <div>
+        <span class="eyebrow">Miễn trừ trách nhiệm</span>
+        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Lưu ý quan trọng</h2>
+        <p>3Credit không phải tổ chức tín dụng, không trực tiếp cho vay và không quyết định phê duyệt. “Đáp ứng điều kiện đã biết” nghĩa là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố, không phải bạn sẽ được duyệt.</p>
+        <p>Hạn mức, lãi suất, phí và kỳ hạn cuối cùng do đối tác quyết định theo hồ sơ thực tế. Hãy đọc kỹ hợp đồng, nhất là tổng chi phí (lãi + phí), trước khi ký.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="canh-bao">
+  <div class="in">
+    <div class="warn">
+      <div><span class="wt">⚠ Cảnh báo</span><h2>Nhận diện app vay “tín dụng đen”</h2><p>Nếu một app có các dấu hiệu bên cạnh, đừng đăng ký. 3Credit chỉ mở đăng ký cho đối tác khi đã có hồ sơ pháp lý và bảng tổng chi phí.</p></div>
+      <div class="signs">
+        <div class="sign"><b>Không rõ pháp nhân, giấy phép</b><span>Không tra được tên công ty và giấy phép hoạt động.</span></div>
+        <div class="sign"><b>Đòi quyền danh bạ, ảnh</b><span>Dùng để gọi điện, bêu riếu người thân.</span></div>
+        <div class="sign"><b>Trừ phí trước khi giải ngân</b><span>Vay 5 triệu nhưng chỉ nhận 3,5 triệu.</span></div>
+        <div class="sign"><b>Lãi theo ngày, kỳ hạn 7–14 ngày</b><span>Quy ra năm thường vượt xa mức luật cho phép.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-bottom:20px">
+  <div class="in">
+    <div class="sh" style="justify-content:center;text-align:center"><div class="t" style="justify-items:center"><span class="eyebrow">Hỏi đáp</span><h2>Câu hỏi thường gặp</h2></div></div>
+    <div class="faq">
+      <details open><summary>“Đáp ứng điều kiện đã biết” có phải là được duyệt?</summary><p>Không. Đó là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố. Đối tác vẫn thẩm định hồ sơ thực tế và quyết định.</p></details>
+      <details><summary>Vì sao có sản phẩm ghi “Chính sách chưa xác minh”?</summary><p>Vì 3Credit chưa có nguồn chính thức cho điều kiện của sản phẩm đó. Chúng tôi vẫn hiển thị để bạn tham khảo, nhưng không xếp trên các sản phẩm đã xác minh.</p></details>
+      <details><summary>Tôi có nợ xấu thì 3Credit đề xuất gì?</summary><p>Chỉ những sản phẩm mà đối tác đã xác nhận nhận trường hợp của bạn. Nếu chưa có, chúng tôi nói thẳng là chưa tìm thấy, thay vì hứa hẹn.</p></details>
+      <details><summary>3Credit kiếm tiền từ đâu?</summary><p>Từ phí giới thiệu đối tác trả khi bạn đăng ký thành công. Phí này không ảnh hưởng thứ tự đề xuất theo mức phù hợp.</p></details>
+    </div>
+  </div>
+</section>
+<div class="tray" id="tray" hidden><span id="trayTxt"></span><button class="btn btn-pri btn-sm" type="button" id="trayGo">So sánh</button><button class="btn btn-ghost btn-sm" type="button" id="trayClr">Bỏ chọn</button></div>
+{{template "foot" .}}

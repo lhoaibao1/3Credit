@@ -1,0 +1,728 @@
+<title>3Credit Concept</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap">
+<style>
+/* Layout: navy hero with need-picker → discovery wizard → explained matches (eligible / check / not) → compare tray + detail sheet; admin view on #admin. */
+:root{
+  --bg:#F5F6FB; --surface:#FFFFFF; --soft:#EEF0F8; --ink:#0B1E4F; --muted:#5B6684; --line:rgba(11,30,79,.10);
+  --navy:#101B4D; --navy2:#16245E; --or:#FF642E; --or-ink:#E2501C; --or-soft:rgba(255,100,46,.12); --blue:#3D7BFF;
+  --ok:#12A97F; --ok-soft:rgba(18,169,127,.12); --mid:#C98A0C; --mid-soft:rgba(227,155,16,.14); --low:#D9434A; --low-soft:rgba(229,72,77,.12); --gray-soft:rgba(91,102,132,.12);
+  --shadow:0 24px 50px -30px rgba(11,30,79,.4);
+  --font:"Nunito",ui-rounded,system-ui,sans-serif; --num:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1024; --surface:#111A36; --soft:#18224A; --ink:#EEF1FF; --muted:#9AA5C8; --line:rgba(255,255,255,.09);
+  --or-ink:#FF8A5C; --ok:#2BD49E; --mid:#F5B73B; --low:#FF6B70; --shadow:0 24px 50px -30px rgba(0,0,0,.85); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0A1024; --surface:#111A36; --soft:#18224A; --ink:#EEF1FF; --muted:#9AA5C8; --line:rgba(255,255,255,.09);
+  --or-ink:#FF8A5C; --ok:#2BD49E; --mid:#F5B73B; --low:#FF6B70; --shadow:0 24px 50px -30px rgba(0,0,0,.85); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;font-weight:600}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--navy)}
+.in{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{margin:0;line-height:1.15;text-wrap:balance;font-weight:900;letter-spacing:-.02em}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+button,input,select{font-family:inherit}
+.or{color:var(--or)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.76rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--or-ink)}
+.eyebrow::before{content:"";width:18px;height:3px;border-radius:3px;background:var(--or)}
+.btn{font-weight:800;font-size:.95rem;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,background .2s,border-color .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn-pri{background:var(--or);color:#fff}.btn-pri:hover{background:#F2551D}
+.btn-line{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn-line:hover{border-color:var(--or)}
+.btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.btn-sm{padding:8px 14px;font-size:.84rem}
+:focus-visible{outline:3px solid #FFC24B;outline-offset:2px}
+.sec{padding-block:80px 0}
+.sh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.sh .t{display:grid;gap:10px;max-width:660px}
+.sh h2{font-size:clamp(1.8rem,3.4vw,2.6rem)}
+.sh p{color:var(--muted);font-size:1.03rem}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
+.conf{font-family:var(--num);font-size:.66rem;font-weight:800;padding:1px 6px;border-radius:6px;margin-left:6px;vertical-align:1px}
+.conf.A{background:var(--ok-soft);color:var(--ok)}.conf.B{background:rgba(61,123,255,.14);color:var(--blue)}.conf.C{background:var(--mid-soft);color:var(--mid)}.conf.U{background:var(--gray-soft);color:var(--muted)}
+.reveal{transition:transform .7s cubic-bezier(.2,.8,.2,1)}.reveal.pre{transform:translateY(18px)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:#101B4D;border-bottom:1px solid rgba(255,255,255,.07);color:#fff}
+.nav .in{display:flex;align-items:center;gap:26px;height:66px}
+.brand{display:flex;align-items:center;gap:10px}
+.wm{font-weight:900;font-size:1.5rem;letter-spacing:-.02em;line-height:1;color:#fff}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0;padding:0;font-weight:800;font-size:.92rem;color:#C9D2F0}
+.nav ul a{padding:8px 13px;border-radius:999px;display:block}.nav ul a:hover,.nav ul a[aria-current="page"]{background:rgba(255,255,255,.09);color:#fff}
+.nav .act{display:flex;gap:10px;align-items:center;margin-left:auto}
+.tgl{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;cursor:pointer;display:grid;place-items:center}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:radial-gradient(120% 90% at 20% 0%,#1A2A6C 0%,#101B4D 55%,#0B1338 100%);color:#F4F6FF;isolation:isolate}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.glow{position:absolute;border-radius:50%;filter:blur(80px);z-index:-2;pointer-events:none}
+.g1{width:560px;height:560px;right:-160px;top:-200px;background:radial-gradient(circle,rgba(255,100,46,.22),transparent 65%);animation:drift 16s ease-in-out infinite alternate}
+.g2{width:520px;height:520px;left:-200px;bottom:-260px;background:radial-gradient(circle,rgba(61,123,255,.18),transparent 65%);animation:drift 19s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(50px,30px) scale(1.08)}}
+.hero .in{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding-block:64px 80px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:.84rem;font-weight:700;color:#D7DEF7}
+.pill b{background:var(--or);color:#fff;border-radius:999px;padding:2px 10px;font-size:.74rem}
+.hero h1{font-size:clamp(2.3rem,5vw,3.9rem);margin-top:20px}
+.hero .lede{font-size:1.1rem;color:#B9C3E6;max-width:50ch;margin-top:18px}
+.needs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px;max-width:560px}
+.need{display:flex;gap:12px;align-items:center;text-align:left;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;font-weight:800;font-size:.95rem;transition:background .2s,border-color .2s,transform .2s}
+.need:hover{background:rgba(255,100,46,.14);border-color:rgba(255,100,46,.6);transform:translateY(-2px)}
+.need i{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.08);font-style:normal}
+.need small{display:block;font-weight:700;color:#9FAAD3;font-size:.76rem}
+.trust{display:flex;gap:20px;flex-wrap:wrap;margin-top:26px;font-size:.84rem;color:#9FAAD3}
+.trust span::before{content:"✓";color:var(--or);font-weight:900;margin-right:6px}
+.explain{position:relative;display:grid;gap:14px}
+.ecard{background:#fff;color:#0B1E4F;border-radius:24px;padding:20px;box-shadow:0 40px 80px -40px rgba(0,0,0,.8)}
+.ecard .row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.ecard h4{font-size:1.02rem}
+.ecard small{color:#5B6684;font-weight:700;font-size:.78rem}
+.chk{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:7px;font-size:.86rem}
+.chk li{display:flex;gap:8px;align-items:flex-start}
+.chk li::before{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;font-weight:900;margin-top:2px}
+.chk li.y::before{content:"✓";background:rgba(18,169,127,.14);color:#12A97F}
+.chk li.q::before{content:"?";background:rgba(227,155,16,.16);color:#C98A0C}
+.chk li.n::before{content:"✕";background:rgba(229,72,77,.14);color:#D9434A}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:900;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.st.eligible{background:var(--ok-soft);color:var(--ok)}.st.potential{background:var(--mid-soft);color:var(--mid)}.st.unverified{background:var(--gray-soft);color:var(--muted)}.st.not{background:var(--low-soft);color:var(--low)}
+.ecard .st.eligible{color:#12A97F}
+.ecard.mini{padding:14px 18px;margin-left:48px;animation:bob 7s ease-in-out infinite}
+.ecard.mini2{margin-left:0;margin-right:48px;animation-delay:-3.5s}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fs{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:8px;align-content:start}
+.fs i{font-style:normal;font-family:var(--num);font-weight:800;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--or);color:#fff;margin-bottom:6px}
+.fs h3{font-size:1.08rem}.fs p{color:var(--muted);font-size:.92rem}
+
+.wiz{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
+.wform{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;display:grid;gap:14px;position:sticky;top:84px}
+.wform h3{font-size:1.15rem}
+.fld{display:grid;gap:6px;min-width:0}
+.fld label,.fld .lb{font-size:.74rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:flex;justify-content:space-between;gap:8px}
+.fld output{font-family:var(--num);color:var(--ink);text-transform:none;letter-spacing:0}
+select,input[type=number],input[type=text],input[type=url]{width:100%;font-weight:700;font-size:.93rem;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+input[type=range]{width:100%;accent-color:#FF642E}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1.5px solid var(--line);background:transparent;color:var(--ink);font-weight:800;font-size:.82rem;padding:7px 12px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--or);border-color:var(--or);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{font-size:.8rem;color:var(--muted)}
+.res{display:grid;gap:14px;min-width:0}
+.rsum{background:var(--navy);color:#fff;border-radius:22px;padding:20px 22px;display:grid;gap:10px}
+.rsum h3{font-size:1.2rem}
+.rsum p{color:#B9C3E6;font-size:.92rem}
+.segs{display:flex;flex-wrap:wrap;gap:6px}
+.segs span{font-size:.74rem;font-weight:800;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);color:#D7DEF7}
+.counts{display:flex;gap:18px;flex-wrap:wrap;font-size:.86rem;color:#D7DEF7}
+.counts b{font-family:var(--num);color:#fff;font-size:1.1rem;margin-right:4px}
+.alert{border-radius:18px;padding:16px 18px;background:var(--mid-soft);color:var(--ink);font-size:.92rem;border:1px solid rgba(227,155,16,.35)}
+.alert b{display:block;margin-bottom:4px}
+.grp{display:grid;gap:12px}
+.grp>h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;gap:8px;align-items:center;margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:grid;gap:14px;transition:transform .25s,box-shadow .25s,border-color .25s;min-width:0}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:rgba(255,100,46,.35)}
+.ch{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lg{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:.95rem;flex:none;background:var(--navy)}
+.ch h3{font-size:1.05rem}.ch small{display:block;color:var(--muted);font-size:.8rem;font-weight:700}
+.ch .st{margin-left:auto}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:12px 14px;border-radius:14px;background:var(--soft)}
+.specs div{display:grid;gap:2px;min-width:0}
+.specs small{font-size:.66rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.specs b{font-size:.84rem;font-weight:800}
+.why{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.why .chk{margin:0;font-size:.84rem}
+.why h5{margin:0 0 4px;font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cf{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.meter{flex:1;min-width:160px;display:grid;gap:4px;font-size:.76rem;color:var(--muted);font-weight:800}
+.bar{height:6px;border-radius:6px;background:var(--soft);overflow:hidden;display:block}.bar i{display:block;height:100%;background:var(--or);border-radius:6px}
+.cmpchk{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:800;cursor:pointer}
+.cmpchk input{width:17px;height:17px;accent-color:#FF642E}
+.src{font-size:.74rem;color:var(--muted)}
+details.nots{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 18px}
+details.nots summary{cursor:pointer;font-weight:800}
+.nrow{display:flex;gap:10px;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);font-size:.88rem;flex-wrap:wrap}
+.nrow span{color:var(--muted)}
+.empty{padding:28px;border-radius:20px;border:2px dashed var(--line);color:var(--muted);text-align:center}
+
+.tray{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;background:var(--navy);color:#fff;border-radius:999px;padding:8px 8px 8px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 20px 40px -20px rgba(0,0,0,.6);max-width:calc(100% - 32px)}
+.tray span{font-weight:800;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scrim{position:fixed;inset:0;z-index:80;background:rgba(8,12,32,.55);display:grid;place-items:end center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet{background:var(--surface);color:var(--ink);border-radius:26px;width:min(980px,100%);max-height:86vh;overflow:auto;padding:24px;display:grid;gap:16px}
+.sheet .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet h3{font-size:1.3rem}
+.sheet p{color:var(--muted)}
+.x{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:1.1rem;flex:none}
+.tw{overflow-x:auto}
+table.ct{border-collapse:collapse;width:100%;min-width:640px;font-size:.88rem}
+.ct th,.ct td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.ct thead th{font-size:.95rem}
+.ct tbody th{color:var(--muted);font-weight:800;width:170px;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.kv{display:grid;grid-template-columns:200px 1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.kv div{padding:10px 14px;border-bottom:1px solid var(--line);font-size:.9rem;min-width:0}
+.kv div:nth-child(odd){background:var(--soft);color:var(--muted);font-weight:800;font-size:.8rem}
+.kv div:nth-last-child(-n+2){border-bottom:0}
+
+.comp{display:grid;grid-template-columns:1fr 1fr;gap:32px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:34px}
+.comp p{color:var(--muted);margin-top:10px}
+.legend{display:grid;gap:8px;margin-top:14px;font-size:.88rem}
+.warn{border-radius:28px;padding:40px;background:linear-gradient(135deg,#2A0E1C 0%,#140A24 60%,#101B4D 100%);color:#fff;display:grid;grid-template-columns:.9fr 1.1fr;gap:36px}
+.warn h2{font-size:clamp(1.7rem,3vw,2.4rem);margin-top:14px}.warn p{color:#C9C2DA;margin-top:10px}
+.wt{display:inline-flex;padding:5px 12px;border-radius:999px;background:rgba(255,90,95,.15);color:#FF9A9D;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.signs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sign{padding:16px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:.88rem}
+.sign b{display:block}.sign span{color:#B3ACC8}
+.news{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.ni{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:grid;align-content:start;transition:transform .2s}
+.ni:hover{transform:translateY(-3px)}
+.cv{aspect-ratio:16/10;max-width:100%;position:relative;overflow:hidden}
+.cv svg{position:absolute;inset:0;width:100%;height:100%}
+.ni .b{padding:16px;display:grid;gap:6px}.ni h4{font-size:.98rem;line-height:1.3}.ni small{color:var(--muted);font-size:.78rem}
+.faq{display:grid;gap:10px;max-width:840px;margin:0 auto}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 20px}
+.faq summary{cursor:pointer;font-weight:800;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--or);font-size:1.3rem;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{color:var(--muted);margin-top:8px}
+footer{padding-block:60px 36px;color:var(--muted);font-size:.88rem}
+footer .in{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:28px}
+footer h4{margin:0 0 10px;color:var(--ink);font-size:.95rem}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.legal{border-top:1px solid var(--line);margin-top:30px;padding-top:20px;grid-column:1/-1;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.8rem}
+
+#admin{padding-block:36px 80px}
+.atabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 22px}
+.atabs button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:.88rem;padding:9px 15px;border-radius:999px;cursor:pointer}
+.atabs button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.kpi small{color:var(--muted);font-weight:800;font-size:.74rem;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{display:block;font-family:var(--num);font-size:1.6rem;font-variant-numeric:tabular-nums;margin-top:4px}
+.kpi span{font-size:.78rem;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:16px}
+.panel h3{font-size:1.1rem;margin-bottom:12px}
+table.at{border-collapse:collapse;width:100%;min-width:860px;font-size:.86rem}
+.at th,.at td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.at th{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.at td select,.at td input{padding:7px 9px;font-size:.84rem;border-radius:10px}
+.at td input[type=number]{width:74px}
+.pst{font-size:.72rem;font-weight:900;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pst.pending{background:var(--mid-soft);color:var(--mid)}.pst.draft{background:var(--gray-soft);color:var(--muted)}
+.cbar{display:flex;align-items:center;gap:8px;font-family:var(--num);font-size:.8rem}
+.cbar .bar{width:90px}
+.toast{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:90;background:var(--navy);color:#fff;padding:12px 18px;border-radius:14px;font-weight:800;font-size:.9rem}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}.reveal.pre{transform:none}}
+@media (max-width:1000px){
+  .hero .in,.wiz,.comp,.warn{grid-template-columns:1fr}
+  .explain{display:none}
+  .nav ul{display:none}
+  .wform{position:static}
+  .flow,.news,.kpis{grid-template-columns:1fr 1fr}
+  footer .in{grid-template-columns:1fr 1fr}
+}
+@media (max-width:600px){
+  .needs,.flow,.news,.why,.signs,.two{grid-template-columns:1fr}
+  .specs{grid-template-columns:1fr 1fr}
+  .kv{grid-template-columns:1fr}.kv div:nth-child(odd){border-bottom:0;padding-bottom:2px}
+  .warn,.comp{padding:24px}
+  .sec{padding-block:56px 0}
+  .nav .act .btn{display:none}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark" viewBox="8.8 14.8 46.4 34.4"><rect x="11" y="17" width="42" height="30" rx="13" fill="none" stroke="currentColor" stroke-width="4.4"/><rect x="22.5" y="25.5" width="5.6" height="13" rx="2.8" fill="currentColor"/><path d="M35.6 32.6l3.8 4l7-8" fill="none" stroke="#FF642E" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<nav class="nav" aria-label="Chính">
+  <div class="in">
+    <a class="brand" href="#" aria-label="3Credit trang chủ"><svg width="35" height="26" style="color:#fff"><use href="#mark"/></svg><span class="wm">3<span class="or">Credit</span></span></a>
+    <ul id="navlinks"><li><a href="#tim">Tìm sản phẩm</a></li><li><a href="#cach-hoat-dong">Cách hoạt động</a></li><li><a href="#nguon">Nguồn dữ liệu</a></li><li><a href="#canh-bao">Báo lừa đảo</a></li><li><a href="#admin">Quản trị</a></li></ul>
+    <div class="act">
+      <button class="tgl" id="tgl" type="button" aria-label="Đổi giao diện sáng/tối"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <a class="btn btn-pri" href="#tim">Bắt đầu</a>
+    </div>
+  </div>
+</nav>
+
+<div id="site">
+<header class="hero">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="in">
+    <div>
+      <span class="pill"><b>Mới</b>Đề xuất có giải thích, không cam kết duyệt</span>
+      <h1>Tìm sản phẩm tài chính <span class="or">hợp với bạn</span>, và biết vì sao.</h1>
+      <p class="lede">3Credit đọc điều kiện công bố của từng ngân hàng, công ty tài chính, rồi đối chiếu với hồ sơ bạn tự khai. Bạn thấy rõ điều kiện nào đã khớp, điều kiện nào còn cần kiểm tra.</p>
+      <div class="needs" role="group" aria-label="Bạn cần gì">
+        <button class="need" type="button" data-need="cash_loan"><i>💸</i><span>Tôi muốn vay tiền<small>Vay tiêu dùng, vay qua app</small></span></button>
+        <button class="need" type="button" data-need="credit_card"><i>💳</i><span>Tìm thẻ tín dụng<small>Theo thu nhập, nhu cầu</small></span></button>
+        <button class="need" type="button" data-need="compare"><i>⚖️</i><span>So sánh sản phẩm<small>Lãi, hạn mức, kỳ hạn, phí</small></span></button>
+        <button class="need" type="button" data-need="secured"><i>🏍️</i><span>Giải pháp khác<small>Vay bằng đăng ký xe</small></span></button>
+      </div>
+      <div class="trust"><span>Không cần CCCD để xem đề xuất</span><span>Không ảnh hưởng điểm tín dụng</span><span>Nguồn và ngày cập nhật trên từng sản phẩm</span></div>
+    </div>
+    <div class="explain" aria-hidden="true">
+      <div class="ecard mini"><div class="row"><small>Hồ sơ của bạn</small><span class="st eligible">Đáp ứng điều kiện đã biết</span></div></div>
+      <div class="ecard">
+        <div><h4>Vay tín chấp theo lương</h4><small>Ví dụ cách 3Credit giải thích một đề xuất</small></div>
+        <ul class="chk">
+          <li class="y">Số tiền 50 triệu nằm trong hạn mức công bố</li>
+          <li class="y">Kỳ hạn 24 tháng trong khung cho phép</li>
+          <li class="y">Nhận lương chuyển khoản, đúng yêu cầu</li>
+          <li class="q">Điều kiện lịch sử tín dụng: đối tác chưa công bố</li>
+        </ul>
+      </div>
+      <div class="ecard mini mini2"><div class="row"><small>Không bao giờ hiển thị</small><b style="color:#D9434A">“Duyệt 100%”</b></div></div>
+    </div>
+  </div>
+</header>
+
+<section class="sec" id="cach-hoat-dong">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Cách hoạt động</span><h2>Từ nhu cầu đến <span class="or">đăng ký đúng chỗ</span></h2></div></div>
+    <div class="flow">
+      <div class="fs reveal"><i>1</i><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
+      <div class="fs reveal"><i>2</i><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
+      <div class="fs reveal"><i>3</i><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
+      <div class="fs reveal"><i>4</i><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="tim">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Tìm sản phẩm</span><h2>Hồ sơ của bạn, <span class="or">đề xuất của bạn</span></h2><p>Kết quả cập nhật ngay khi bạn thay đổi thông tin. Đây là đánh giá theo điều kiện công bố, không phải kết quả duyệt vay.</p></div></div>
+    <div class="wiz">
+      <form class="wform" id="pf" onsubmit="return false">
+        <h3>Thông tin của bạn</h3>
+        <div class="fld"><span class="lb">Bạn cần</span><div class="seg" id="needSeg">
+          <button type="button" data-v="cash_loan">Vay tiền</button><button type="button" data-v="credit_card">Thẻ tín dụng</button><button type="button" data-v="secured">Vay bằng xe</button><button type="button" data-v="compare">Tất cả</button></div></div>
+        <div class="fld"><label for="fAmount">Số tiền <output id="oAmount"></output></label><input type="range" id="fAmount" min="1" max="500" step="1" value="50"></div>
+        <div class="fld"><label for="fTerm">Kỳ hạn <output id="oTerm"></output></label><input type="range" id="fTerm" min="1" max="60" step="1" value="24"></div>
+        <div class="two">
+          <div class="fld"><label for="fAge">Tuổi</label><input type="number" id="fAge" min="16" max="90" value="28" inputmode="numeric"></div>
+          <div class="fld"><label for="fProv">Nơi sống</label><select id="fProv"><option>Hà Nội</option><option selected>TP. Hồ Chí Minh</option><option>Đà Nẵng</option><option>Hải Phòng</option><option>Cần Thơ</option><option>Tỉnh/thành khác</option></select></div>
+        </div>
+        <div class="fld"><label for="fJob">Công việc</label><select id="fJob">
+          <option value="salaried_office" selected>Nhân viên văn phòng</option><option value="civil_servant">Công chức, viên chức, y tế, giáo dục</option><option value="worker">Công nhân, lao động phổ thông</option><option value="self_employed">Chủ hộ kinh doanh</option><option value="online_seller">Kinh doanh online</option><option value="freelancer">Làm tự do (freelancer)</option><option value="driver_gig">Tài xế công nghệ</option><option value="student">Sinh viên</option><option value="retired">Nghỉ hưu</option></select></div>
+        <div class="two">
+          <div class="fld"><label for="fIncome">Thu nhập/tháng</label><select id="fIncome"><option value="2">Dưới 3 triệu</option><option value="4">3–5 triệu</option><option value="6">5–7 triệu</option><option value="9">7–10 triệu</option><option value="12" selected>10–15 triệu</option><option value="20">15–25 triệu</option><option value="30">Trên 25 triệu</option></select></div>
+          <div class="fld"><label for="fChannel">Nhận lương</label><select id="fChannel"><option value="bank_transfer" selected>Chuyển khoản</option><option value="cash">Tiền mặt</option><option value="mixed">Cả hai</option></select></div>
+        </div>
+        <div class="fld"><label for="fCredit">Lịch sử tín dụng (tự khai)</label><select id="fCredit">
+          <option value="">Không muốn trả lời</option><option value="good" selected>Tốt, chưa từng trễ hạn</option><option value="none">Chưa từng vay</option><option value="past_late_resolved">Từng trễ hạn, đã xử lý xong</option><option value="group2">Đang nợ nhóm 2</option><option value="bad_settled">Từng nợ xấu, đã tất toán</option><option value="bad_unsettled">Đang có nợ xấu chưa tất toán</option></select></div>
+        <div class="two">
+          <div class="fld"><label for="fUrg">Mức gấp</label><select id="fUrg"><option value="flexible">Không gấp</option><option value="this_week">Trong tuần</option><option value="today">Cần ngay hôm nay</option></select></div>
+          <div class="fld"><label for="fVeh">Đăng ký xe</label><select id="fVeh"><option value="none">Không có</option><option value="motorbike">Xe máy</option><option value="car">Ô tô</option></select></div>
+        </div>
+        <p class="note">Thông tin chỉ dùng để lọc ngay trên trình duyệt của bạn, không gửi đi đâu.</p>
+      </form>
+      <div class="res" id="results" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="nguon">
+  <div class="in">
+    <div class="comp">
+      <div>
+        <span class="eyebrow">Minh bạch dữ liệu</span>
+        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Mỗi con số đều có nguồn</h2>
+        <p>Chính sách sản phẩm được tổng hợp từ website chính thức và tài liệu công bố của đối tác, kèm ngày kiểm tra. Thông tin chưa xác minh được đánh dấu rõ và không dùng để kết luận bạn đủ điều kiện.</p>
+        <div class="legend">
+          <div><span class="conf A">A</span> Đọc trực tiếp trên website chính thức của đối tác</div>
+          <div><span class="conf B">B</span> Nguồn chính thức gián tiếp (Hiệp hội Ngân hàng, trang khác của đối tác)</div>
+          <div><span class="conf C">C</span> Báo chí, trang tổng hợp: chỉ để tham khảo</div>
+          <div><span class="conf U">?</span> Chưa xác minh</div>
+        </div>
+      </div>
+      <div>
+        <span class="eyebrow">Miễn trừ trách nhiệm</span>
+        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Lưu ý quan trọng</h2>
+        <p>3Credit không phải tổ chức tín dụng, không trực tiếp cho vay và không quyết định phê duyệt. “Đáp ứng điều kiện đã biết” nghĩa là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố, không phải bạn sẽ được duyệt.</p>
+        <p>Hạn mức, lãi suất, phí và kỳ hạn cuối cùng do đối tác quyết định theo hồ sơ thực tế. Hãy đọc kỹ hợp đồng, nhất là tổng chi phí (lãi + phí), trước khi ký.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="canh-bao">
+  <div class="in">
+    <div class="warn">
+      <div><span class="wt">⚠ Cảnh báo</span><h2>Nhận diện app vay “tín dụng đen”</h2><p>Nếu một app có các dấu hiệu bên cạnh, đừng đăng ký. 3Credit chỉ mở đăng ký cho đối tác khi đã có hồ sơ pháp lý và bảng tổng chi phí.</p></div>
+      <div class="signs">
+        <div class="sign"><b>Không rõ pháp nhân, giấy phép</b><span>Không tra được tên công ty và giấy phép hoạt động.</span></div>
+        <div class="sign"><b>Đòi quyền danh bạ, ảnh</b><span>Dùng để gọi điện, bêu riếu người thân.</span></div>
+        <div class="sign"><b>Trừ phí trước khi giải ngân</b><span>Vay 5 triệu nhưng chỉ nhận 3,5 triệu.</span></div>
+        <div class="sign"><b>Lãi theo ngày, kỳ hạn 7–14 ngày</b><span>Quy ra năm thường vượt xa mức luật cho phép.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="kien-thuc">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h2>Đọc trước khi <span class="or">ký hợp đồng</span></h2></div><span class="tag">Bài mẫu</span></div>
+    <div class="news">
+      <a class="ni" href="#kien-thuc"><div class="cv"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#101B4D"/><circle cx="130" cy="10" r="50" fill="#FF642E" opacity=".35"/><text x="18" y="62" font-family="JetBrains Mono,monospace" font-size="26" font-weight="800" fill="#fff">APR</text></svg></div><div class="b"><h4>APR là gì và vì sao quan trọng hơn “lãi từ”</h4><small>Lãi suất · 5 phút</small></div></a>
+      <a class="ni" href="#kien-thuc"><div class="cv"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#16245E"/><rect x="34" y="22" width="92" height="56" rx="10" fill="#fff" opacity=".92"/><rect x="44" y="34" width="46" height="6" rx="3" fill="#101B4D"/><rect x="44" y="47" width="64" height="5" rx="2.5" fill="#AEB8DA"/><rect x="44" y="58" width="30" height="8" rx="4" fill="#FF642E"/></svg></div><div class="b"><h4>Cách tự tra cứu thông tin tín dụng CIC</h4><small>Tín dụng · 4 phút</small></div></a>
+      <a class="ni" href="#kien-thuc"><div class="cv"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#2A0E1C"/><path d="M80 24l30 52H50z" fill="none" stroke="#FF8A8E" stroke-width="7" stroke-linejoin="round"/><rect x="77" y="44" width="6" height="16" rx="3" fill="#FF8A8E"/></svg></div><div class="b"><h4>Nợ xấu: các nhóm nợ và cách xử lý</h4><small>Nợ xấu · 6 phút</small></div></a>
+      <a class="ni" href="#kien-thuc"><div class="cv"><svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#0E3B4A"/><circle cx="80" cy="50" r="24" fill="none" stroke="#fff" stroke-width="6"/><path d="M80 36v14l10 7" stroke="#FF642E" stroke-width="6" fill="none" stroke-linecap="round"/></svg></div><div class="b"><h4>Trả nợ trước hạn: phí và cách tính</h4><small>Vay vốn · 3 phút</small></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="in">
+    <div class="sh" style="justify-content:center;text-align:center"><div class="t" style="justify-items:center"><span class="eyebrow">Hỏi đáp</span><h2>Câu hỏi thường gặp</h2></div></div>
+    <div class="faq">
+      <details open><summary>“Đáp ứng điều kiện đã biết” có phải là được duyệt?</summary><p>Không. Đó là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố. Đối tác vẫn thẩm định hồ sơ thực tế và quyết định.</p></details>
+      <details><summary>Vì sao có sản phẩm ghi “Chính sách chưa xác minh”?</summary><p>Vì 3Credit chưa có nguồn chính thức cho điều kiện của sản phẩm đó. Chúng tôi vẫn hiển thị để bạn tham khảo, nhưng không xếp trên các sản phẩm đã xác minh.</p></details>
+      <details><summary>Tôi có nợ xấu thì 3Credit đề xuất gì?</summary><p>Chỉ những sản phẩm mà đối tác đã xác nhận nhận trường hợp của bạn. Nếu chưa có, chúng tôi nói thẳng là chưa tìm thấy, thay vì hứa hẹn.</p></details>
+      <details><summary>3Credit kiếm tiền từ đâu?</summary><p>Từ phí giới thiệu đối tác trả khi bạn đăng ký thành công. Phí này không ảnh hưởng thứ tự đề xuất theo mức phù hợp.</p></details>
+    </div>
+  </div>
+</section>
+</div>
+
+<main id="admin" hidden>
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Quản trị · bản thử nghiệm</span><h2>Vận hành 3Credit</h2><p>Chỉnh sửa ở đây lưu trên trình duyệt này để thử luồng. Bản thật lưu vào cơ sở dữ liệu, có phân quyền và lịch sử thay đổi.</p></div><a class="btn btn-line btn-sm" href="#tim">← Về trang khách</a></div>
+    <div class="atabs" id="atabs" role="group" aria-label="Mục quản trị">
+      <button type="button" data-t="overview" aria-pressed="true">Tổng quan</button>
+      <button type="button" data-t="campaigns" aria-pressed="false">Chiến dịch</button>
+      <button type="button" data-t="partners" aria-pressed="false">Đối tác &amp; chính sách</button>
+      <button type="button" data-t="matching" aria-pressed="false">Matching analytics</button>
+      <button type="button" data-t="tracking" aria-pressed="false">Tracking</button>
+    </div>
+    <div id="apanel"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="in">
+    <div><a class="brand" href="#"><svg width="35" height="26" style="color:var(--ink)"><use href="#mark"/></svg><span class="wm" style="color:var(--ink)">3<span class="or">Credit</span></span></a><p style="margin-top:12px;max-width:36ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính, không trực tiếp cho vay.</p></div>
+    <div><h4>Sản phẩm</h4><ul><li>Vay tiêu dùng</li><li>Thẻ tín dụng</li><li>Vay bằng đăng ký xe</li></ul></div>
+    <div><h4>Minh bạch</h4><ul><li>Nguồn dữ liệu</li><li>Tiêu chí đối tác</li><li>Báo lừa đảo</li></ul></div>
+    <div><h4>Pháp lý</h4><ul><li>Điều khoản</li><li>Chính sách dữ liệu cá nhân</li><li>Xóa dữ liệu</li></ul></div>
+    <div class="legal"><span>© 2026 3Credit · Bản prototype. Dữ liệu chính sách nghiên cứu ngày 05/11/2026.</span><span>3Credit không phải tổ chức tín dụng.</span></div>
+  </div>
+</footer>
+
+<div class="tray" id="tray" hidden><span id="trayTxt"></span><button class="btn btn-pri btn-sm" type="button" id="trayGo">So sánh</button><button class="btn btn-ghost btn-sm" type="button" id="trayClr">Bỏ chọn</button></div>
+<div class="scrim" id="scrim" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div></div>
+
+<script>
+(function(){
+'use strict';
+/* =======================================================================
+   POLICY REGISTRY (seed) — từ docs/research, nghiên cứu 05/11/2026.
+   c: 'A' web chính thức đọc trực tiếp · 'B' chính thức gián tiếp · 'C' báo chí/tổng hợp.
+   Không có giá trị nào tự đặt ra. Thiếu = chưa xác minh.
+   ======================================================================= */
+var VERIFIED_ON='05/11/2026',M=1e6;
+var PARTNERS={
+  shinhan:{name:'Shinhan Finance',legal:'Công ty Tài chính TNHH MTV Shinhan Việt Nam',type:'Công ty tài chính',lc:'A',grp:'A'},
+  fecredit:{name:'FE CREDIT',legal:'VPB SMBC FC',type:'Công ty tài chính',lc:'A',grp:'A'},
+  vib:{name:'VIB',legal:'Ngân hàng TMCP Quốc tế Việt Nam',type:'Ngân hàng',lc:'B',grp:'A'},
+  vpbank:{name:'VPBank',legal:'Ngân hàng TMCP Việt Nam Thịnh Vượng',type:'Ngân hàng',lc:'A',grp:'A'},
+  lotte:{name:'LOTTE Finance',legal:'Công ty Tài chính Tổng hợp TNHH MTV LOTTE Việt Nam',type:'Công ty tài chính',lc:'B',grp:'A'},
+  mafc:{name:'Mirae Asset Finance',legal:'Công ty Tài chính TNHH MTV Mirae Asset (Việt Nam)',type:'Công ty tài chính',lc:'B',grp:'A'},
+  evo:{name:'EVO Money',legal:'Trusting Social × Mirae Asset (bên cho vay cần xác nhận)',type:'Sản phẩm vay số',lc:'C',grp:'A'},
+  cake:{name:'Cake',legal:'Cake by VPBank',type:'Ngân hàng số',lc:'B',grp:'A'},
+  tpbank:{name:'TPBank',legal:'Ngân hàng TMCP Tiên Phong',type:'Ngân hàng',lc:'',grp:'A'},
+  sfinance:{name:'SFinance',legal:'Công ty Tài chính Tín dụng Tiêu dùng TNHH MTV SFinance',type:'Công ty tài chính',lc:'B',grp:'A'},
+  moneyveo:{name:'Moneyveo',legal:'Công ty TNHH Moneyveo Việt Nam (cần xác nhận)',type:'Vay qua app',lc:'C',grp:'B'},
+  moneycat:{name:'MoneyCAT',legal:'Chưa xác minh (nguồn tổng hợp: Công ty TNHH MTV Lendtop)',type:'Vay qua app',lc:'C',grp:'B'},
+  jeff:{name:'Jeff',legal:'Nhà phát triển JEFF SIA (Latvia); bên cho vay chưa xác minh',type:'Nền tảng kết nối',lc:'C',grp:'B'},
+  vayvnd:{name:'Vay VND',legal:'Chờ đối tác gửi giấy phép, pháp nhân',type:'Chưa xác minh',lc:'',grp:'B'},
+  f88:{name:'F88',legal:'Công ty Cổ phần Kinh doanh F88',type:'Cầm cố tài sản',lc:'A',grp:'B'}
+};
+var SEED=[
+ {id:'C-SHF-01',p:'shinhan',name:'Vay tín chấp theo lương',cat:'cash_loan',
+  rules:{amount:{v:[0,500*M],c:'A'},term:{v:[0,60],c:'A'},jobs:{v:['civil_servant'],mode:'boost',c:'B',why:'Có cơ chế thu nhập thay thế qua VssID cho công chức, y tế, giáo dục'}},
+  info:{rate:['Từ 18%/năm','A'],amount:['Đến 500 triệu (tối đa 13 lần thu nhập tháng)','A'],term:['Đến 60 tháng','A'],fee:[],docs:['Công chức, y tế, giáo dục, lực lượng vũ trang: VssID hoặc HĐLĐ, không cần sao kê','B'],speed:[]},src:'shinhanfinance.com.vn; vnba.org.vn'},
+ {id:'C-FEC-01',p:'fecredit',name:'Tiền mặt linh hoạt',cat:'cash_loan',
+  rules:{amount:{v:[0,100*M],c:'A'},age:{v:[20,60],c:'C'},income:{v:3,c:'C'},term:{v:[6,36],c:'C'}},
+  info:{rate:[],amount:['Đến 100 triệu','A'],term:['6–36 tháng','C'],fee:[],docs:[],speed:[]},src:'fecredit.com.vn'},
+ {id:'C-FEC-02',p:'fecredit',name:'Tiền Mặt Chủ Động',cat:'cash_loan',
+  rules:{amount:{v:[0,400*M],c:'A'}},
+  info:{rate:[],amount:['Đến 400 triệu, không tài sản đảm bảo','A'],term:[],fee:[],docs:[],speed:[]},src:'fecredit.com.vn (tin 30/10/2026)'},
+ {id:'C-VIB-01',p:'vib',name:'Vay tiêu dùng tín chấp',cat:'cash_loan',
+  rules:{age:{v:[22,60],c:'B',note:'nữ đến 55'},income:{v:7,c:'B',civil:5},channel:{v:['bank_transfer'],c:'B'},amount:{v:[0,1000*M],c:'B'},term:{v:[12,60],c:'B'}},
+  info:{rate:['Từ 1,9%/tháng','B'],amount:['Tối đa 1 tỷ','B'],term:['12–60 tháng','B'],fee:[],docs:['Thu nhập bình quân 3 tháng qua chuyển khoản; hai trang VIB ghi điều kiện khác nhau','B'],speed:[]},src:'vib.com.vn'},
+ {id:'C-VPB-01',p:'vpbank',name:'Vay tiêu dùng cá nhân theo lương',cat:'cash_loan',
+  rules:{jobs:{v:['salaried_office','civil_servant','worker'],mode:'allow',c:'A',why:'Dành cho khách hàng có thu nhập từ lương'},income:{v:5,c:'B'},age:{v:[23,60],c:'C'}},
+  info:{rate:[],amount:[],term:[],fee:[],docs:['Khách hàng có thu nhập từ lương','A'],speed:[]},src:'vpbank.com.vn/ca-nhan/vay'},
+ {id:'C-LTF-01',p:'lotte',name:'Vay tiền mặt tín chấp',cat:'cash_loan',
+  rules:{age:{v:[20,60],c:'C'},income:{v:3,c:'C'},amount:{v:[0,300*M],c:'C'}},
+  info:{rate:[],amount:['Đến 300 triệu','C'],term:[],fee:[],docs:['Có gói không cần chứng minh thu nhập','C'],speed:[]},src:'nguồn tổng hợp'},
+ {id:'C-MAF-01',p:'mafc',name:'Vay tiền mặt (My Finance)',cat:'cash_loan',
+  rules:{age:{v:[18,60],c:'C'}},
+  info:{rate:['Chỉ có số liệu khuyến mãi theo đợt','C'],amount:[],term:[],fee:[],docs:[],speed:[]},src:'nguồn tổng hợp'},
+ {id:'C-EVO-01',p:'evo',name:'Vay online EVO Money',cat:'cash_loan',
+  rules:{amount:{v:[5*M,70*M],c:'C'},term:{v:[6,36],c:'C'}},
+  info:{rate:['Từ 2,1%/tháng','C'],amount:['5–70 triệu','C'],term:['6–36 tháng','C'],fee:[],docs:['CCCD gắn chip, 100% online','C'],speed:[]},src:'trang bán lẻ đối tác'},
+ {id:'C-CAK-01',p:'cake',name:'Vay tiêu dùng cho tài xế Be',cat:'cash_loan',
+  rules:{jobs:{v:['driver_gig'],mode:'allow',c:'C',why:'Sản phẩm dành cho tài xế Be'},amount:{v:[0,20*M],c:'C'}},
+  info:{rate:['Từ 1,67%/tháng','C'],amount:['Đến 20 triệu','C'],term:[],fee:['Lãi quá hạn 150% lãi trong hạn (biểu 2023)','B'],docs:[],speed:[]},src:'báo chí; img.cake.vn'},
+ {id:'C-TPB-01',p:'tpbank',name:'Vay tín chấp',cat:'cash_loan',
+  rules:{age:{v:[22,60],c:'C'},income:{v:8,c:'C'}},
+  info:{rate:[],amount:[],term:[],fee:[],docs:[],speed:[]},src:'nguồn tổng hợp'},
+ {id:'C-SFI-01',p:'sfinance',name:'Vay tiêu dùng',cat:'cash_loan',rules:{},
+  info:{rate:[],amount:[],term:[],fee:[],docs:[],speed:[]},src:'vnba.org.vn (chỉ pháp nhân)'},
+ {id:'C-MVO-01',p:'moneyveo',name:'Vay online ngắn hạn',cat:'app_loan',
+  rules:{amount:{v:[0,10*M],c:'C'},term:{v:[1,4],c:'C'},age:{v:[18,60],c:'C',note:'web có chỗ ghi 20–80'}},
+  info:{rate:['APR 18,25%/năm (0,05%/ngày)','A'],amount:['Đến 10 triệu','C'],term:['Ví dụ công bố: 100 ngày','A'],fee:['Có “phí tư vấn” tính riêng, mức phí chưa công bố','A'],docs:[],speed:[]},src:'moneyveo.vn',flags:['Tổng chi phí (lãi + phí tư vấn) chưa xác minh']},
+ {id:'C-MCT-01',p:'moneycat',name:'Vay online ngắn hạn',cat:'app_loan',
+  rules:{age:{v:[22,60],c:'C'},term:{v:[1,6],c:'C'}},
+  info:{rate:['Tối đa 24%/năm từ khoản thứ 2','C'],amount:[],term:['1–6 tháng','C'],fee:[],docs:[],speed:[]},src:'nguồn tổng hợp',flags:['Pháp nhân, giấy phép chưa xác minh','Lãi tham khảo vượt trần 20%/năm của cho vay dân sự']},
+ {id:'C-JEF-01',p:'jeff',name:'Kết nối khoản vay nhỏ',cat:'app_loan',
+  rules:{amount:{v:[0.5*M,10*M],c:'C'},age:{v:[18,60],c:'C'}},
+  info:{rate:[],amount:['0,5–10 triệu','C'],term:[],fee:[],docs:[],speed:[]},src:'Google Play; nguồn tổng hợp',flags:['Bên cho vay thực tế chưa xác minh']},
+ {id:'C-VVN-01',p:'vayvnd',name:'Vay online',cat:'app_loan',rules:{},
+  info:{rate:[],amount:[],term:[],fee:[],docs:[],speed:[]},src:'chưa có',flags:['Chờ đối tác gửi giấy phép và bảng chi phí']},
+ {id:'C-F88-01',p:'f88',name:'Vay bằng đăng ký xe máy, ô tô',cat:'secured_vehicle',
+  rules:{vehicle:{v:true,c:'A'},term:{v:[1,24],c:'A'}},
+  info:{rate:['Khuyến mãi từ 3,6%/tháng (gồm lãi và phí)','A'],amount:['Duyệt tới 6 tháng lương','A'],term:['Trả góp đến 24 tháng','A'],fee:['Báo chí: lãi 1,1%/tháng + phí dịch vụ 3,4–7%/tháng','C'],docs:['Không cần chứng minh thu nhập (báo chí)','C'],speed:[]},src:'f88.vn; báo chí',flags:['Chi phí ngoài lãi cao, cần đọc kỹ hợp đồng']}
+];
+
+var LS='3c-admin-v1',CLK='3c-clicks-v1';
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var OVR=load(LS,{});
+function camp(c){var o=OVR[c.id]||{};return Object.assign({},c,{status:o.status||'pending',priority:+o.priority||0,link:o.link||'',leadCap:o.leadCap||''})}
+function campaigns(){return SEED.map(camp)}
+
+var SEGMENTS=[
+ {id:'SEG01',name:'Nhân viên văn phòng',test:function(p){return (p.job==='salaried_office'||p.job==='civil_servant')&&p.channel==='bank_transfer'}},
+ {id:'SEG02',name:'Công nhân, lao động',test:function(p){return p.job==='worker'}},
+ {id:'SEG03',name:'Tự kinh doanh, tự do',test:function(p){return ['self_employed','freelancer','online_seller','driver_gig'].indexOf(p.job)>=0}},
+ {id:'SEG04',name:'Chưa có lịch sử tín dụng',test:function(p){return p.credit==='none'}},
+ {id:'SEG05',name:'Lịch sử tín dụng tốt',test:function(p){return p.credit==='good'}},
+ {id:'SEG06',name:'Từng quá hạn / nhóm 2',test:function(p){return p.credit==='past_late_resolved'||p.credit==='group2'}},
+ {id:'SEG07',name:'Có nợ xấu',test:function(p){return p.credit==='bad_settled'||p.credit==='bad_unsettled'}},
+ {id:'SEG08',name:'Cần tiền nhanh',test:function(p){return p.urg==='today'}},
+ {id:'SEG09',name:'Có xe làm tài sản',test:function(p){return p.veh!=='none'}}
+];
+function segmentsOf(p){return SEGMENTS.filter(function(s){return s.test(p)})}
+
+/* ---------- MATCHING ENGINE: hard rules + scoring + ranking ---------- */
+function VER(c){return c==='A'||c==='B'}
+var CATS={cash_loan:['cash_loan','app_loan'],credit_card:['credit_card'],secured:['secured_vehicle'],compare:['cash_loan','app_loan','credit_card','secured_vehicle']};
+function fmtM(v){return v>=1000*M?(v/1000/M).toLocaleString('vi-VN')+' tỷ':(v/M).toLocaleString('vi-VN')+' triệu'}
+var CREDIT_TXT={group2:'nợ nhóm 2',bad_settled:'nợ xấu đã tất toán',bad_unsettled:'nợ xấu chưa tất toán'};
+function evaluate(c,p){
+  var R=c.rules,pass=[],ref=[],gap=[],fail=[],soft=0;
+  function chk(ok,cf,okTxt,badTxt){
+    if(ok){ if(VER(cf)) pass.push(okTxt); else ref.push(okTxt+' (nguồn tham khảo)'); }
+    else if(VER(cf)) fail.push(badTxt);
+    else { gap.push(badTxt+' (nguồn tham khảo, cần kiểm tra)'); soft++; }
+  }
+  if(R.amount){var a=R.amount.v;chk(p.amount>=a[0]&&p.amount<=a[1],R.amount.c,'Số tiền '+fmtM(p.amount)+' trong hạn mức','Số tiền '+fmtM(p.amount)+' ngoài hạn mức '+(a[0]?fmtM(a[0])+'–':'tối đa ')+fmtM(a[1]))} else gap.push('Hạn mức chưa xác minh');
+  if(c.cat!=='credit_card'){ if(R.term){var t=R.term.v;chk(p.term>=t[0]&&p.term<=t[1],R.term.c,'Kỳ hạn '+p.term+' tháng trong khung','Kỳ hạn '+p.term+' tháng ngoài khung '+(t[0]?t[0]+'–':'tối đa ')+t[1]+' tháng')} else gap.push('Kỳ hạn chưa xác minh'); }
+  if(R.age){var g=R.age.v;chk(p.age>=g[0]&&p.age<=g[1],R.age.c,'Tuổi '+p.age+' trong khung '+g[0]+'–'+g[1]+(R.age.note?' ('+R.age.note+')':''),'Tuổi '+p.age+' ngoài khung '+g[0]+'–'+g[1])} else gap.push('Điều kiện độ tuổi chưa xác minh');
+  if(R.income){var need=(p.job==='civil_servant'&&R.income.civil)?R.income.civil:R.income.v;chk(p.income>=need,R.income.c,'Thu nhập đạt mức tối thiểu '+need+' triệu/tháng','Thu nhập dưới mức tối thiểu '+need+' triệu/tháng')} else gap.push('Thu nhập tối thiểu chưa xác minh');
+  if(R.channel){chk(R.channel.v.indexOf(p.channel)>=0,R.channel.c,'Nhận lương chuyển khoản, đúng yêu cầu','Yêu cầu nhận lương qua chuyển khoản')}
+  if(R.jobs){var inJ=R.jobs.v.indexOf(p.job)>=0;
+    if(R.jobs.mode==='allow') chk(inJ,R.jobs.c,R.jobs.why,'Không dành cho nhóm nghề của bạn ('+R.jobs.why.toLowerCase()+')');
+    else if(inJ){ if(VER(R.jobs.c)) pass.push(R.jobs.why); else ref.push(R.jobs.why); }}
+  if(R.vehicle){chk(p.veh!=='none',R.vehicle.c,'Bạn có giấy đăng ký xe làm tài sản','Cần giấy đăng ký xe máy hoặc ô tô')}
+  var badish=['group2','bad_settled','bad_unsettled'].indexOf(p.credit)>=0;
+  if(R.credit&&VER(R.credit.c)){ if(p.credit) chk(R.credit.accept.indexOf(p.credit)>=0,R.credit.c,'Chính sách nhận lịch sử tín dụng của bạn','Chính sách không nhận lịch sử tín dụng của bạn') }
+  else gap.push(badish?'Chưa xác minh đối tác có nhận hồ sơ '+CREDIT_TXT[p.credit]+' hay không':'Điều kiện lịch sử tín dụng (CIC) chưa được công bố');
+  (c.flags||[]).forEach(function(f){gap.push(f)});
+  var status;
+  if(fail.length) status='not';
+  else if(pass.length===0) status='unverified';
+  else if(badish||soft>0||(c.flags||[]).length) status='potential';
+  else if(pass.length>=2) status='eligible';
+  else status='potential';
+  var known=0;['amount','term','age','income','channel','jobs','vehicle'].forEach(function(k){if(R[k]&&VER(R[k].c))known++});
+  var conf=Math.max(.3,Math.min(1,.3+known/5*.7));
+  var fit=45+pass.length*12+ref.length*4-soft*12-fail.length*30;
+  if(p.urg==='today'&&c.cat==='app_loan') fit+=6;
+  if(p.need==='secured'&&c.cat==='secured_vehicle') fit+=10;
+  fit=Math.max(0,Math.min(100,fit));
+  return {c:c,status:status,pass:pass,ref:ref,gap:gap,fail:fail,fit:fit,conf:conf,score:Math.round(fit*conf)+Math.min(5,c.priority)};
+}
+var ORDER={eligible:0,potential:1,unverified:2,not:3};
+function match(p,opts){
+  opts=opts||{};var cats=CATS[p.need]||CATS.compare;
+  return campaigns().filter(function(c){return cats.indexOf(c.cat)>=0&&(opts.all||c.status==='active'||c.status==='pending')})
+    .map(function(c){return evaluate(c,p)})
+    .sort(function(a,b){return ORDER[a.status]-ORDER[b.status]||b.score-a.score});
+}
+var STXT={eligible:'Đáp ứng điều kiện đã biết',potential:'Có thể phù hợp, cần kiểm tra',unverified:'Chính sách chưa xác minh',not:'Không phù hợp'};
+
+/* ---------- customer UI ---------- */
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]})}
+var state={need:'cash_loan',compare:[]};
+function profile(){return {need:state.need,amount:+$('#fAmount').value*M,term:+$('#fTerm').value,age:+$('#fAge').value||0,prov:$('#fProv').value,job:$('#fJob').value,income:+$('#fIncome').value,channel:$('#fChannel').value,credit:$('#fCredit').value,urg:$('#fUrg').value,veh:$('#fVeh').value}}
+function cbadge(c){return '<span class="conf '+(c||'U')+'">'+(c||'?')+'</span>'}
+function val(x){return x&&x[0]?esc(x[0])+cbadge(x[1]):'<span style="color:var(--muted)">Chưa xác minh</span>'}
+function ini(n){return n.replace(/[^A-Za-z0-9 ]/g,' ').split(' ').filter(Boolean).map(function(w){return w[0]}).join('').slice(0,3).toUpperCase()}
+function li(arr,cls){return arr.map(function(t){return '<li class="'+cls+'">'+esc(t)+'</li>'}).join('')}
+function cardHTML(r){
+  var c=r.c,P=PARTNERS[c.p],sel=state.compare.indexOf(c.id)>=0,gs=r.gap.slice(0,4);
+  return '<article class="card">'+
+   '<div class="ch"><div class="lg">'+ini(P.name)+'</div><div><h3>'+esc(c.name)+'</h3><small>'+esc(P.name)+' · '+esc(P.type)+'</small></div><span class="st '+r.status+'">'+STXT[r.status]+'</span></div>'+
+   '<div class="specs"><div><small>Lãi suất / chi phí</small><b>'+val(c.info.rate)+'</b></div><div><small>Hạn mức</small><b>'+val(c.info.amount)+'</b></div><div><small>Kỳ hạn</small><b>'+val(c.info.term)+'</b></div><div><small>Phí</small><b>'+val(c.info.fee)+'</b></div></div>'+
+   '<div class="why"><div><h5>Vì sao đề xuất</h5><ul class="chk">'+((li(r.pass,'y')+li(r.ref,'y'))||'<li class="q">Chưa có điều kiện đã xác minh để đối chiếu</li>')+'</ul></div><div><h5>Cần kiểm tra'+(r.fail.length?' / không đạt':'')+'</h5><ul class="chk">'+li(r.fail,'n')+li(gs,'q')+(r.gap.length>4?'<li class="q">và '+(r.gap.length-4)+' mục khác (xem chi tiết)</li>':'')+'</ul></div></div>'+
+   '<div class="cf"><div class="meter">Mức phù hợp '+r.fit+'/100 · Độ tin cậy dữ liệu '+Math.round(r.conf*100)+'%<span class="bar"><i style="width:'+Math.round(r.fit*r.conf)+'%"></i></span></div>'+
+   '<label class="cmpchk"><input type="checkbox" data-cmp="'+c.id+'"'+(sel?' checked':'')+'> So sánh</label>'+
+   '<button class="btn btn-line btn-sm" type="button" data-detail="'+c.id+'">Chi tiết</button>'+
+   (c.status==='active'&&c.link?'<button class="btn btn-pri btn-sm" type="button" data-go="'+c.id+'">Đăng ký tại '+esc(P.name)+'</button>':'<button class="btn btn-line btn-sm" type="button" disabled title="Chiến dịch chưa kích hoạt hoặc chưa gắn link">Chưa mở đăng ký</button>')+
+   '</div><div class="src">Nguồn: '+esc(c.src)+' · kiểm tra '+VERIFIED_ON+' · '+c.id+'</div></article>';
+}
+var lastResults=[];
+function render(){
+  var p=profile();$('#oAmount').textContent=fmtM(p.amount);$('#oTerm').textContent=p.term+' tháng';
+  $$('#needSeg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===state.need))});
+  var rs=match(p);lastResults=rs;var segs=segmentsOf(p);
+  var g={eligible:[],potential:[],unverified:[],not:[]};rs.forEach(function(r){g[r.status].push(r)});
+  var badish=['group2','bad_settled','bad_unsettled'].indexOf(p.credit)>=0;
+  var h='<div class="rsum"><h3>'+rs.length+' sản phẩm được đối chiếu với hồ sơ của bạn</h3><div class="segs">'+(segs.map(function(s){return '<span>'+s.id+' · '+esc(s.name)+'</span>'}).join('')||'<span>Chưa xếp nhóm</span>')+'</div>'+
+    '<div class="counts"><span><b>'+g.eligible.length+'</b>đáp ứng điều kiện đã biết</span><span><b>'+g.potential.length+'</b>cần kiểm tra thêm</span><span><b>'+g.unverified.length+'</b>chưa xác minh</span><span><b>'+g.not.length+'</b>không phù hợp</span></div>'+
+    '<p>Đánh giá theo điều kiện đối tác công bố, không phải kết quả phê duyệt.</p></div>';
+  if(badish) h+='<div class="alert"><b>Về hồ sơ '+CREDIT_TXT[p.credit]+'</b>Hiện chưa đối tác nào công bố chính thức điều kiện nhận trường hợp này, nên 3Credit không đánh dấu sản phẩm nào là “đáp ứng điều kiện”. Các sản phẩm thông thường có thể không phù hợp. Bạn nên tự tra cứu thông tin tín dụng tại CIC trước, và tránh các app hứa “duyệt 100% nợ xấu”.</div>';
+  if(state.need==='credit_card'&&!rs.length) h+='<div class="empty">Chưa có chiến dịch thẻ tín dụng nào trong danh mục. Danh mục sẽ được bổ sung khi có chính sách thẻ được xác minh.</div>';
+  else if(!rs.length) h+='<div class="empty">Chưa tìm thấy sản phẩm cho nhu cầu này.</div>';
+  if(g.eligible.length===0&&rs.length&&!badish) h+='<div class="alert"><b>Chưa có sản phẩm “đáp ứng điều kiện đã biết”</b>Với hồ sơ hiện tại, các sản phẩm còn thiếu dữ liệu chính sách đã xác minh hoặc có điều kiện cần bạn kiểm tra thêm.</div>';
+  function grp(k,title){return g[k].length?'<div class="grp"><h4><span class="st '+k+'">'+title+'</span> '+g[k].length+'</h4>'+g[k].map(cardHTML).join('')+'</div>':''}
+  h+=grp('eligible','Phù hợp nhất')+grp('potential','Cần kiểm tra thêm')+grp('unverified','Chưa đủ dữ liệu');
+  if(g.not.length) h+='<details class="nots"><summary>Không phù hợp ('+g.not.length+'), xem lý do</summary>'+g.not.map(function(r){return '<div class="nrow"><b>'+esc(PARTNERS[r.c.p].name)+' · '+esc(r.c.name)+'</b><span>'+esc(r.fail.join('; '))+'</span></div>'}).join('')+'</details>';
+  $('#results').innerHTML=h;tray();
+}
+function tray(){var n=state.compare.length;$('#tray').hidden=n===0||location.hash==='#admin';$('#trayTxt').textContent='Đã chọn '+n+'/3';$('#trayGo').disabled=n<2}
+var lastFocus=null;
+function openSheet(html){lastFocus=document.activeElement;$('#sheet').innerHTML=html;$('#scrim').hidden=false;var x=$('#sheet .x');if(x)x.focus()}
+function closeSheet(){$('#scrim').hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+function find(id){return lastResults.filter(function(x){return x.c.id===id})[0]||evaluate(campaigns().filter(function(x){return x.id===id})[0],profile())}
+function detail(id){
+  var r=find(id),c=r.c,P=PARTNERS[c.p];function row(k,v){return '<div>'+k+'</div><div>'+v+'</div>'}
+  openSheet('<div class="top"><div><span class="st '+r.status+'">'+STXT[r.status]+'</span><h3 id="sheetTitle" style="margin-top:8px">'+esc(c.name)+' · '+esc(P.name)+'</h3></div><button class="x" type="button" aria-label="Đóng">✕</button></div>'+
+   '<div class="kv">'+row('Đối tác',esc(P.name)+' ('+esc(P.type)+')')+row('Pháp nhân',esc(P.legal)+cbadge(P.lc))+row('Lãi suất / chi phí',val(c.info.rate))+row('Hạn mức',val(c.info.amount))+row('Kỳ hạn',val(c.info.term))+row('Phí',val(c.info.fee))+row('Hồ sơ, điều kiện khác',val(c.info.docs))+row('Thời gian xử lý',val(c.info.speed))+row('Cảnh báo',(c.flags||[]).map(esc).join('<br>')||'—')+row('Nguồn',esc(c.src)+' · kiểm tra '+VERIFIED_ON)+row('Mã chiến dịch',c.id)+'</div>'+
+   '<div class="why"><div><h5>Khớp với hồ sơ của bạn</h5><ul class="chk">'+(li(r.pass,'y')+li(r.ref,'y')||'<li class="q">Chưa có</li>')+'</ul></div><div><h5>Cần kiểm tra / không đạt</h5><ul class="chk">'+li(r.fail,'n')+li(r.gap,'q')+'</ul></div></div>'+
+   '<p class="note">3Credit không phải bên cho vay. Điều kiện và chi phí cuối cùng do '+esc(P.name)+' quyết định.</p>');
+}
+function compare(){
+  var rs=state.compare.map(find);
+  var rows=[['Trạng thái',function(r){return '<span class="st '+r.status+'">'+STXT[r.status]+'</span>'}],['Đối tác',function(r){return esc(PARTNERS[r.c.p].name)+'<br><small>'+esc(PARTNERS[r.c.p].type)+'</small>'}],['Lãi suất / chi phí',function(r){return val(r.c.info.rate)}],['Hạn mức',function(r){return val(r.c.info.amount)}],['Kỳ hạn',function(r){return val(r.c.info.term)}],['Phí',function(r){return val(r.c.info.fee)}],['Điều kiện khác',function(r){return val(r.c.info.docs)}],['Mức phù hợp',function(r){return r.fit+'/100'}],['Độ tin cậy dữ liệu',function(r){return Math.round(r.conf*100)+'%'}],['Cảnh báo',function(r){return (r.c.flags||[]).map(esc).join('<br>')||'—'}],['Nguồn, cập nhật',function(r){return esc(r.c.src)+'<br><small>'+VERIFIED_ON+'</small>'}]];
+  openSheet('<div class="top"><h3 id="sheetTitle">So sánh '+rs.length+' sản phẩm</h3><button class="x" type="button" aria-label="Đóng">✕</button></div><div class="tw"><table class="ct"><thead><tr><th></th>'+rs.map(function(r){return '<th>'+esc(r.c.name)+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(rw){return '<tr><th scope="row">'+rw[0]+'</th>'+rs.map(function(r){return '<td>'+rw[1](r)+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>');
+}
+function uid(){return 'clk_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function go(id){
+  var c=campaigns().filter(function(x){return x.id===id})[0];if(!c||c.status!=='active'||!c.link)return;var P=PARTNERS[c.p];
+  var cid=uid(),url=c.link.indexOf('{click_id}')>=0?c.link.split('{click_id}').join(encodeURIComponent(cid)):c.link+(c.link.indexOf('?')>=0?'&':'?')+'sub_id='+encodeURIComponent(cid);
+  openSheet('<div class="top"><h3 id="sheetTitle">Chuyển sang '+esc(P.name)+'</h3><button class="x" type="button" aria-label="Đóng">✕</button></div><p>Bạn sẽ đăng ký trên trang chính thức của '+esc(P.name)+'. 3Credit <b>không</b> gửi tên, số điện thoại, CCCD hay thông tin tín dụng của bạn qua liên kết này, chỉ gửi mã theo dõi <code>'+cid+'</code>.</p><p class="note">'+esc(P.name)+' là bên xét duyệt. Hãy đọc kỹ lãi suất, phí và tổng chi phí trước khi ký.</p><div><a class="btn btn-pri" id="goLink" href="'+esc(url)+'" target="_blank" rel="sponsored nofollow noopener">Tiếp tục tới '+esc(P.name)+'</a></div>');
+  $('#goLink').addEventListener('click',function(){var L=load(CLK,[]);if(!L.some(function(x){return x.cid===cid})){L.unshift({cid:cid,campaign:c.id,partner:P.name,ts:new Date().toISOString(),device:/Mobi/.test(navigator.userAgent)?'mobile':'desktop',source:'web'});save(CLK,L.slice(0,500))}setTimeout(closeSheet,300)});
+}
+function toast(m){var d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},2400)}
+document.addEventListener('click',function(e){
+  var t=e.target;
+  var n=t.closest('[data-need]');if(n){state.need=n.dataset.need;render();$('#tim').scrollIntoView({behavior:'smooth'});return}
+  var sb=t.closest('#needSeg button');if(sb){state.need=sb.dataset.v;render();return}
+  var d=t.closest('[data-detail]');if(d){detail(d.dataset.detail);return}
+  var g=t.closest('[data-go]');if(g){go(g.dataset.go);return}
+  if(t.closest('.x')||t.id==='scrim'){closeSheet();return}
+  if(t.id==='trayGo'){compare();return}
+  if(t.id==='trayClr'){state.compare=[];render();return}
+});
+document.addEventListener('change',function(e){var cb=e.target.closest('[data-cmp]');if(!cb)return;var id=cb.dataset.cmp,i=state.compare.indexOf(id);
+  if(cb.checked&&i<0){if(state.compare.length>=3){cb.checked=false;toast('Chỉ so sánh tối đa 3 sản phẩm');return}state.compare.push(id)}
+  if(!cb.checked&&i>=0)state.compare.splice(i,1);tray()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('#scrim').hidden)closeSheet()});
+$('#pf').addEventListener('input',render);$('#pf').addEventListener('change',render);
+
+/* ---------- ADMIN ---------- */
+var ATAB='overview';
+var STATUSES=[['draft','Draft'],['pending','Pending verification'],['active','Active'],['paused','Paused'],['expired','Expired'],['rejected','Rejected']];
+function presets(){return [
+  {n:'NV văn phòng, 28t, 12tr, vay 50tr/24th',p:{need:'cash_loan',amount:50*M,term:24,age:28,job:'salaried_office',income:12,channel:'bank_transfer',credit:'good',urg:'flexible',veh:'none'}},
+  {n:'Công chức, 40t, 9tr, vay 100tr/36th',p:{need:'cash_loan',amount:100*M,term:36,age:40,job:'civil_servant',income:9,channel:'bank_transfer',credit:'good',urg:'flexible',veh:'none'}},
+  {n:'Công nhân, lương tiền mặt, vay 20tr/12th',p:{need:'cash_loan',amount:20*M,term:12,age:30,job:'worker',income:6,channel:'cash',credit:'good',urg:'this_week',veh:'none'}},
+  {n:'Tự kinh doanh, vay 100tr/36th',p:{need:'cash_loan',amount:100*M,term:36,age:35,job:'self_employed',income:20,channel:'mixed',credit:'good',urg:'flexible',veh:'none'}},
+  {n:'Chưa từng vay, 22t, vay 10tr/6th',p:{need:'cash_loan',amount:10*M,term:6,age:22,job:'salaried_office',income:7,channel:'bank_transfer',credit:'none',urg:'flexible',veh:'none'}},
+  {n:'Nợ xấu chưa tất toán, cần gấp 5tr',p:{need:'cash_loan',amount:5*M,term:3,age:30,job:'worker',income:6,channel:'cash',credit:'bad_unsettled',urg:'today',veh:'none'}},
+  {n:'Nợ xấu, có xe máy, vay bằng xe 15tr',p:{need:'secured',amount:15*M,term:12,age:32,job:'freelancer',income:9,channel:'mixed',credit:'bad_settled',urg:'today',veh:'motorbike'}},
+  {n:'Cần thẻ tín dụng, 26t, 15tr',p:{need:'credit_card',amount:20*M,term:12,age:26,job:'salaried_office',income:20,channel:'bank_transfer',credit:'good',urg:'flexible',veh:'none'}}
+]}
+function completeness(c){var f=['rate','amount','term','fee','docs','speed'],n=0,v=0;f.forEach(function(k){var x=c.info[k];if(x&&x[0]){n++;if(VER(x[1]))v++}});return {any:Math.round(n/f.length*100),ver:Math.round(v/f.length*100)}}
+function renderAdmin(){
+  $$('#atabs button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.t===ATAB))});
+  var cs=campaigns(),L=load(CLK,[]),h='',np=Object.keys(PARTNERS).length;
+  if(ATAB==='overview'){
+    var act=cs.filter(function(c){return c.status==='active'}).length;
+    h='<div class="kpis"><div class="kpi"><small>Tổng chiến dịch</small><b>'+cs.length+'</b><span>'+np+' đối tác</span></div><div class="kpi"><small>Đang chạy</small><b>'+act+'</b><span>Cần tracking URL + kích hoạt</span></div><div class="kpi"><small>Click</small><b>'+L.length+'</b><span>Ghi nhận trên trình duyệt này</span></div><div class="kpi"><small>Lead · Conversion · Hoa hồng</small><b>0 · 0 · 0đ</b><span>Chưa tích hợp postback</span></div></div>'+
+      '<div class="panel"><h3>Việc cần làm</h3><ul class="chk">'+
+      '<li class="q">'+cs.filter(function(c){return !c.link}).length+'/'+cs.length+' chiến dịch chưa gắn tracking URL</li>'+
+      '<li class="q">'+cs.filter(function(c){return completeness(c).ver<50}).length+' chiến dịch có dưới 50% thông tin sản phẩm được xác minh</li>'+
+      '<li class="q">0/'+np+' đối tác đã xác nhận điều kiện CIC/nợ xấu bằng văn bản</li>'+
+      '<li class="q">Nhóm B: chưa có giấy phép đính kèm cho Vay VND, MoneyCAT, Jeff, Moneyveo</li>'+
+      '<li class="q">Chưa có chiến dịch thẻ tín dụng nào</li></ul></div>';
+  }
+  if(ATAB==='campaigns'){
+    h='<div class="panel"><h3>Chiến dịch</h3><p class="note" style="margin-bottom:12px">Đổi trạng thái, ưu tiên (tối đa +5 điểm, chỉ phá thế hòa) hoặc tracking URL rồi bấm Lưu. Dùng <code>{click_id}</code> trong URL để chèn mã theo dõi; nếu không có, hệ thống thêm <code>sub_id</code>. Chỉ chiến dịch <b>Active</b> có link mới hiện nút đăng ký.</p><div class="tw"><table class="at"><thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th>Ưu tiên</th><th>Tracking URL</th><th>Lead cap/ngày</th><th></th></tr></thead><tbody>'+
+     cs.map(function(c){return '<tr data-row="'+c.id+'"><td><code>'+c.id+'</code></td><td><b>'+esc(PARTNERS[c.p].name)+'</b><br><small>'+esc(c.name)+'</small></td><td><select data-f="status" aria-label="Trạng thái '+c.id+'">'+STATUSES.map(function(s){return '<option value="'+s[0]+'"'+(c.status===s[0]?' selected':'')+'>'+s[1]+'</option>'}).join('')+'</select></td><td><input type="number" min="0" max="5" data-f="priority" value="'+c.priority+'" aria-label="Ưu tiên '+c.id+'"></td><td><input type="url" data-f="link" placeholder="https://… (từ đối tác/network)" value="'+esc(c.link)+'" aria-label="Tracking URL '+c.id+'"></td><td><input type="number" min="0" data-f="leadCap" value="'+esc(c.leadCap)+'" placeholder="—" aria-label="Lead cap '+c.id+'"></td><td><button class="btn btn-pri btn-sm" type="button" data-save="'+c.id+'">Lưu</button></td></tr>'}).join('')+'</tbody></table></div></div>';
+  }
+  if(ATAB==='partners'){
+    var byP={};cs.forEach(function(c){(byP[c.p]=byP[c.p]||[]).push(c)});
+    h='<div class="panel"><h3>Đối tác &amp; mức đầy đủ dữ liệu chính sách</h3><div class="tw"><table class="at"><thead><tr><th>Đối tác</th><th>Nhóm</th><th>Loại</th><th>Pháp nhân</th><th>Có dữ liệu</th><th>Đã xác minh</th><th>Tích hợp</th></tr></thead><tbody>'+
+      Object.keys(PARTNERS).map(function(k){var P=PARTNERS[k],arr=byP[k]||[],a=0,v=0;arr.forEach(function(c){var x=completeness(c);a+=x.any;v+=x.ver});a=arr.length?Math.round(a/arr.length):0;v=arr.length?Math.round(v/arr.length):0;
+      return '<tr><td><b>'+esc(P.name)+'</b></td><td>'+P.grp+'</td><td>'+esc(P.type)+'</td><td>'+esc(P.legal)+cbadge(P.lc)+'</td><td><span class="cbar"><span class="bar"><i style="width:'+a+'%;background:var(--blue)"></i></span>'+a+'%</span></td><td><span class="cbar"><span class="bar"><i style="width:'+v+'%"></i></span>'+v+'%</span></td><td><span class="pst pending">Chờ tích hợp</span></td></tr>'}).join('')+'</tbody></table></div></div>';
+  }
+  if(ATAB==='matching'){
+    h='<div class="panel"><h3>Hồ sơ mẫu → kết quả matching (tất cả chiến dịch)</h3><div class="tw"><table class="at"><thead><tr><th>Hồ sơ mẫu</th><th>Đáp ứng</th><th>Cần kiểm tra</th><th>Chưa xác minh</th><th>Không phù hợp</th><th>Xếp đầu</th></tr></thead><tbody>'+
+      presets().map(function(x){var rs=match(x.p,{all:true}),cnt={eligible:0,potential:0,unverified:0,not:0};rs.forEach(function(r){cnt[r.status]++});var top=rs[0];
+      return '<tr><td>'+esc(x.n)+'</td><td><b style="color:var(--ok)">'+cnt.eligible+'</b></td><td>'+cnt.potential+'</td><td>'+cnt.unverified+'</td><td>'+cnt.not+'</td><td>'+(top?esc(PARTNERS[top.c.p].name+' · '+top.c.name)+'<br><span class="st '+top.status+'">'+STXT[top.status]+'</span>':'<span style="color:var(--low)">Không có sản phẩm</span>')+'</td></tr>'}).join('')+'</tbody></table></div><p class="note" style="margin-top:12px">Hồ sơ có 0 sản phẩm “Đáp ứng” là khoảng trống: cần đối tác bổ sung chính sách đã xác minh, hoặc cần thêm chiến dịch.</p></div>';
+  }
+  if(ATAB==='tracking'){
+    h='<div class="panel"><h3>Click logs</h3>'+(L.length?'<div class="tw"><table class="at"><thead><tr><th>Click ID</th><th>Chiến dịch</th><th>Đối tác</th><th>Thời gian</th><th>Thiết bị</th><th>Conversion</th></tr></thead><tbody>'+L.map(function(x){return '<tr><td><code>'+esc(x.cid)+'</code></td><td>'+esc(x.campaign)+'</td><td>'+esc(x.partner)+'</td><td>'+esc(new Date(x.ts).toLocaleString('vi-VN'))+'</td><td>'+esc(x.device)+'</td><td><span class="pst draft">Chờ postback</span></td></tr>'}).join('')+'</tbody></table></div>':'<div class="empty">Chưa có click. Gắn tracking URL và kích hoạt một chiến dịch ở tab Chiến dịch, rồi bấm nút đăng ký ở trang khách.</div>')+'</div>'+
+      '<div class="panel"><h3>Postback &amp; đối soát</h3><p class="note">Endpoint dự kiến: <code>POST /api/postback/:network</code>, xác thực bằng chữ ký HMAC hoặc IP whitelist, chống trùng theo <code>conversion_id</code>. Chưa có dữ liệu vì chưa tích hợp đối tác nào.</p></div>';
+  }
+  $('#apanel').innerHTML=h;
+}
+$('#atabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;ATAB=b.dataset.t;renderAdmin()});
+$('#apanel').addEventListener('click',function(e){var b=e.target.closest('[data-save]');if(!b)return;var id=b.dataset.save,tr=$('tr[data-row="'+id+'"]'),o={};
+  $$('[data-f]',tr).forEach(function(i){o[i.dataset.f]=i.value.trim()});o.priority=Math.max(0,Math.min(5,+o.priority||0));
+  if(o.link&&!/^https:\/\/\S+$/i.test(o.link)){toast('Tracking URL phải bắt đầu bằng https://');return}
+  if(o.status==='active'&&!o.link){toast('Cần tracking URL trước khi kích hoạt');return}
+  OVR[id]=o;save(LS,OVR);toast('Đã lưu '+id);render();renderAdmin()});
+
+function route(){var adm=location.hash==='#admin';$('#admin').hidden=!adm;$('#site').hidden=adm;
+  $$('#navlinks a').forEach(function(a){if(adm&&a.getAttribute('href')==='#admin')a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  tray();if(adm){renderAdmin();scrollTo(0,0)}}
+addEventListener('hashchange',route);
+
+var root=document.documentElement;try{var s=localStorage.getItem('3c-theme');if(s==='dark'||s==='light')root.dataset.theme=s}catch(e){}
+$('#tgl').addEventListener('click',function(){var dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('3c-theme',root.dataset.theme)}catch(e){}});
+
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduce&&'IntersectionObserver' in window){var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.remove('pre');io.unobserve(x.target)}})},{threshold:.15});
+  $$('.reveal').forEach(function(el){if(el.getBoundingClientRect().top>innerHeight){el.classList.add('pre');io.observe(el)}})}
+var cv=$('#fx'),cx=cv.getContext('2d'),W=0,H=0,Q=[],mx=-999,my=-999;
+function size(){var d=Math.min(2,devicePixelRatio||1),r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);var n=Math.round(Math.min(80,W*H/15000));Q=[];for(var i=0;i<n;i++)Q.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:.6+Math.random()*1.5,c:i%5?'#AEB8DA':'#FF642E'})}
+function draw(){cx.clearRect(0,0,W,H);for(var i=0;i<Q.length;i++){var p=Q[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+  for(var j=i+1;j<Q.length;j++){var q=Q[j],dx=p.x-q.x,dy=p.y-q.y,dd=dx*dx+dy*dy;if(dd<10000){cx.globalAlpha=(1-dd/10000)*.14;cx.strokeStyle='#AEB8DA';cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke()}}
+  var md=Math.hypot(p.x-mx,p.y-my),gg=md<130?1+(1-md/130)*2:1;cx.globalAlpha=.7;cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r*gg,0,6.29);cx.fill()}cx.globalAlpha=1;if(!reduce)requestAnimationFrame(draw)}
+var hero=$('.hero');hero.addEventListener('mousemove',function(e){var r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});hero.addEventListener('mouseleave',function(){mx=my=-999});
+addEventListener('resize',size);size();draw();
+
+render();route();
+})();
+</script>

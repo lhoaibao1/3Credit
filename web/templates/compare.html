@@ -1,0 +1,25 @@
+{{template "head" .}}
+<main class="sec" style="padding-top:36px">
+  <div class="in" style="display:grid;gap:18px">
+    <div class="crumb"><a href="/?{{.Query}}#tim">← Quay lại kết quả</a></div>
+    <div class="sh"><div class="t"><span class="eyebrow">So sánh</span><h2>So sánh {{len .Items}} sản phẩm</h2><p>Mỗi giá trị kèm mức tin cậy nguồn. “Chưa xác minh” nghĩa là đối tác chưa công bố hoặc 3Credit chưa kiểm tra được.</p></div></div>
+    <div class="card"><div class="tw"><table class="ct">
+      <thead><tr><th></th>{{range .Items}}<th><div class="ch">{{template "logo" .Offer.Partner}}<div>{{.Offer.Product.Name}}<br><small>{{.Offer.Partner.Name}}</small></div></div></th>{{end}}</tr></thead>
+      <tbody>
+        <tr><th scope="row">Trạng thái</th>{{range .Items}}<td><span class="st {{.Status}}">{{.Status.Label}}</span></td>{{end}}</tr>
+        <tr><th scope="row">Loại đối tác</th>{{range .Items}}<td>{{.Offer.Partner.OrgType}}</td>{{end}}</tr>
+        <tr><th scope="row">Lãi suất / chi phí</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Rate}}</td>{{end}}</tr>
+        <tr><th scope="row">Hạn mức</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Amount}}</td>{{end}}</tr>
+        <tr><th scope="row">Kỳ hạn</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Term}}</td>{{end}}</tr>
+        <tr><th scope="row">Phí</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Fee}}</td>{{end}}</tr>
+        <tr><th scope="row">Điều kiện khác</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Docs}}</td>{{end}}</tr>
+        <tr><th scope="row">Mức phù hợp</th>{{range .Items}}<td>{{.Fit}}/100</td>{{end}}</tr>
+        <tr><th scope="row">Độ tin cậy dữ liệu</th>{{range .Items}}<td>{{pct .Confidence}}%</td>{{end}}</tr>
+        <tr><th scope="row">Cảnh báo</th>{{range .Items}}<td>{{range .Offer.Policy.Flags}}{{.}}<br>{{else}}—{{end}}</td>{{end}}</tr>
+        <tr><th scope="row">Nguồn, cập nhật</th>{{range .Items}}<td>{{.Offer.Policy.Source}}<br><small>{{.Offer.Policy.VerifiedOn}} · v{{.Offer.Policy.Version}}</small></td>{{end}}</tr>
+        <tr><th scope="row"></th>{{range .Items}}<td>{{if .Live}}<a class="btn btn-pri btn-sm" href="/go/{{.CampaignID}}" rel="nofollow">Đăng ký</a>{{else}}<span class="note">Chưa mở đăng ký</span>{{end}}</td>{{end}}</tr>
+      </tbody>
+    </table></div></div>
+  </div>
+</main>
+{{template "foot" .}}
