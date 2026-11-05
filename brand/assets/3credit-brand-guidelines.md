@@ -14,6 +14,16 @@ Biểu tượng được làm lại theo yêu cầu “giữ robot, thêm chất
 
 Các mục bên dưới (màu, chữ, khoảng cách, cấm kỵ) vẫn áp dụng. Phần “Ba concept” ở mục 2 là lịch sử của phiên bản 1.
 
+### Chữ “Credit” (05/11/2026)
+
+Dấu chấm của chữ **i** trong “Credit” được thay bằng **dấu tick cùng màu cam**, lặp lại dấu tick ở mắt robot. Đã thử 4 kiểu (`brand/preview/wordmark-concepts.png`):
+- **Dải từ cắt ngang chữ**: bị loại vì đọc như chữ bị gạch bỏ (gợi “từ chối”).
+- **Dãy chấm số thẻ dưới chữ**: bị loại vì rối ở cỡ nhỏ.
+- **Dải từ + tick**: bị loại, cùng lý do với dải từ.
+- **Tick trên chữ i**: được chọn.
+
+Chữ được vẽ thành đường vector, dùng chữ ı (không chấm) của Nunito Black cộng thêm nét tick. Không gõ lại logo bằng font, luôn dùng file SVG.
+
 ## 1. Phân tích logo gốc 3RDHub Vietnam
 
 | Thành phần | 3RDHub Vietnam (đo từ favicon.svg và icon-512.png) |
