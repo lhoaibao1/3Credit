@@ -25,6 +25,29 @@ Lần chạy đầu, server tự tạo `./data/3credit.db` và nạp dữ liệu
 | `ADMIN_USER`, `ADMIN_PASSWORD` | Tài khoản quản trị. Để trống thì tắt trang quản trị |
 | `APP_ENV=production` | Từ chối khởi động nếu thiếu secret |
 
+## Triển khai lên server bằng 1 lệnh (truy cập qua IP)
+
+Cần một VPS Ubuntu/Debian (khuyến nghị 1 vCPU, 1 GB RAM trở lên). SSH vào server rồi chạy:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo bash
+```
+
+Script tự làm các bước:
+1. Cài Docker nếu chưa có.
+2. Tải code về `/opt/3credit`.
+3. Tạo `.env` với khóa bí mật và mật khẩu quản trị ngẫu nhiên.
+4. Mở cổng 80 nếu firewall ufw đang bật.
+5. Build và chạy container, tự khởi động lại khi server reboot.
+6. In ra địa chỉ `http://<IP-server>`, `http://<IP-server>/admin` và mật khẩu quản trị.
+
+- **Cập nhật** lên code mới nhất: chạy lại đúng lệnh trên. File `.env` và dữ liệu được giữ nguyên.
+- **Đổi cổng**: `curl -fsSL …/deploy.sh | sudo PORT=8080 bash`.
+- **Dữ liệu** (database, logo tải lên) nằm trong Docker volume `3credit_3credit-data`.
+- **Mất `.env`** thì không giải mã được lead cũ. Hãy sao lưu file này.
+
+> Truy cập qua IP là HTTP, chưa mã hóa. Dùng để chạy thử. Trước khi nhận thông tin khách thật, hãy gắn domain và bật HTTPS.
+
 ## Test
 
 ```bash

@@ -1,3 +1,5 @@
 bin/
 data/
 *.db
+.env
+.proxy-ca.crt

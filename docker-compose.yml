@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    image: 3credit:latest
+    container_name: 3credit
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "${PORT:-80}:8080"
+    volumes:
+      - 3credit-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  3credit-data:

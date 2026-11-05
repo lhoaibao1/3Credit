@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# 3Credit — cài đặt / cập nhật bằng một lệnh trên server Ubuntu/Debian.
+#
+#   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo bash
+#
+# Chạy lại lệnh trên bất cứ lúc nào để cập nhật lên code mới nhất.
+# File .env (mật khẩu, khóa mã hóa) được giữ nguyên giữa các lần cập nhật.
+set -euo pipefail
+
+REPO_URL="${REPO_URL:-https://github.com/lhoaibao1/3Credit.git}"
+BRANCH="${BRANCH:-main}"
+APP_DIR="${APP_DIR:-/opt/3credit}"
+PORT="${PORT:-80}"
+
+say()  { printf '\033[1;38;5;208m==>\033[0m %s\n' "$*"; }
+fail() { printf '\033[1;31mLỗi:\033[0m %s\n' "$*" >&2; exit 1; }
+
+[ "$(id -u)" -eq 0 ] || fail "Hãy chạy với quyền root (thêm sudo)."
+
+# 1. Công cụ cần thiết
+if ! command -v git >/dev/null 2>&1 || ! command -v curl >/dev/null 2>&1; then
+  say "Cài git, curl…"
+  if command -v apt-get >/dev/null 2>&1; then
+    apt-get update -qq && apt-get install -y -qq git curl ca-certificates openssl >/dev/null
+  else
+    fail "Không tìm thấy apt-get. Hãy tự cài git và curl rồi chạy lại."
+  fi
+fi
+if ! command -v docker >/dev/null 2>&1; then
+  say "Cài Docker…"
+  curl -fsSL https://get.docker.com | sh
+fi
+systemctl enable --now docker >/dev/null 2>&1 || true
+docker compose version >/dev/null 2>&1 || fail "Thiếu Docker Compose plugin (docker compose)."
+
+# 2. Lấy code
+if [ -d "$APP_DIR/.git" ]; then
+  say "Cập nhật code tại $APP_DIR…"
+  git -C "$APP_DIR" fetch --depth 1 origin "$BRANCH"
+  git -C "$APP_DIR" reset --hard "origin/$BRANCH"
+else
+  say "Tải code về $APP_DIR…"
+  git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
+fi
+cd "$APP_DIR"
+
+# 3. Cấu hình (.env chỉ tạo một lần)
+rand() { openssl rand -hex "$1" 2>/dev/null || head -c "$1" /dev/urandom | od -An -tx1 | tr -d ' \n'; }
+PUBLIC_IP="$(curl -fsS --max-time 5 https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}')"
+if [ ! -f .env ]; then
+  say "Tạo file cấu hình .env…"
+  ADMIN_PASSWORD="$(rand 9)"
+  BASE="http://$PUBLIC_IP"; [ "$PORT" = "80" ] || BASE="$BASE:$PORT"
+  umask 077
+  cat > .env <<ENV
+APP_ENV=production
+BASE_URL=$BASE
+SESSION_SECRET=$(rand 32)
+DATA_KEY=$(rand 32)
+ADMIN_USER=admin
+ADMIN_PASSWORD=$ADMIN_PASSWORD
+PORT=$PORT
+ENV
+  NEW_INSTALL=1
+fi
+# docker compose đọc PORT từ .env
+set -a; . ./.env; set +a
+
+# 4. Mở cổng firewall nếu đang bật ufw
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+  ufw allow "$PORT"/tcp >/dev/null && say "Đã mở cổng $PORT trên ufw."
+fi
+
+# 5. Build và chạy
+say "Build và khởi động (lần đầu mất vài phút)…"
+docker compose up -d --build --remove-orphans
+
+say "Chờ server sẵn sàng…"
+for _ in $(seq 1 30); do
+  if curl -fsS "http://127.0.0.1:$PORT/healthz" >/dev/null 2>&1; then OK=1; break; fi
+  sleep 2
+done
+[ "${OK:-0}" = 1 ] || { docker compose logs --tail 50; fail "Server không phản hồi. Xem log ở trên."; }
+docker image prune -f >/dev/null 2>&1 || true
+
+URL="$BASE_URL"
+echo
+say "3Credit đã chạy!"
+echo "    Trang khách : $URL"
+echo "    Quản trị    : $URL/admin"
+echo "    Tài khoản   : $ADMIN_USER"
+if [ "${NEW_INSTALL:-0}" = 1 ]; then
+  echo "    Mật khẩu    : $ADMIN_PASSWORD   (lưu lại ngay, xem lại trong $APP_DIR/.env)"
+else
+  echo "    Mật khẩu    : xem trong $APP_DIR/.env"
+fi
+echo
+echo "    Cập nhật  : chạy lại đúng lệnh cài đặt"
+echo "    Xem log   : cd $APP_DIR && docker compose logs -f"
+echo "    Dừng      : cd $APP_DIR && docker compose down"
+echo
+echo "    Lưu ý: đang chạy HTTP qua IP, chưa mã hóa. Khi có domain hãy bật HTTPS trước khi nhận khách thật."
