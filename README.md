@@ -55,13 +55,17 @@ Script tự làm các bước:
 
 ## Gắn domain qua Cloudflare, cách đơn giản (bản ghi A)
 
-1. Cloudflare → **DNS → Records**, thêm 2 bản ghi, bật **Proxied** (đám mây màu cam):
+Không tắt website khác đang chạy trên cổng 80 của máy chủ. 3Credit chạy cổng 8080, Cloudflare chuyển khách của domain sang cổng đó.
+
+1. Cloudflare → **DNS → Records**, bật **Proxied** (đám mây cam):
    - `A` · Name `@` · IPv4 = IP server
    - `CNAME` · Name `www` · Target `3credit.asia`
-2. Cloudflare → **SSL/TLS → Overview**: chọn **Flexible**. **Edge Certificates**: bật **Always Use HTTPS**.
-3. Trên server (3Credit dùng cổng 80, tắt web cũ đang chiếm cổng 80):
+2. **Rules → Origin Rules → Create rule**: Hostname *ends with* `3credit.asia` → **Destination Port: Rewrite to 8080** → Deploy.
+3. **SSL/TLS → Overview**: **Flexible**. **Edge Certificates**: bật **Always Use HTTPS**.
+4. Mở cổng 8080 TCP trên firewall của nhà cung cấp VPS.
+5. Trên server:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo DOMAIN=3credit.asia PORT=80 FREE_PORT=1 bash
+   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo DOMAIN=3credit.asia PORT=8080 bash
    ```
 
 ## Gắn domain qua Cloudflare Tunnel (HTTPS, không cần mở cổng)
