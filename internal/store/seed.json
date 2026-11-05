@@ -3,7 +3,7 @@
   "verified_on": "2026-11-05",
   "partners": [
     {"id":"shinhan","name":"Shinhan Finance","legal_name":"Công ty Tài chính TNHH MTV Shinhan Việt Nam","org_type":"Công ty tài chính","group":"A","legal_conf":"A","logo_path":"/static/partners/shinhan.png","website":"https://shinhanfinance.com.vn"},
-    {"id":"fecredit","name":"FE CREDIT","legal_name":"VPB SMBC FC","org_type":"Công ty tài chính","group":"A","legal_conf":"A","logo_path":"/static/partners/fecredit.svg","website":"https://www.fecredit.com.vn"},
+    {"id":"fecredit","name":"FE CREDIT","legal_name":"VPB SMBC FC","org_type":"Công ty tài chính","group":"A","legal_conf":"A","logo_path":"/static/partners/fecredit.webp","website":"https://www.fecredit.com.vn"},
     {"id":"vib","name":"VIB","legal_name":"Ngân hàng TMCP Quốc tế Việt Nam","org_type":"Ngân hàng","group":"A","legal_conf":"B","website":"https://www.vib.com.vn"},
     {"id":"vpbank","name":"VPBank","legal_name":"Ngân hàng TMCP Việt Nam Thịnh Vượng","org_type":"Ngân hàng","group":"A","legal_conf":"A","logo_path":"/static/partners/vpbank.svg","website":"https://www.vpbank.com.vn"},
     {"id":"lotte","name":"LOTTE Finance","legal_name":"Công ty Tài chính Tổng hợp TNHH MTV LOTTE Việt Nam","org_type":"Công ty tài chính","group":"A","legal_conf":"B","website":"https://lottefinance.vn"},

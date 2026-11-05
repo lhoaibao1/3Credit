@@ -322,3 +322,24 @@ input[type=datetime-local],input[type=password],input[type=tel],input[type=file]
 @media (max-width:1000px){.cardstack{height:380px;margin-top:10px}.ecard.fcheck{display:none}}
 @media (max-width:600px){.cardstack{height:300px}.ccard{width:250px}.cc-num{font-size:.82rem}.ccard.front{padding:14px 16px;top:56px}.f-ok{top:220px}.f-rate{display:none}.fchip{font-size:.76rem;padding:8px 11px}}
 @media (prefers-reduced-motion:reduce){.ticker .track{animation:none}}
+/* ---- 3RDVN ecosystem ---- */
+.eco{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.em{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:20px;background:var(--surface);border:1px solid var(--line);transition:transform .2s,border-color .2s}
+.em:hover{transform:translateY(-2px);border-color:rgba(255,100,46,.45)}
+.em.cur{background:#101B4D;color:#fff;border-color:#101B4D}
+.el{flex:none;width:48px;height:48px;border-radius:14px;background:#101B4D;display:grid;place-items:center;overflow:hidden}
+.el img{width:100%;height:100%;object-fit:contain}
+.em small{display:block;font-size:.72rem;font-weight:800;color:var(--or-ink);text-transform:uppercase;letter-spacing:.06em}
+.em.cur small{color:#FFB08F}
+.em b{display:block;font-size:1.05rem;margin:2px 0 4px}
+.em .ed{display:block;font-size:.86rem;color:var(--muted);line-height:1.45}.em.cur .ed{color:#B9C3E6}
+.netlogos{display:flex;flex-wrap:wrap;gap:12px}
+.nl{height:58px;min-width:130px;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid var(--line);display:grid;place-items:center}
+.nl img{max-height:34px;max-width:130px;object-fit:contain}
+.svc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.svc div{padding:18px;border-radius:18px;background:var(--surface);border:1px solid var(--line)}.svc b{display:block;margin-bottom:4px}.svc span{color:var(--muted);font-size:.9rem}
+.legalbox{display:grid;grid-template-columns:200px 1fr;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--surface)}
+.legalbox div{padding:12px 16px;border-bottom:1px solid var(--line)}.legalbox div:nth-child(odd){background:var(--soft);color:var(--muted);font-weight:800;font-size:.84rem}
+.legalbox div:nth-last-child(-n+2){border-bottom:0}
+@media (max-width:1000px){.eco{grid-template-columns:1fr 1fr}.svc{grid-template-columns:1fr}}
+@media (max-width:600px){.eco{grid-template-columns:1fr}.legalbox{grid-template-columns:1fr}.legalbox div:nth-child(odd){border-bottom:0;padding-bottom:2px}}

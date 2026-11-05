@@ -85,6 +85,7 @@ func (s *Server) routes() {
 		s.mux.HandleFunc("GET "+path, s.legal)
 	}
 	s.mux.HandleFunc("POST /xoa-du-lieu", s.deletionSubmit)
+	s.mux.HandleFunc("GET /gioi-thieu", s.about)
 
 	a := func(h http.HandlerFunc) http.Handler { return s.admin(h) }
 	s.mux.Handle("GET /admin/inquiries", a(s.adminInquiries))

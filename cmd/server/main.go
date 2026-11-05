@@ -63,6 +63,9 @@ func main() {
 	if err := st.SeedPosts(); err != nil {
 		log.Fatal(err)
 	}
+	if err := st.SeedEcosystem(); err != nil {
+		log.Fatal(err)
+	}
 	tr := tracking.New(d, sess)
 	lr := leads.New(d, key)
 	srv, err := server.New(server.Config{

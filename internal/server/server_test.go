@@ -86,7 +86,7 @@ var csrfRe = regexp.MustCompile(`name="csrf" value="([0-9a-f]+)"`)
 func TestCustomerPages(t *testing.T) {
 	e := setup(t)
 	code, body := e.get(t, "/", false)
-	if code != 200 || !strings.Contains(body, "Tìm sản phẩm tài chính") || !strings.Contains(body, "/static/partners/fecredit.svg") {
+	if code != 200 || !strings.Contains(body, "Tìm sản phẩm tài chính") || !strings.Contains(body, "/static/partners/fecredit.webp") {
 		t.Fatalf("home: %d", code)
 	}
 	if strings.Contains(body, "100% duyệt") || strings.Contains(body, "duyệt 100%\"") {

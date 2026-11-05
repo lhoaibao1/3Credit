@@ -11,7 +11,18 @@ import (
 	"strings"
 
 	"github.com/threecredit/platform/internal/leads"
+	"github.com/threecredit/platform/internal/store"
 )
+
+// ---------- about / ecosystem ----------
+
+func (s *Server) about(w http.ResponseWriter, r *http.Request) {
+	partners, _ := s.st.Partners()
+	d := s.base(r, "Giới thiệu 3Credit – sản phẩm của 3RDVN Technology")
+	d["Eco"], d["Services"], d["Network"], d["Partners"] = store.Ecosystem, store.EcoServices, store.Network, partners
+	d["Description"] = "3Credit là sản phẩm so sánh tài chính thuộc hệ sinh thái 3RDVN Technology, cùng với 3RDHub Vietnam."
+	s.render(w, "about.html", d)
+}
 
 // ---------- tiny markdown: ## heading, - list, **bold**, *italic*, paragraphs ----------
 
