@@ -41,7 +41,12 @@ Script tự làm các bước:
 5. Build và chạy container, tự khởi động lại khi server reboot.
 6. In ra địa chỉ `http://<IP-server>`, `http://<IP-server>/admin` và mật khẩu quản trị.
 
-- **Cập nhật** lên code mới nhất: chạy lại đúng lệnh trên. File `.env` và dữ liệu được giữ nguyên.
+- **Tự cập nhật**: server kiểm tra GitHub mỗi 2 phút (systemd timer `3credit-update.timer`). Có commit mới trên `main` thì tự build và khởi động lại bản mới. Web chỉ gián đoạn vài giây lúc đổi container. Nếu bản mới build lỗi, web giữ nguyên bản cũ và bỏ qua commit lỗi đó cho đến khi có commit mới hơn.
+  - Xem lịch sử: `journalctl -u 3credit-update -n 50`
+  - Cập nhật ngay: `sudo /opt/3credit/update.sh`
+  - Đổi tần suất: chạy lại lệnh cài với `UPDATE_EVERY=10min`. Tắt: chạy lại với `AUTO_UPDATE=0`.
+  - Lưu ý: ai có quyền push lên `main` là có thể đưa code lên server. Hãy bật bảo vệ nhánh `main` trên GitHub.
+- **Cập nhật bằng tay**: chạy lại đúng lệnh cài. File `.env` và dữ liệu được giữ nguyên.
 - **Cổng**: mặc định 80. Nếu cổng 80 đã bị chương trình khác dùng (Nginx, Apache, web khác), script tự chọn cổng trống (8080, 8081…) và in ra địa chỉ đúng. Muốn chỉ định cổng: `curl -fsSL …/deploy.sh | sudo PORT=8080 bash`.
 - **Dữ liệu** (database, logo tải lên) nằm trong Docker volume `3credit_3credit-data`.
 - **Mất `.env`** thì không giải mã được lead cũ. Hãy sao lưu file này.

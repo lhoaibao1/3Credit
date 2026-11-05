@@ -67,8 +67,10 @@ set -a; . ./.env; set +a
 PORT="${PORT:-80}"
 
 # 4. Chọn cổng: nếu cổng đang bị chương trình khác chiếm thì tự chọn cổng trống
-docker compose stop >/dev/null 2>&1 || true   # nhả cổng của chính 3Credit (nếu đang chạy)
+# Cổng mà container 3Credit đang dùng thì không tính là "bị chiếm" (không cần dừng web khi cập nhật)
+OWN_PORT="$(docker port 3credit 8080/tcp 2>/dev/null | head -1 | awk -F: '{print $NF}')"
 port_busy() {
+  [ "$1" = "$OWN_PORT" ] && return 1
   if command -v ss >/dev/null 2>&1 && ss -ltnH 2>/dev/null | awk '{print $4}' | grep -Eq "[:.]$1\$"; then return 0; fi
   (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
 }
@@ -124,6 +126,46 @@ if [ "$HOST_OK" != 1 ]; then
   echo "    của nhà cung cấp cloud đã mở cổng $PORT (TCP) chưa."
 fi
 
+# 7. Tự cập nhật khi GitHub có commit mới (tắt bằng AUTO_UPDATE=0)
+AUTO_UPDATE="${AUTO_UPDATE:-1}"
+UPDATE_EVERY="${UPDATE_EVERY:-2min}"
+if [ "$AUTO_UPDATE" = 1 ] && command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
+  chmod +x "$APP_DIR/update.sh"
+  cat > /etc/systemd/system/3credit-update.service <<UNIT
+[Unit]
+Description=3Credit: cập nhật khi GitHub có commit mới
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=APP_DIR=$APP_DIR
+Environment=BRANCH=$BRANCH
+ExecStart=$APP_DIR/update.sh
+TimeoutStartSec=1800
+UNIT
+  cat > /etc/systemd/system/3credit-update.timer <<UNIT
+[Unit]
+Description=3Credit: kiểm tra cập nhật mỗi $UPDATE_EVERY
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=$UPDATE_EVERY
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+UNIT
+  systemctl daemon-reload
+  systemctl enable --now 3credit-update.timer >/dev/null 2>&1
+  AUTO_MSG="bật (kiểm tra GitHub mỗi $UPDATE_EVERY)"
+elif [ "$AUTO_UPDATE" = 0 ] && command -v systemctl >/dev/null 2>&1; then
+  systemctl disable --now 3credit-update.timer >/dev/null 2>&1 || true
+  AUTO_MSG="tắt"
+else
+  AUTO_MSG="không hỗ trợ (máy không dùng systemd)"
+fi
+
 URL="$BASE_URL"
 echo
 say "3Credit đã chạy!"
@@ -136,7 +178,9 @@ else
   echo "    Mật khẩu    : xem trong $APP_DIR/.env"
 fi
 echo
-echo "    Cập nhật  : chạy lại đúng lệnh cài đặt"
+echo "    Tự cập nhật: $AUTO_MSG"
+echo "    Lịch sử cập nhật: journalctl -u 3credit-update -n 50"
+echo "    Cập nhật ngay   : sudo $APP_DIR/update.sh"
 echo "    Xem log   : cd $APP_DIR && docker compose logs -f"
 echo "    Dừng      : cd $APP_DIR && docker compose down"
 echo

@@ -3,3 +3,4 @@ data/
 *.db
 .env
 .proxy-ca.crt
+.update-failed
