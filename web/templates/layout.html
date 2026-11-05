@@ -34,6 +34,7 @@
 <footer>
   <div class="in">
     <div><a class="brand" href="/" aria-label="3Credit"><svg class="logo" width="154" height="40" style="color:var(--ink)" role="img"><title>3Credit</title><use href="#logo"/></svg></a><p style="margin-top:12px;max-width:38ch">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính thuộc hệ sinh thái 3RDVN, không trực tiếp cho vay.</p>
+      <a href="https://3rdvn.io.vn" target="_blank" rel="noopener" class="byparent"><small>Sản phẩm của</small><img src="/static/eco/3rdvn-logo.webp" alt="3RDVN Technology" loading="lazy"></a>
       {{with .S}}<p style="margin-top:10px;font-size:.84rem">{{if .company_name}}{{.company_name}}{{if .tax_id}} · MST {{.tax_id}}{{end}}<br>{{end}}{{if .address}}{{.address}}<br>{{end}}{{if .hotline}}Hotline: {{.hotline}}{{end}}{{if .email}}{{if .hotline}} · {{end}}{{.email}}{{end}}</p>{{end}}</div>
     <div><h4>Sản phẩm</h4><ul><li><a href="/?need=cash_loan#tim">Vay tiêu dùng</a></li><li><a href="/?need=credit_card#tim">Thẻ tín dụng</a></li><li><a href="/?need=secured&amp;vehicle=motorbike#tim">Vay bằng đăng ký xe</a></li><li><a href="/#tu-van">Nhờ 3Credit tư vấn</a></li></ul></div>
     <div><h4>Hệ sinh thái 3RDVN</h4><ul><li><a href="/gioi-thieu">Giới thiệu 3Credit</a></li><li><a href="https://3rdhubvietnam.tech" target="_blank" rel="noopener">3RDHub Vietnam</a></li><li><a href="https://3rdvn.io.vn" target="_blank" rel="noopener">3RDVN Technology</a></li><li><a href="/kien-thuc">Kiến thức tài chính</a></li><li><a href="/tieu-chi-doi-tac">Tiêu chí đối tác</a></li></ul></div>
@@ -78,7 +79,12 @@
 </section>
 {{end}}
 
-{{define "ecogrid"}}<div class="eco">{{range .Eco}}<a class="em{{if .Current}} cur{{end}}" href="{{.URL}}" {{if not .Current}}target="_blank" rel="noopener"{{end}}>
-  <span class="el"><img src="{{.Logo}}" alt="" loading="lazy"></span>
+{{define "ecogrid"}}{{with .Parent}}<a class="parent" href="{{.URL}}" target="_blank" rel="noopener">
+  <span class="plogo"><img src="{{.Logo}}" alt="{{.Name}} – {{.Tagline}}" loading="lazy"></span>
+  <span class="pinfo"><small>Công ty mẹ</small><b>{{.Legal}}</b><span>{{.Desc}}</span><em>{{.URL}} ↗</em></span>
+</a>{{end}}
+<p class="note" style="margin:18px 0 10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Sản phẩm cùng công ty</p>
+<div class="eco">{{range .Eco}}<a class="em{{if .Current}} cur{{end}}" href="{{.URL}}" {{if not .Current}}target="_blank" rel="noopener"{{end}}>
+  <span class="el"><img src="{{.Logo}}" alt="{{.Name}}" loading="lazy"></span>
   <span><small>{{.Role}}{{if .Current}} · bạn đang ở đây{{end}}</small><b>{{.Name}}</b><span class="ed">{{.Desc}}</span></span>
 </a>{{end}}</div>{{end}}

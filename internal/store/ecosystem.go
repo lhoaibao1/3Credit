@@ -19,12 +19,19 @@ type EcoMember struct {
 	Current                     bool
 }
 
-// Ecosystem lists the members of the 3RDVN ecosystem shown on 3Credit.
+// Parent is the company that owns and operates 3Credit.
+var Parent = struct{ Name, Legal, Tagline, Desc, URL, Logo, Icon string }{
+	Name: "3RDVN Technology", Legal: "Công ty TNHH Công nghệ 3RDVN",
+	Tagline: "Connecting Resources. Accelerating Growth.",
+	Desc:    "Đối tác dịch vụ tài chính, công nghệ và vận hành. 3RDVN Technology xây dựng và vận hành các sản phẩm trong hệ sinh thái, trong đó có 3RDHub Vietnam và 3Credit.",
+	URL:     "https://3rdvn.io.vn", Logo: "/static/eco/3rdvn-logo.webp", Icon: "/static/eco/3rdvn-icon.webp",
+}
+
+// Ecosystem lists the products of 3RDVN Technology shown on 3Credit.
 var Ecosystem = []EcoMember{
-	{Name: "3RDVN Technology", Role: "Công ty chủ quản", Desc: "Công ty TNHH Công nghệ 3RDVN, đơn vị xây dựng và vận hành các sản phẩm trong hệ sinh thái.", URL: "https://3rdvn.io.vn", Logo: "/static/eco/3rdhub.svg"},
-	{Name: "3RDHub Vietnam", Role: "Tiếp thị liên kết", Desc: "Nền tảng tiếp thị liên kết, minh bạch từng lượt bấm, từng hồ sơ và từng đồng hoa hồng.", URL: "https://3rdhubvietnam.tech", Logo: "/static/eco/3rdhub.svg"},
+	{Name: "3RDHub Vietnam", Role: "Tiếp thị liên kết", Desc: "Nền tảng tiếp thị liên kết, minh bạch từng lượt bấm, từng hồ sơ và từng đồng hoa hồng.", URL: "https://3rdhubvietnam.tech", Logo: "/static/eco/3rdhub-icon.webp"},
 	{Name: "3Credit", Role: "So sánh tài chính", Desc: "Tìm và so sánh sản phẩm tài chính theo hồ sơ, có giải thích vì sao phù hợp.", URL: "/", Logo: "/static/brand/3credit-icon.svg", Current: true},
-	{Name: "SaaS 3RDVN HUB", Role: "Phần mềm phân phối", Desc: "Phần mềm vận hành phân phối, chiến dịch và đối soát hoa hồng, dùng ngay không cần xây.", URL: "https://3rdhubvietnam.tech/vi/san-pham", Logo: "/static/eco/3rdhub.svg"},
+	{Name: "SaaS 3RDVN HUB", Role: "Phần mềm phân phối", Desc: "Phần mềm vận hành phân phối, chiến dịch và đối soát hoa hồng, dùng ngay không cần xây.", URL: "https://demo.3rdvn.io.vn", Logo: "/static/eco/3rdvn-hub-icon.webp"},
 }
 
 // EcoServices are the services 3RDVN Technology provides.
