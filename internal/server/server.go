@@ -234,6 +234,7 @@ type cardData struct {
 
 func (s *Server) funcs() template.FuncMap {
 	return template.FuncMap{
+		"assetv": func() string { return assetVersion },
 		"initials": func(n string) string {
 			var b strings.Builder
 			for _, w := range strings.Fields(n) {
@@ -360,3 +361,18 @@ func (s *Server) takeFlash(w http.ResponseWriter, r *http.Request) (string, stri
 	kind, msg, _ := strings.Cut(raw, "|")
 	return msg, kind
 }
+
+// assetVersion changes whenever any static file changes, so CDN/browser caches
+// never serve an old stylesheet with a new page.
+var assetVersion = func() string {
+	h := sha256.New()
+	fs.WalkDir(web.FS, "static", func(p string, d fs.DirEntry, err error) error {
+		if err == nil && !d.IsDir() {
+			b, _ := web.FS.ReadFile(p)
+			h.Write([]byte(p))
+			h.Write(b)
+		}
+		return nil
+	})
+	return hex.EncodeToString(h.Sum(nil))[:10]
+}()
