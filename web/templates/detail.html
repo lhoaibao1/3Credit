@@ -41,4 +41,5 @@
     {{end}}
   </div>
 </main>
+{{if not (and $r.Live $o.Campaign.LeadEndpoint)}}{{template "consult" .}}{{end}}
 {{template "foot" .}}

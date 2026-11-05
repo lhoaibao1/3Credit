@@ -2,12 +2,16 @@
 <div class="sh" style="margin-bottom:14px"><div class="t"><span class="eyebrow">Quản trị</span><h2>{{.Title}}</h2></div><span class="tag">Đăng nhập: {{.User}}</span></div>
 <nav class="anav" aria-label="Quản trị">
   <a href="/admin" {{if eq .Page "overview"}}aria-current="page"{{end}}>Tổng quan</a>
+  <a href="/admin/inquiries" {{if eq .Page "inquiries"}}aria-current="page"{{end}}>Khách cần tư vấn</a>
   <a href="/admin/campaigns" {{if eq .Page "campaigns"}}aria-current="page"{{end}}>Chiến dịch</a>
-  <a href="/admin/partners" {{if eq .Page "partners"}}aria-current="page"{{end}}>Đối tác &amp; chính sách</a>
+  <a href="/admin/partners" {{if eq .Page "partners"}}aria-current="page"{{end}}>Đối tác</a>
+  <a href="/admin/posts" {{if eq .Page "posts"}}aria-current="page"{{end}}>Bài viết</a>
   <a href="/admin/segments" {{if eq .Page "segments"}}aria-current="page"{{end}}>Segment</a>
-  <a href="/admin/matching" {{if eq .Page "matching"}}aria-current="page"{{end}}>Matching analytics</a>
+  <a href="/admin/matching" {{if eq .Page "matching"}}aria-current="page"{{end}}>Matching</a>
   <a href="/admin/tracking" {{if eq .Page "tracking"}}aria-current="page"{{end}}>Tracking</a>
-  <a href="/admin/leads" {{if eq .Page "leads"}}aria-current="page"{{end}}>Lead</a>
+  <a href="/admin/leads" {{if eq .Page "leads"}}aria-current="page"{{end}}>Lead đối tác</a>
+  <a href="/admin/deletions" {{if eq .Page "deletions"}}aria-current="page"{{end}}>Xóa dữ liệu</a>
+  <a href="/admin/settings" {{if eq .Page "settings"}}aria-current="page"{{end}}>Cài đặt</a>
   <a href="/admin/audit" {{if eq .Page "audit"}}aria-current="page"{{end}}>Nhật ký</a>
 </nav>
 {{if .Flash}}<div class="flash {{.FlashKind}}" role="status">{{.Flash}}</div>{{end}}
@@ -17,7 +21,8 @@
 <div class="kpis">
   <div class="kpi"><small>Tổng chiến dịch</small><b>{{.K.Campaigns}}</b><span>{{.K.Partners}} đối tác</span></div>
   <div class="kpi"><small>Đang chạy</small><b>{{.K.Live}}</b><span>Active + có tracking URL</span></div>
-  <div class="kpi"><small>Click · Lead</small><b>{{.K.Clicks}} · {{.K.Leads}}</b><span>{{.K.Searches}} lượt tìm kiếm</span></div>
+  <div class="kpi"><small>Khách cần tư vấn</small><b>{{.K.Inquiries}}</b><span><a href="/admin/inquiries?status=new" style="color:var(--or-ink);font-weight:800">{{.K.NewInquiries}} chưa gọi →</a></span></div>
+  <div class="kpi"><small>Click · Tìm kiếm</small><b>{{.K.Clicks}} · {{.K.Searches}}</b><span>{{.K.Leads}} lead gửi đối tác</span></div>
   <div class="kpi"><small>Conversion · Hoa hồng</small><b>{{.K.Conversions}} · {{vnd .K.Commission}}</b><span>Tỷ lệ chuyển đổi {{.K.CR}}</span></div>
 </div>
 <div class="panel"><h3>Việc cần làm</h3><ul class="chk">
@@ -41,16 +46,27 @@
   <td>{{if .Campaign.PostbackSecret}}✓{{else}}<span style="color:var(--muted)">—</span>{{end}}</td>
   <td>{{if .Campaign.LeadEndpoint}}✓{{else}}<span style="color:var(--muted)">—</span>{{end}}</td>
   <td><span class="cbar"><span class="bar"><i style="width:{{verified .}}%"></i></span>{{verified .}}%</span></td>
-  <td><a class="btn btn-line btn-sm" href="/admin/campaigns/{{.Campaign.ID}}">Sửa</a></td>
+  <td><div class="qs">
+    {{if eq .Campaign.Status "active"}}<form method="post" action="/admin/campaigns/{{.Campaign.ID}}/status"><input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="status" value="paused"><button class="btn btn-line btn-sm" type="submit">Tắt</button></form>
+    {{else}}<form method="post" action="/admin/campaigns/{{.Campaign.ID}}/status"><input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="status" value="active"><button class="btn btn-pri btn-sm" type="submit" {{if not .Campaign.TrackingURL}}title="Cần dán tracking URL trước"{{end}}>Bật</button></form>{{end}}
+    <a class="btn btn-line btn-sm" href="/admin/campaigns/{{.Campaign.ID}}">Sửa link</a>
+    <a class="btn btn-line btn-sm" href="/admin/policies/{{.Product.ID}}">Chính sách</a>
+  </div></td>
 </tr>{{end}}</tbody></table></div></div>
-<form class="panel" method="post" action="/admin/campaigns/new"><h3>Tạo chiến dịch mới</h3>
+<div class="panel"><h3>Cách đưa một camp lên web</h3><ul class="chk">
+  <li class="y">Bấm <b>Sửa link</b>, dán tracking link lấy từ đối tác hoặc affiliate network, bấm Lưu.</li>
+  <li class="y">Bấm <b>Chính sách</b> để nhập lãi suất, hạn mức, kỳ hạn, điều kiện (ô nhập thường, không cần JSON).</li>
+  <li class="y">Bấm <b>Bật</b>. Khách thấy nút “Đăng ký” ngay, không cần khởi động lại.</li>
+</ul></div>
+<form class="panel" method="post" action="/admin/products/new"><h3>Thêm sản phẩm / camp mới</h3>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="aform">
-    <div class="fld"><label for="nid">Mã chiến dịch</label><input id="nid" name="id" type="text" placeholder="C-FEC-03" required pattern="[A-Za-z0-9-]{3,32}"></div>
-    <div class="fld"><label for="nprod">Sản phẩm</label><select id="nprod" name="product_id">{{range .Offers}}<option value="{{.Product.ID}}">{{.Partner.Name}} · {{.Product.Name}}</option>{{end}}</select></div>
-    <div class="fld"><label for="nname">Tên chiến dịch</label><input id="nname" name="name" type="text" required maxlength="120"></div>
+    <div class="fld"><label for="npartner">Đối tác</label><select id="npartner" name="partner_id">{{range .Partners}}<option value="{{.ID}}">{{.Name}}</option>{{end}}</select></div>
+    <div class="fld"><label for="nname">Tên sản phẩm</label><input id="nname" name="name" type="text" required maxlength="120" placeholder="Thẻ tín dụng hoàn tiền"></div>
+    <div class="fld"><label for="ncat">Loại</label><select id="ncat" name="category">{{range .Categories}}<option value="{{.V}}">{{.L}}</option>{{end}}</select></div>
+    <div class="fld"><label for="ncid">Mã camp (không bắt buộc)</label><input id="ncid" name="campaign_id" type="text" pattern="[A-Za-z0-9-]{3,32}" placeholder="tự tạo nếu để trống"></div>
   </div>
-  <p class="note" style="margin:10px 0">Chiến dịch mới ở trạng thái Draft. Mở trang sửa để gắn link, segment, lead cap.</p>
+  <p class="note" style="margin:10px 0">Chưa có đối tác trong danh sách? Thêm ở trang <a href="/admin/partners" style="color:var(--or-ink)">Đối tác</a>.</p>
   <button class="btn btn-pri btn-sm" type="submit">Tạo</button>
 </form>
 </div></main>{{template "foot" .}}{{end}}
@@ -103,30 +119,63 @@
     </form>
   </td>
 </tr>{{end}}</tbody></table></div>
+<form method="post" action="/admin/partners/new" class="aform" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
+  <input type="hidden" name="csrf" value="{{.CSRF}}">
+  <div class="fld"><label for="pid">Mã (chữ thường)</label><input id="pid" name="id" type="text" required pattern="[a-z0-9-]{2,30}" placeholder="vietcombank"></div>
+  <div class="fld"><label for="pname">Tên hiển thị</label><input id="pname" name="name" type="text" required maxlength="60"></div>
+  <div class="fld"><label for="ptype">Loại tổ chức</label><input id="ptype" name="org_type" type="text" placeholder="Ngân hàng / Công ty tài chính"></div>
+  <div class="fld full"><label for="plegal">Pháp nhân</label><input id="plegal" name="legal_name" type="text"></div>
+  <div class="fld"><label for="pgrp">Nhóm</label><select id="pgrp" name="group"><option value="A">A – Ngân hàng, công ty tài chính</option><option value="B">B – Vay nhanh, giải pháp khác</option></select></div>
+  <div class="fld"><span class="lb">&nbsp;</span><button class="btn btn-pri btn-sm" type="submit">Thêm đối tác</button></div>
+</form>
 <p class="note" style="margin-top:10px">Logo: PNG, SVG hoặc WebP, tối đa 200 KB. SVG chứa script sẽ bị từ chối. Chỉ dùng logo đối tác cung cấp hoặc cho phép trong hợp đồng.</p></div>
 <div class="panel"><h3>Sản phẩm &amp; chính sách</h3><div class="tw"><table class="at"><thead><tr><th>Sản phẩm</th><th>Loại</th><th>Phiên bản</th><th>Kiểm tra</th><th>Nguồn</th><th></th></tr></thead>
 <tbody>{{range .Offers}}<tr><td><b>{{.Partner.Name}}</b> · {{.Product.Name}}</td><td>{{.Product.Category}}</td><td>v{{.Policy.Version}}</td><td>{{.Policy.VerifiedOn}}</td><td>{{.Policy.Source}}</td><td><a class="btn btn-line btn-sm" href="/admin/policies/{{.Product.ID}}">Lịch sử / sửa</a></td></tr>{{end}}</tbody></table></div></div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_policy"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="crumb"><a href="/admin/partners">← Đối tác &amp; chính sách</a></div>
+<div class="crumb"><a href="/admin/campaigns">← Chiến dịch</a></div>
+{{$f := .F}}
 <form class="panel" method="post" action="/admin/policies/{{.ProductID}}">
-  <h3>Tạo phiên bản chính sách mới cho {{.ProductID}}</h3>
-  <p class="note" style="margin-bottom:12px">Phiên bản cũ không bị sửa. Chỉ giá trị có <code>"conf":"A"</code> hoặc <code>"B"</code> mới được dùng làm luật loại trừ. Không nhập số liệu không có nguồn.</p>
+  <h3>Chính sách: {{.ProductName}}</h3>
+  <p class="note" style="margin-bottom:14px">Mỗi lần lưu tạo phiên bản mới, bản cũ được giữ lại. Ô “Nguồn tin cậy”: <b>A</b> = đọc trên web chính thức / hợp đồng đối tác, <b>B</b> = nguồn chính thức gián tiếp, <b>C</b> = báo chí (chỉ tham khảo, không loại khách), <b>—</b> = không áp dụng điều kiện này. Chỉ A, B mới dùng để loại sản phẩm khỏi kết quả.</p>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
+  <h4 style="margin:6px 0 10px">Điều kiện đối chiếu</h4>
   <div class="aform">
-    <div class="fld full"><label for="prules">Rules (JSON)</label><textarea id="prules" name="rules" spellcheck="false">{{.RulesJSON}}</textarea></div>
-    <div class="fld full"><label for="pinfo">Info hiển thị (JSON)</label><textarea id="pinfo" name="info" spellcheck="false" style="min-height:160px">{{.InfoJSON}}</textarea></div>
-    <div class="fld full"><label for="pflags">Cảnh báo (mỗi dòng một cảnh báo)</label><textarea id="pflags" name="flags" style="min-height:80px">{{.FlagsText}}</textarea></div>
-    <div class="fld"><label for="psrc">Nguồn</label><input id="psrc" name="source" type="text" value="{{.Source}}" required></div>
-    <div class="fld"><label for="pver">Ngày kiểm tra</label><input id="pver" name="verified_on" type="text" value="{{.Today}}" pattern="\d{4}-\d{2}-\d{2}" required></div>
-    <div class="fld"><label for="pnote">Nội dung thay đổi</label><input id="pnote" name="change_note" type="text" required maxlength="200"></div>
+    <div class="fld"><label>Hạn mức (triệu): tối thiểu – tối đa</label><div class="two"><input name="amount_min" type="number" step="any" min="0" value="{{$f.AmountMin}}" aria-label="Hạn mức tối thiểu"><input name="amount_max" type="number" step="any" min="0" value="{{$f.AmountMax}}" aria-label="Hạn mức tối đa"></div></div>
+    <div class="fld"><label>Kỳ hạn (tháng): tối thiểu – tối đa</label><div class="two"><input name="term_min" type="number" min="0" value="{{$f.TermMin}}" aria-label="Kỳ hạn tối thiểu"><input name="term_max" type="number" min="0" value="{{$f.TermMax}}" aria-label="Kỳ hạn tối đa"></div></div>
+    <div class="fld"><label>Độ tuổi: tối thiểu – tối đa</label><div class="two"><input name="age_min" type="number" min="0" value="{{$f.AgeMin}}" aria-label="Tuổi tối thiểu"><input name="age_max" type="number" min="0" value="{{$f.AgeMax}}" aria-label="Tuổi tối đa"></div></div>
+    <div class="fld"><label for="pac">Nguồn – hạn mức</label>{{template "confsel" (pair "amount_conf" $f.AmountConf)}}</div>
+    <div class="fld"><label>Nguồn – kỳ hạn</label>{{template "confsel" (pair "term_conf" $f.TermConf)}}</div>
+    <div class="fld"><label>Nguồn – độ tuổi · ghi chú</label><div class="two">{{template "confsel" (pair "age_conf" $f.AgeConf)}}<input name="age_note" type="text" value="{{$f.AgeNote}}" placeholder="nữ đến 55" aria-label="Ghi chú độ tuổi"></div></div>
+    <div class="fld"><label>Thu nhập tối thiểu (triệu/tháng)</label><input name="income_min" type="number" step="any" min="0" value="{{$f.IncomeMin}}"></div>
+    <div class="fld"><label>Thu nhập tối thiểu cho công chức (nếu khác)</label><input name="income_civil" type="number" step="any" min="0" value="{{$f.IncomeCivil}}"></div>
+    <div class="fld"><label>Nguồn – thu nhập</label>{{template "confsel" (pair "income_conf" $f.IncConf)}}</div>
+    <div class="fld"><label>Bắt buộc nhận lương chuyển khoản</label>{{template "confsel" (pair "channel_conf" $f.ChannelConf)}}</div>
+    <div class="fld"><label>Bắt buộc có giấy đăng ký xe</label>{{template "confsel" (pair "vehicle_conf" $f.VehicleConf)}}</div>
+    <div class="fld"></div>
+    <div class="fld full"><span class="lb">Nghề nghiệp</span><div class="seg">{{range .Jobs}}<label class="cmpchk"><input type="checkbox" name="jobs" value="{{.V}}" {{if has $f.Jobs .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
+    <div class="fld"><label>Cách áp dụng nghề nghiệp</label><select name="jobs_mode"><option value="allow" {{if eq $f.JobsMode "allow"}}selected{{end}}>Chỉ nhận các nghề đã chọn</option><option value="boost" {{if eq $f.JobsMode "boost"}}selected{{end}}>Nhận mọi nghề, ưu tiên nghề đã chọn</option></select></div>
+    <div class="fld"><label>Lý do hiển thị cho khách</label><input name="jobs_why" type="text" value="{{$f.JobsWhy}}" placeholder="Dành cho khách hàng có thu nhập từ lương"></div>
+    <div class="fld"><label>Nguồn – nghề nghiệp</label>{{template "confsel" (pair "jobs_conf" $f.JobsConf)}}</div>
+    <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận)</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
+    <div class="fld"><label>Nguồn – lịch sử tín dụng</label>{{template "confsel" (pair "credit_conf" $f.CreditConf)}}</div>
   </div>
-  <button class="btn btn-pri" type="submit" style="margin-top:14px">Lưu phiên bản mới</button>
+  <h4 style="margin:22px 0 10px">Thông tin hiển thị cho khách</h4>
+  <div class="aform">
+    {{range $f.Facts}}<div class="fld" style="grid-column:span 2"><label>{{.Label}}</label><input name="info_{{.Key}}" type="text" value="{{.Text}}" maxlength="200"></div><div class="fld"><label>Nguồn</label>{{template "confsel" (pair (printf "info_%s_conf" .Key) .Conf)}}</div>{{end}}
+    <div class="fld full"><label for="pflags">Cảnh báo cho khách (mỗi dòng một cảnh báo)</label><textarea id="pflags" name="flags" style="min-height:70px;font-family:var(--font)">{{$f.Flags}}</textarea></div>
+    <div class="fld"><label for="psrc">Nguồn tham khảo (URL / hợp đồng)</label><input id="psrc" name="source" type="text" value="{{$f.Source}}" required></div>
+    <div class="fld"><label for="pver">Ngày kiểm tra</label><input id="pver" name="verified_on" type="date" value="{{.Today}}" required></div>
+    <div class="fld"><label for="pnote">Nội dung thay đổi</label><input id="pnote" name="change_note" type="text" required maxlength="200" placeholder="Cập nhật lãi suất theo hợp đồng 11/2026"></div>
+  </div>
+  <button class="btn btn-pri" type="submit" style="margin-top:16px">Lưu phiên bản mới</button>
 </form>
 <div class="panel"><h3>Lịch sử phiên bản</h3><div class="tw"><table class="at"><thead><tr><th>Phiên bản</th><th>Ngày kiểm tra</th><th>Nguồn</th><th>Người cập nhật</th><th>Nội dung</th><th>Thời điểm</th></tr></thead>
 <tbody>{{range .History}}<tr><td>v{{.Version}}</td><td>{{.VerifiedOn}}</td><td>{{.Source}}</td><td>{{.ChangedBy}}</td><td>{{.ChangeNote}}</td><td>{{.CreatedAt.Format "02/01/2006 15:04"}}</td></tr>{{end}}</tbody></table></div></div>
 </div></main>{{template "foot" .}}{{end}}
+
+{{define "confsel"}}<select name="{{.A}}" aria-label="Mức tin cậy nguồn"><option value="" {{if eq .B ""}}selected{{end}}>— không áp dụng</option><option value="A" {{if eq .B "A"}}selected{{end}}>A – web chính thức / hợp đồng</option><option value="B" {{if eq .B "B"}}selected{{end}}>B – chính thức gián tiếp</option><option value="C" {{if eq .B "C"}}selected{{end}}>C – tham khảo</option><option value="U" {{if eq .B "U"}}selected{{end}}>? – chưa rõ nguồn</option></select>{{end}}
 
 {{define "admin_segments"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
 <div class="panel"><h3>Segment</h3><div class="tw"><table class="at"><thead><tr><th>Mã</th><th>Tên</th><th>Luật</th><th>Phiên bản</th><th>Bật</th></tr></thead>

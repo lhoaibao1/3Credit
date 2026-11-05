@@ -1,0 +1,62 @@
+{{template "head" .}}
+{{$co := or .S.company_name "đơn vị vận hành 3Credit"}}
+<main class="sec" style="padding-top:40px">
+  <div class="in legalpage">
+    <div class="crumb"><a href="/">← Trang chủ</a></div>
+    <h1 style="font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:8px">{{.PageTitle}}</h1>
+    <p class="note" style="margin-bottom:22px">Áp dụng cho website 3Credit. Cập nhật: 05/11/2026.</p>
+    <div class="prose">
+{{if eq .Page "dieu-khoan"}}
+<h2>1. 3Credit là gì</h2>
+<p>3Credit là nền tảng so sánh và giới thiệu sản phẩm tài chính do {{$co}} vận hành. <strong>3Credit không phải tổ chức tín dụng</strong>, không trực tiếp cho vay, không thẩm định và không quyết định phê duyệt hồ sơ.</p>
+<h2>2. Kết quả đề xuất</h2>
+<p>Kết quả đối chiếu dựa trên thông tin bạn tự khai và điều kiện đối tác công bố tại thời điểm 3Credit kiểm tra. Nhãn “Đáp ứng điều kiện đã biết” không có nghĩa là bạn sẽ được duyệt. Hạn mức, lãi suất, phí và kỳ hạn cuối cùng do đối tác quyết định và ghi trong hợp đồng giữa bạn và đối tác.</p>
+<h2>3. Chuyển sang đối tác</h2>
+<p>Khi bạn bấm “Đăng ký”, bạn rời 3Credit sang trang của đối tác. Việc đăng ký, ký hợp đồng và thanh toán diễn ra giữa bạn và đối tác. 3Credit có thể nhận phí giới thiệu từ đối tác; phí này không ảnh hưởng thứ tự đề xuất theo mức phù hợp.</p>
+<h2>4. Trách nhiệm của bạn</h2>
+<ul><li>Khai thông tin trung thực.</li><li>Đọc kỹ hợp đồng, đặc biệt là tổng chi phí (lãi và phí), trước khi ký.</li><li>Không dùng 3Credit cho mục đích gian lận.</li></ul>
+<h2>5. Liên hệ</h2>
+<p>{{$co}}{{if .S.address}}, {{.S.address}}{{end}}{{if .S.hotline}}. Hotline: {{.S.hotline}}{{end}}{{if .S.email}}. Email: {{.S.email}}{{end}}.</p>
+{{else if eq .Page "bao-mat"}}
+<h2>1. Bên kiểm soát dữ liệu</h2>
+<p>{{$co}}{{if .S.tax_id}} (mã số doanh nghiệp {{.S.tax_id}}){{end}} chịu trách nhiệm xử lý dữ liệu cá nhân bạn cung cấp trên 3Credit, theo Luật Bảo vệ dữ liệu cá nhân và các văn bản hướng dẫn.</p>
+<h2>2. Dữ liệu thu thập và mục đích</h2>
+<ul>
+<li><strong>Hồ sơ tìm kiếm</strong> (số tiền, kỳ hạn, tuổi, nghề, khoảng thu nhập, lịch sử tín dụng tự khai): để đối chiếu sản phẩm. Không gắn với danh tính của bạn; lưu ẩn danh để cải thiện đề xuất.</li>
+<li><strong>Họ tên, số điện thoại</strong> khi bạn gửi yêu cầu tư vấn: để 3Credit liên hệ tư vấn. Chỉ thu khi bạn đánh dấu đồng ý.</li>
+<li><strong>Dữ liệu kỹ thuật</strong> (cookie phiên, mã theo dõi lượt bấm): để vận hành website, chống gian lận và đối soát với đối tác. Liên kết sang đối tác chỉ chứa mã theo dõi, không chứa tên, số điện thoại hay thông tin tín dụng.</li>
+</ul>
+<h2>3. Chia sẻ dữ liệu</h2>
+<p>3Credit <strong>không bán</strong> dữ liệu cá nhân. Thông tin liên hệ chỉ được chuyển cho một đối tác cụ thể khi bạn đồng ý riêng cho đối tác đó. 3Credit không tự tra cứu thông tin tín dụng (CIC) của bạn.</p>
+<h2>4. Bảo vệ và lưu trữ</h2>
+<p>Họ tên và số điện thoại được mã hóa khi lưu, chỉ người được phân quyền mới xem được, và mọi lần xem, xuất dữ liệu đều được ghi nhật ký. Dữ liệu được lưu trong thời gian cần thiết cho mục đích đã nêu hoặc theo yêu cầu của pháp luật.</p>
+<h2>5. Quyền của bạn</h2>
+<p>Bạn có quyền được biết, truy cập, chỉnh sửa, rút lại đồng ý và yêu cầu xóa dữ liệu. Gửi yêu cầu tại <a href="/xoa-du-lieu">trang yêu cầu xóa dữ liệu</a>{{if .S.dpo_email}} hoặc email {{.S.dpo_email}}{{end}}.</p>
+{{else if eq .Page "tieu-chi-doi-tac"}}
+<p>3Credit chỉ mở đăng ký cho một sản phẩm khi đối tác đáp ứng các tiêu chí sau:</p>
+<ul>
+<li>Có pháp nhân rõ ràng và giấy phép hoạt động phù hợp với sản phẩm (tổ chức tín dụng được Ngân hàng Nhà nước cấp phép, hoặc giấy phép tương ứng với loại hình kinh doanh).</li>
+<li>Công bố lãi suất quy ra năm (APR) đã gồm các khoản phí bắt buộc, kỳ hạn tối thiểu – tối đa và ví dụ tổng chi phí.</li>
+<li>Không yêu cầu quyền truy cập danh bạ, ảnh, tin nhắn của khách hàng.</li>
+<li>Không trừ phí trước khi giải ngân mà không công bố rõ.</li>
+<li>Cam kết không đòi nợ bằng cách liên hệ, bêu riếu người thân của khách hàng.</li>
+<li>Có hợp đồng hợp tác với 3Credit còn hiệu lực.</li>
+</ul>
+<h2>Cách 3Credit hiển thị thông tin</h2>
+<p>Mỗi con số trên 3Credit ghi kèm mức tin cậy nguồn: <span class="conf A">A</span> đọc trực tiếp trên website chính thức của đối tác, <span class="conf B">B</span> nguồn chính thức gián tiếp, <span class="conf C">C</span> báo chí hoặc trang tổng hợp (chỉ tham khảo). Chỉ thông tin mức A, B được dùng để kết luận bạn có đáp ứng điều kiện hay không.</p>
+{{else if eq .Page "xoa-du-lieu"}}
+<p>Nhập số điện thoại bạn đã dùng trên 3Credit. Chúng tôi sẽ xóa các yêu cầu tư vấn và thông tin liên hệ gắn với số này, và phản hồi trong thời hạn luật định.</p>
+</div>
+<form class="leadbox" method="post" action="/xoa-du-lieu" style="margin-top:12px">
+  {{if .Flash}}<div class="flash {{.FlashKind}}" role="status">{{.Flash}}</div>{{end}}
+  <input type="hidden" name="csrf" value="{{.CSRF}}">
+  <div class="fld"><label for="dphone">Số điện thoại</label><input id="dphone" name="phone" type="tel" required pattern="0[0-9]{9}" placeholder="09xxxxxxxx"></div>
+  <div class="fld"><label for="dnote">Ghi chú (không bắt buộc)</label><input id="dnote" name="note" type="text" maxlength="300"></div>
+  <button class="btn btn-pri" type="submit" style="justify-self:start">Gửi yêu cầu xóa</button>
+</form>
+<div class="prose">
+{{end}}
+    </div>
+  </div>
+</main>
+{{template "foot" .}}

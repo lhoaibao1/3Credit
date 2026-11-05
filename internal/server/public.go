@@ -193,6 +193,11 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 		data[k] = v
 	}
 	data["Partners"] = partners
+	data["Posts"], _ = s.st.Posts(true, 4)
+	data["Back"], data["Source"] = "/?"+profileQuery(p).Encode(), "trang-chu"
+	if msg, kind := s.takeFlash(w, r); msg != "" {
+		data["Flash"], data["FlashKind"] = msg, kind
+	}
 	data["Needs"], data["Regions"], data["Jobs"], data["Incomes"] = needs, regions, jobs, incomes
 	data["Channels"], data["Credits"], data["Urgencies"], data["Vehicles"] = channels, credits, urgencies, vehicles
 	s.render(w, "home.html", data)
@@ -222,6 +227,7 @@ func (s *Server) detail(w http.ResponseWriter, r *http.Request) {
 	res := matching.Evaluate(o, p, o.Campaign.Live(s.now()))
 	data := s.base(r, o.Product.Name+" · "+o.Partner.Name+" – 3Credit")
 	data["R"], data["Query"] = res, q(profileQuery(p))
+	data["Back"], data["Source"], data["CampaignID"] = "/san-pham/"+o.Campaign.ID+"?"+profileQuery(p).Encode(), "san-pham", o.Campaign.ID
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		data["Flash"], data["FlashKind"] = msg, kind
 	}
@@ -338,4 +344,16 @@ func (s *Server) postback(w http.ResponseWriter, r *http.Request) {
 func (s *Server) fail(w http.ResponseWriter, err error) {
 	log.Printf("error: %v", err)
 	http.Error(w, "Lỗi hệ thống, vui lòng thử lại", http.StatusInternalServerError)
+}
+
+// Label returns the Vietnamese label for a profile code (need, job, region, credit…).
+func Label(code string) string {
+	for _, list := range [][]opt{needs, regions, jobs, channels, credits, urgencies, vehicles} {
+		for _, o := range list {
+			if o.V == code && code != "" {
+				return o.L
+			}
+		}
+	}
+	return code
 }

@@ -14,6 +14,7 @@
 {{range .Items}}{{template "card" (card . $q)}}{{end}}
 </div>
 {{end}}{{end}}
+<div class="cta-card"><div><b>Không chắc nên chọn sản phẩm nào?</b><span class="note">Để lại số điện thoại, chuyên viên 3Credit gọi lại tư vấn miễn phí.</span></div><a class="btn btn-pri btn-sm" href="#tu-van">Nhờ tư vấn</a></div>
 {{if .Nots}}<details class="nots"><summary>Không phù hợp ({{len .Nots}}), xem lý do</summary>{{range .Nots}}<div class="nrow"><b>{{.Offer.Partner.Name}} · {{.Offer.Product.Name}}</b><span>{{join .Fails "; "}}</span></div>{{end}}</details>{{end}}
 {{end}}
 
@@ -34,3 +35,5 @@
   <div class="src">Nguồn: {{$o.Policy.Source}} · kiểm tra {{$o.Policy.VerifiedOn}} · chính sách v{{$o.Policy.Version}} · {{$r.CampaignID}}</div>
 </article>
 {{end}}
+
+{{define "postcard"}}<a class="post" href="/kien-thuc/{{.Slug}}"><div class="cv">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="" loading="lazy">{{else}}{{.Category}}{{end}}</div><div class="b"><small>{{.Category}}{{if .PublishedAt}} · {{.PublishedAt.Format "02/01/2006"}}{{end}}</small><h3>{{.Title}}</h3><p>{{.Summary}}</p></div></a>{{end}}

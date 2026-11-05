@@ -53,6 +53,19 @@ Script tự làm các bước:
 
 > Truy cập qua IP là HTTP, chưa mã hóa. Dùng để chạy thử. Trước khi nhận thông tin khách thật, hãy gắn domain và bật HTTPS.
 
+## Dùng hằng ngày (trang quản trị `/admin`)
+
+| Việc | Ở đâu |
+|---|---|
+| Gọi lại khách để lại số điện thoại, ghi chú, tải Excel | **Khách cần tư vấn** |
+| Gắn link affiliate cho một camp | **Chiến dịch → Sửa link**, rồi bấm **Bật** |
+| Nhập lãi suất, hạn mức, kỳ hạn, điều kiện (ô nhập thường) | **Chiến dịch → Chính sách** |
+| Thêm sản phẩm hoặc camp mới (vd. thẻ tín dụng) | **Chiến dịch → Thêm sản phẩm / camp mới** |
+| Thêm đối tác, tải logo | **Đối tác** |
+| Viết bài kiến thức / tin tức | **Bài viết → Viết bài mới** |
+| Tên công ty, MST, địa chỉ, hotline (hiện ở chân trang và trang pháp lý) | **Cài đặt** |
+| Xử lý yêu cầu xóa dữ liệu của khách | **Xóa dữ liệu** |
+
 ## Test
 
 ```bash

@@ -80,6 +80,15 @@
   </div>
 </section>
 
+{{template "consult" .}}
+
+{{if .Posts}}<section class="sec" id="kien-thuc">
+  <div class="in">
+    <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h2>Đọc trước khi <span class="or">ký hợp đồng</span></h2></div><a class="btn btn-line btn-sm" href="/kien-thuc">Xem tất cả bài viết</a></div>
+    <div class="posts">{{range .Posts}}{{template "postcard" .}}{{end}}</div>
+  </div>
+</section>{{end}}
+
 <section class="sec" id="nguon">
   <div class="in">
     <div class="comp">

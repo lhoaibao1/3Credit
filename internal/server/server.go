@@ -77,7 +77,28 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/postback/{network}", s.postback)
 	s.mux.HandleFunc("POST /api/postback/{network}", s.postback)
 
+	s.mux.HandleFunc("GET /kien-thuc", s.newsList)
+	s.mux.HandleFunc("GET /kien-thuc/{slug}", s.newsDetail)
+	s.mux.HandleFunc("POST /tu-van", s.inquirySubmit)
+	for path := range legalPages {
+		s.mux.HandleFunc("GET "+path, s.legal)
+	}
+	s.mux.HandleFunc("POST /xoa-du-lieu", s.deletionSubmit)
+
 	a := func(h http.HandlerFunc) http.Handler { return s.admin(h) }
+	s.mux.Handle("GET /admin/inquiries", a(s.adminInquiries))
+	s.mux.Handle("GET /admin/inquiries.csv", a(s.adminInquiriesCSV))
+	s.mux.Handle("POST /admin/inquiries/{id}", a(s.adminInquiryUpdate))
+	s.mux.Handle("GET /admin/posts", a(s.adminPosts))
+	s.mux.Handle("GET /admin/posts/{id}", a(s.adminPostEdit))
+	s.mux.Handle("POST /admin/posts/{id}", a(s.adminPostSave))
+	s.mux.Handle("GET /admin/settings", a(s.adminSettings))
+	s.mux.Handle("POST /admin/settings", a(s.adminSettingsSave))
+	s.mux.Handle("GET /admin/deletions", a(s.adminDeletions))
+	s.mux.Handle("POST /admin/deletions/{id}", a(s.adminDeletionDo))
+	s.mux.Handle("POST /admin/campaigns/{id}/status", a(s.adminCampaignStatus))
+	s.mux.Handle("POST /admin/products/new", a(s.adminProductNew))
+	s.mux.Handle("POST /admin/partners/new", a(s.adminPartnerNew))
 	s.mux.Handle("GET /admin", a(s.adminOverview))
 	s.mux.Handle("GET /admin/campaigns", a(s.adminCampaigns))
 	s.mux.Handle("POST /admin/campaigns/new", a(s.adminCampaignNew))
@@ -175,7 +196,7 @@ func (s *Server) admin(h http.HandlerFunc) http.Handler {
 		}
 		w.Header().Set("Cache-Control", "no-store")
 		if r.Method == http.MethodPost {
-			if err := r.ParseMultipartForm(1 << 20); err != nil && err != http.ErrNotMultipart {
+			if err := r.ParseMultipartForm(2 << 20); err != nil && err != http.ErrNotMultipart {
 				http.Error(w, "form quá lớn", http.StatusBadRequest)
 				return
 			}
@@ -242,6 +263,8 @@ func (s *Server) funcs() template.FuncMap {
 			}
 			return t.Local().Format("2006-01-02T15:04")
 		},
+		"vi":   Label,
+		"pair": func(a, b string) struct{ A, B string } { return struct{ A, B string }{a, b} },
 		"has": func(xs []string, v string) bool {
 			for _, x := range xs {
 				if x == v {
@@ -284,7 +307,7 @@ func verifiedPct(o model.Offer) int {
 }
 
 func (s *Server) base(r *http.Request, title string) map[string]any {
-	return map[string]any{"Title": title, "CSRF": s.csrf(r)}
+	return map[string]any{"Title": title, "CSRF": s.csrf(r), "S": s.st.Settings(), "Path": r.URL.Path}
 }
 
 func (s *Server) logoDir() string { return filepath.Join(s.cfg.DataDir, "uploads", "partners") }

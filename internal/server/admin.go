@@ -2,7 +2,6 @@ package server
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -38,6 +37,7 @@ type kpis struct {
 	Commission                                                     float64
 	CR                                                             string
 	NoURL, LowData, CreditVerified, NoLogo, NoSecret               int
+	Inquiries, NewInquiries                                        int
 }
 
 func (s *Server) adminOverview(w http.ResponseWriter, r *http.Request) {
@@ -73,6 +73,8 @@ func (s *Server) adminOverview(w http.ResponseWriter, r *http.Request) {
 			k.NoLogo++
 		}
 	}
+	k.Inquiries = s.st.Count(`SELECT COUNT(*) FROM inquiries`)
+	k.NewInquiries = s.st.Count(`SELECT COUNT(*) FROM inquiries WHERE status='new'`)
 	k.Clicks = s.st.Count(`SELECT COUNT(*) FROM clicks`)
 	k.Leads = s.st.Count(`SELECT COUNT(*) FROM leads`)
 	k.Searches = s.st.Count(`SELECT COUNT(*) FROM searches`)
@@ -93,8 +95,9 @@ func (s *Server) adminCampaigns(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, err)
 		return
 	}
+	partners, _ := s.st.Partners()
 	d := s.adminData(w, r, "campaigns", "Chiến dịch")
-	d["Offers"] = offers
+	d["Offers"], d["Partners"], d["Categories"] = offers, partners, store.Categories
 	s.render(w, "admin_campaigns", d)
 }
 
@@ -255,58 +258,34 @@ func (s *Server) adminPolicy(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	cur := hist[0]
-	rj, _ := json.MarshalIndent(cur.Rules, "", "  ")
-	ij, _ := json.MarshalIndent(cur.Info, "", "  ")
-	d := s.adminData(w, r, "partners", "Chính sách sản phẩm")
-	d["ProductID"], d["History"] = pid, hist
-	d["RulesJSON"], d["InfoJSON"], d["FlagsText"] = string(rj), string(ij), strings.Join(cur.Flags, "\n")
-	d["Source"], d["Today"] = cur.Source, s.now().Format("2006-01-02")
+	offers, _ := s.st.Offers()
+	var name string
+	for _, o := range offers {
+		if o.Product.ID == pid {
+			name = o.Partner.Name + " · " + o.Product.Name
+		}
+	}
+	d := s.adminData(w, r, "campaigns", "Chính sách sản phẩm")
+	d["ProductID"], d["ProductName"], d["History"], d["F"] = pid, name, hist, toForm(hist[0])
+	d["Today"], d["Jobs"], d["Credits"] = s.now().Format("2006-01-02"), jobs, credits[1:]
 	s.render(w, "admin_policy", d)
-}
-
-func validConf(c model.Confidence) bool { return c == "" || c == "A" || c == "B" || c == "C" }
-
-func checkRules(r model.Rules) error {
-	for name, rg := range map[string]*model.Range{"amount": r.Amount, "term": r.Term, "age": r.Age} {
-		if rg != nil && (rg.Min < 0 || rg.Max < rg.Min || !validConf(rg.Conf)) {
-			return fmt.Errorf("%s: min/max hoặc conf không hợp lệ", name)
-		}
-	}
-	for name, l := range map[string]*model.ListRule{"channel": r.Channel, "jobs": r.Jobs, "regions": r.Regions, "credit": r.Credit} {
-		if l != nil && (len(l.Values) == 0 || !validConf(l.Conf)) {
-			return fmt.Errorf("%s: cần values và conf hợp lệ", name)
-		}
-	}
-	return nil
 }
 
 func (s *Server) adminPolicySave(w http.ResponseWriter, r *http.Request) {
 	pid := r.PathValue("product")
 	to := "/admin/policies/" + pid
-	var v model.PolicyVersion
-	dec := json.NewDecoder(strings.NewReader(r.FormValue("rules")))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&v.Rules); err != nil {
-		s.back(w, r, to, "Rules JSON lỗi: "+errText(err), false)
+	rules, info, err := fromForm(r)
+	if err != nil {
+		s.back(w, r, to, "Chưa lưu: "+errText(err), false)
 		return
 	}
-	if err := checkRules(v.Rules); err != nil {
-		s.back(w, r, to, "Rules không hợp lệ: "+errText(err), false)
-		return
-	}
-	dec = json.NewDecoder(strings.NewReader(r.FormValue("info")))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&v.Info); err != nil {
-		s.back(w, r, to, "Info JSON lỗi: "+errText(err), false)
-		return
-	}
+	v := model.PolicyVersion{ProductID: pid, Rules: rules, Info: info}
 	for _, l := range strings.Split(r.FormValue("flags"), "\n") {
 		if l = strings.TrimSpace(l); l != "" {
 			v.Flags = append(v.Flags, l)
 		}
 	}
-	v.ProductID, v.Source, v.VerifiedOn = pid, strings.TrimSpace(r.FormValue("source")), strings.TrimSpace(r.FormValue("verified_on"))
+	v.Source, v.VerifiedOn = strings.TrimSpace(r.FormValue("source")), strings.TrimSpace(r.FormValue("verified_on"))
 	v.ChangedBy, v.ChangeNote = s.cfg.AdminUser, strings.TrimSpace(r.FormValue("change_note"))
 	if v.ChangeNote == "" {
 		s.back(w, r, to, "Cần ghi nội dung thay đổi", false)
@@ -317,7 +296,7 @@ func (s *Server) adminPolicySave(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, to, "Chưa lưu: "+errText(err), false)
 		return
 	}
-	s.back(w, r, to, fmt.Sprintf("Đã lưu phiên bản v%d", n), true)
+	s.back(w, r, to, fmt.Sprintf("Đã lưu phiên bản v%d. Kết quả đề xuất cho khách cập nhật ngay.", n), true)
 }
 
 func (s *Server) adminSegments(w http.ResponseWriter, r *http.Request) {
@@ -490,4 +469,3 @@ func (s *Server) adminAudit(w http.ResponseWriter, r *http.Request) {
 	s.render(w, "admin_audit", d)
 }
 
-var _ = store.Counter{}
