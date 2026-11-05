@@ -195,7 +195,7 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 	}
 	data["Partners"] = partners
 	data["Posts"], _ = s.st.Posts(true, 4)
-	data["Eco"], data["Network"], data["Parent"] = store.Ecosystem, store.Network, store.Parent
+	data["Eco"], data["Parent"] = store.Ecosystem, store.Parent
 	data["Back"], data["Source"] = "/?"+profileQuery(p).Encode(), "trang-chu"
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		data["Flash"], data["FlashKind"] = msg, kind

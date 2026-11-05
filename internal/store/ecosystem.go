@@ -2,7 +2,7 @@ package store
 
 // 3Credit is a product of 3RDVN Technology (Công ty TNHH Công nghệ 3RDVN),
 // the same company that builds and operates 3RDHub Vietnam.
-// Source: 3rdhubvietnam.tech (organization data and partner list), 05/11/2026.
+// Source: 3rdvn.io.vn / 3rdhubvietnam.tech (organization data), 05/11/2026.
 
 // CompanyDefaults fill empty settings on startup. Values set by an admin are never overwritten.
 var CompanyDefaults = map[string]string{
@@ -24,7 +24,7 @@ var Parent = struct{ Name, Legal, Tagline, Desc, URL, Logo, Icon string }{
 	Name: "3RDVN Technology", Legal: "Công ty TNHH Công nghệ 3RDVN",
 	Tagline: "Connecting Resources. Accelerating Growth.",
 	Desc:    "Đối tác dịch vụ tài chính, công nghệ và vận hành. 3RDVN Technology xây dựng và vận hành các sản phẩm trong hệ sinh thái, trong đó có 3RDHub Vietnam và 3Credit.",
-	URL:     "https://3rdvn.io.vn", Logo: "/static/eco/3rdvn-logo.webp", Icon: "/static/eco/3rdvn-icon.webp",
+	URL:     "https://3rdvn.io.vn", Logo: "/static/eco/3rdvn-icon.webp", Icon: "/static/eco/3rdvn-icon.webp",
 }
 
 // Ecosystem lists the products of 3RDVN Technology shown on 3Credit.
@@ -41,22 +41,7 @@ var EcoServices = []struct{ Name, Desc string }{
 	{"Mail Server doanh nghiệp", "Email theo tên miền riêng"},
 }
 
-type NetworkPartner struct{ Name, Group, Logo string }
-
-// Network lists partners working with the 3RDVN ecosystem (affiliate networks, strategic partners).
-var Network = []NetworkPartner{
-	{"AccessTrade", "Đối tác affiliate", "/static/network/accesstrade.webp"},
-	{"HyperLead", "Đối tác affiliate", "/static/network/hyperlead.webp"},
-	{"Dinos", "Đối tác affiliate", "/static/network/dinos.webp"},
-	{"Permate", "Đối tác affiliate", "/static/network/permate.webp"},
-	{"Mobivision", "Đối tác affiliate", "/static/network/mobivision.webp"},
-	{"Hoàng Thiên Finance", "Đối tác chiến lược", "/static/network/hoangthien.webp"},
-	{"SAIGONBPO", "Đối tác vận hành", "/static/network/saigonbpo.webp"},
-	{"TinVay", "Đối tác", "/static/network/tinvay.webp"},
-}
-
-// SeedEcosystem is idempotent: fills missing logos, adds partners listed on
-// 3RDHub that 3Credit did not have yet, and fills empty company settings.
+// SeedEcosystem is idempotent: fills missing partner logos and empty company settings.
 func (s *Store) SeedEcosystem() error {
 	logos := map[string]string{
 		"lotte":    "/static/partners/lotte.webp",
@@ -73,15 +58,10 @@ func (s *Store) SeedEcosystem() error {
 	if _, err := s.DB.Exec(`UPDATE partners SET logo_path='/static/partners/fecredit.webp' WHERE id='fecredit' AND logo_path='/static/partners/fecredit.svg'`); err != nil {
 		return err
 	}
-	add := []struct{ id, name, legal, org, grp, conf, logo, web string }{
-		{"tnex", "Tnex by MSB", "Ngân hàng số của Ngân hàng TMCP Hàng Hải Việt Nam (MSB)", "Ngân hàng số", "A", "C", "/static/partners/tnex.webp", "https://tnex.com.vn"},
-		{"hoangthien", "Hoàng Thiên Finance", "Đối tác chiến lược của 3RDVN (pháp nhân cần cập nhật)", "Đối tác chiến lược", "A", "", "/static/partners/hoangthien.webp", "https://hoangthienfinance.vn"},
-	}
-	for _, p := range add {
-		if _, err := s.DB.Exec(`INSERT OR IGNORE INTO partners(id,name,legal_name,org_type,grp,legal_conf,logo_path,website) VALUES(?,?,?,?,?,?,?,?)`,
-			p.id, p.name, p.legal, p.org, p.grp, p.conf, p.logo, p.web); err != nil {
-			return err
-		}
+	// Remove partners that an earlier version copied from the 3RDHub partner list,
+	// unless an admin has since attached products to them.
+	if _, err := s.DB.Exec(`DELETE FROM partners WHERE id IN ('tnex','hoangthien') AND id NOT IN (SELECT partner_id FROM products)`); err != nil {
+		return err
 	}
 	for k, v := range CompanyDefaults {
 		if _, err := s.DB.Exec(`INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE settings.value=''`, k, v); err != nil {

@@ -36,10 +36,6 @@
       <div class="netlogos">{{range .Partners}}{{if .LogoPath}}<span class="nl" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy"></span>{{else}}<span class="nl"><b>{{.Name}}</b></span>{{end}}{{end}}</div>
     </section>
 
-    <section>
-      <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Đối tác trong hệ sinh thái</h2><p>Mạng lưới affiliate và đối tác chiến lược làm việc cùng 3RDVN.</p></div></div>
-      <div class="netlogos">{{range .Network}}<span class="nl" title="{{.Name}} · {{.Group}}"><img src="{{.Logo}}" alt="{{.Name}}" loading="lazy"></span>{{end}}</div>
-    </section>
   </div>
 </main>
 {{template "foot" .}}

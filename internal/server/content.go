@@ -19,7 +19,7 @@ import (
 func (s *Server) about(w http.ResponseWriter, r *http.Request) {
 	partners, _ := s.st.Partners()
 	d := s.base(r, "Giới thiệu 3Credit – sản phẩm của 3RDVN Technology")
-	d["Eco"], d["Services"], d["Network"], d["Partners"], d["Parent"] = store.Ecosystem, store.EcoServices, store.Network, partners, store.Parent
+	d["Eco"], d["Services"], d["Partners"], d["Parent"] = store.Ecosystem, store.EcoServices, partners, store.Parent
 	d["Description"] = "3Credit là sản phẩm so sánh tài chính thuộc hệ sinh thái 3RDVN Technology, cùng với 3RDHub Vietnam."
 	s.render(w, "about.html", d)
 }
