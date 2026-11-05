@@ -68,6 +68,7 @@ func main() {
 	srv, err := server.New(server.Config{
 		BaseURL: env("BASE_URL", "http://localhost:8080"), DataDir: dataDir, SessionSecret: sess,
 		AdminUser: os.Getenv("ADMIN_USER"), AdminPassword: os.Getenv("ADMIN_PASSWORD"),
+		TrustCF: os.Getenv("TRUST_CF") == "1",
 	}, st, tr, lr)
 	if err != nil {
 		log.Fatal(err)

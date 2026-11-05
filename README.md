@@ -53,6 +53,23 @@ Script tự làm các bước:
 
 > Truy cập qua IP là HTTP, chưa mã hóa. Dùng để chạy thử. Trước khi nhận thông tin khách thật, hãy gắn domain và bật HTTPS.
 
+## Gắn domain qua Cloudflare (HTTPS, không cần mở cổng)
+
+Dùng Cloudflare Tunnel: server tự kết nối ra Cloudflare, không cần cổng 80/443, IP server được ẩn.
+
+1. Thêm domain vào Cloudflare và đổi nameserver ở nhà đăng ký tên miền theo hướng dẫn của Cloudflare.
+2. Cloudflare → **Zero Trust → Networks → Tunnels → Create a tunnel** → chọn **Cloudflared** → đặt tên `3credit` → sao chép **token** (chuỗi dài sau `--token`).
+3. Ở bước **Public Hostname** của tunnel, thêm:
+   - `3credit.asia` → Service **HTTP** → URL `app:8080`
+   - `www.3credit.asia` → Service **HTTP** → URL `app:8080`
+4. Trên server chạy (thay `<token>`):
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo DOMAIN=3credit.asia CF_TUNNEL_TOKEN=<token> bash
+   ```
+5. Cloudflare → **SSL/TLS → Edge Certificates**: bật **Always Use HTTPS**.
+
+Từ đó web chạy ở `https://3credit.asia`, quản trị ở `https://3credit.asia/admin`. Truy cập bằng IP bị tắt. Token chỉ dán trên server, không gửi cho ai.
+
 ## Dùng hằng ngày (trang quản trị `/admin`)
 
 | Việc | Ở đâu |

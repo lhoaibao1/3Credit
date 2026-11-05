@@ -6,9 +6,28 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "${PORT:-80}:8080"
+      # BIND_ADDR=127.0.0.1 khi dùng Cloudflare Tunnel: web không mở ra Internet trực tiếp
+      - "${BIND_ADDR:-0.0.0.0}:${PORT:-80}:8080"
     volumes:
       - 3credit-data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Chỉ chạy khi COMPOSE_PROFILES=tunnel (deploy.sh tự bật khi có CF_TUNNEL_TOKEN).
+  # Trên Cloudflare, Public Hostname trỏ tới: HTTP  app:8080
+  cloudflared:
+    image: cloudflare/cloudflared:2024.12.2
+    container_name: 3credit-tunnel
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN:-}
+    depends_on:
+      - app
     logging:
       driver: json-file
       options:

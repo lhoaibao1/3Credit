@@ -3,6 +3,9 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/lhoaibao1/3Credit/main/deploy.sh | sudo bash
 #
+# Chạy với domain qua Cloudflare Tunnel (HTTPS, không cần mở cổng):
+#   curl -fsSL …/deploy.sh | sudo DOMAIN=3credit.asia CF_TUNNEL_TOKEN=<token> bash
+#
 # Chạy lại lệnh trên bất cứ lúc nào để cập nhật lên code mới nhất.
 # File .env (mật khẩu, khóa mã hóa) được giữ nguyên giữa các lần cập nhật.
 set -euo pipefail
@@ -11,6 +14,8 @@ REPO_URL="${REPO_URL:-https://github.com/lhoaibao1/3Credit.git}"
 BRANCH="${BRANCH:-main}"
 APP_DIR="${APP_DIR:-/opt/3credit}"
 WANT_PORT="${PORT:-}"   # cổng bạn chỉ định (nếu có)
+WANT_DOMAIN="${DOMAIN:-}"
+WANT_TOKEN="${CF_TUNNEL_TOKEN:-}"
 
 say()  { printf '\033[1;38;5;208m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mLỗi:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -62,7 +67,12 @@ PORT=80
 ENV
   NEW_INSTALL=1
 fi
+setenv() { if grep -q "^$1=" .env; then sed -i "s|^$1=.*|$1=$2|" .env; else printf '%s=%s\n' "$1" "$2" >> .env; fi; }
+[ -n "$WANT_DOMAIN" ] && setenv DOMAIN "$(echo "$WANT_DOMAIN" | tr 'A-Z' 'a-z' | sed -e 's|^https\?://||' -e 's|/.*$||')"
+[ -n "$WANT_TOKEN" ] && setenv CF_TUNNEL_TOKEN "$WANT_TOKEN"
 set -a; . ./.env; set +a
+DOMAIN="${DOMAIN:-}"; CF_TUNNEL_TOKEN="${CF_TUNNEL_TOKEN:-}"
+if [ -n "$CF_TUNNEL_TOKEN" ] && [ -z "$DOMAIN" ]; then fail "Đã có CF_TUNNEL_TOKEN nhưng thiếu DOMAIN (vd. DOMAIN=3credit.asia)."; fi
 [ -n "$WANT_PORT" ] && PORT="$WANT_PORT"
 PORT="${PORT:-80}"
 
@@ -85,11 +95,24 @@ if port_busy "$PORT"; then
   PORT="$NEWP"
 fi
 BASE_URL="http://$PUBLIC_IP"; [ "$PORT" = "80" ] || BASE_URL="$BASE_URL:$PORT"
-sed -i -e "s|^PORT=.*|PORT=$PORT|" -e "s|^BASE_URL=.*|BASE_URL=$BASE_URL|" .env
-export PORT BASE_URL
+if [ -n "$DOMAIN" ]; then
+  BASE_URL="https://$DOMAIN"
+  setenv TRUST_CF 1                       # lấy IP khách thật từ header của Cloudflare
+fi
+if [ -n "$CF_TUNNEL_TOKEN" ]; then
+  setenv COMPOSE_PROFILES tunnel          # chạy thêm container cloudflared
+  setenv BIND_ADDR 127.0.0.1              # web chỉ nghe nội bộ: không vào thẳng bằng IP được
+  BIND_ADDR=127.0.0.1; COMPOSE_PROFILES=tunnel
+else
+  setenv COMPOSE_PROFILES ""
+  setenv BIND_ADDR 0.0.0.0
+  BIND_ADDR=0.0.0.0; COMPOSE_PROFILES=""
+fi
+setenv PORT "$PORT"; setenv BASE_URL "$BASE_URL"
+export PORT BASE_URL BIND_ADDR COMPOSE_PROFILES
 
 # 5. Mở cổng firewall nếu đang bật ufw
-if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+if [ "$BIND_ADDR" != "127.0.0.1" ] && command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
   ufw allow "$PORT"/tcp >/dev/null && say "Đã mở cổng $PORT trên ufw."
 fi
 
@@ -167,11 +190,20 @@ else
 fi
 
 URL="$BASE_URL"
+if [ -n "$CF_TUNNEL_TOKEN" ]; then
+  sleep 3
+  if docker compose logs --tail 40 cloudflared 2>/dev/null | grep -qi "Registered tunnel connection"; then
+    TUNNEL_MSG="đã kết nối Cloudflare"
+  else
+    TUNNEL_MSG="CHƯA kết nối được – xem: cd $APP_DIR && docker compose logs cloudflared"
+  fi
+fi
 echo
 say "3Credit đã chạy!"
 echo "    Trang khách : $URL"
 echo "    Quản trị    : $URL/admin"
 echo "    Tài khoản   : $ADMIN_USER"
+[ -n "$CF_TUNNEL_TOKEN" ] && echo "    Tunnel      : $TUNNEL_MSG"
 if [ "${NEW_INSTALL:-0}" = 1 ]; then
   echo "    Mật khẩu    : $ADMIN_PASSWORD   (lưu lại ngay, xem lại trong $APP_DIR/.env)"
 else
@@ -184,4 +216,4 @@ echo "    Cập nhật ngay   : sudo $APP_DIR/update.sh"
 echo "    Xem log   : cd $APP_DIR && docker compose logs -f"
 echo "    Dừng      : cd $APP_DIR && docker compose down"
 echo
-echo "    Lưu ý: đang chạy HTTP qua IP, chưa mã hóa. Khi có domain hãy bật HTTPS trước khi nhận khách thật."
+[ -n "$DOMAIN" ] || echo "    Lưu ý: đang chạy HTTP qua IP, chưa mã hóa. Khi có domain hãy bật HTTPS trước khi nhận khách thật."

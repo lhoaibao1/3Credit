@@ -37,6 +37,7 @@ type Config struct {
 	SessionSecret string
 	AdminUser     string
 	AdminPassword string
+	TrustCF       bool // behind Cloudflare: read the visitor IP from CF-Connecting-IP
 }
 
 type Server struct {
@@ -128,6 +129,9 @@ func (s *Server) secure(h http.Handler) http.Handler {
 		hd.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		hd.Set("X-Frame-Options", "DENY")
 		hd.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+		if strings.HasPrefix(s.cfg.BaseURL, "https://") {
+			hd.Set("Strict-Transport-Security", "max-age=31536000")
+		}
 		h.ServeHTTP(w, r)
 	})
 }

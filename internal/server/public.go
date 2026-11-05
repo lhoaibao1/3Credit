@@ -265,7 +265,12 @@ func device(ua string) string {
 	return "desktop"
 }
 
-func clientIP(r *http.Request) string {
+func (s *Server) clientIP(r *http.Request) string {
+	if s.cfg.TrustCF {
+		if ip := strings.TrimSpace(r.Header.Get("CF-Connecting-IP")); ip != "" && len(ip) <= 45 {
+			return ip
+		}
+	}
 	host := r.RemoteAddr
 	if i := strings.LastIndex(host, ":"); i > 0 {
 		host = host[:i]
@@ -286,7 +291,7 @@ func (s *Server) goClick(w http.ResponseWriter, r *http.Request) {
 	}
 	clickID, dest, err := s.tr.Click(o, tracking.ClickMeta{
 		Session: sid(r), Source: r.URL.Query().Get("utm_source"), Medium: r.URL.Query().Get("utm_medium"),
-		Landing: landing, Device: device(r.UserAgent()), IP: clientIP(r),
+		Landing: landing, Device: device(r.UserAgent()), IP: s.clientIP(r),
 	})
 	if err != nil {
 		log.Printf("click %s: %v", o.Campaign.ID, err)
