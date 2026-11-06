@@ -17,21 +17,6 @@
 <ul><li>Khai thông tin trung thực.</li><li>Đọc kỹ hợp đồng, đặc biệt là tổng chi phí (lãi và phí), trước khi ký.</li><li>Không dùng 3Credit cho mục đích gian lận.</li></ul>
 <h2>5. Liên hệ</h2>
 <p>{{$co}}{{if .S.address}}, {{.S.address}}{{end}}{{if .S.hotline}}. Hotline: {{.S.hotline}}{{end}}{{if .S.email}}. Email: {{.S.email}}{{end}}.</p>
-{{else if eq .Page "bao-mat"}}
-<h2>1. Bên kiểm soát dữ liệu</h2>
-<p>{{$co}}{{if .S.tax_id}} (mã số doanh nghiệp {{.S.tax_id}}){{end}} chịu trách nhiệm xử lý dữ liệu cá nhân bạn cung cấp trên 3Credit, theo Luật Bảo vệ dữ liệu cá nhân và các văn bản hướng dẫn.</p>
-<h2>2. Dữ liệu thu thập và mục đích</h2>
-<ul>
-<li><strong>Hồ sơ tìm kiếm</strong> (số tiền, kỳ hạn, tuổi, nghề, khoảng thu nhập, lịch sử tín dụng tự khai): để đối chiếu sản phẩm. Không gắn với danh tính của bạn; lưu ẩn danh để cải thiện đề xuất.</li>
-<li><strong>Họ tên, số điện thoại</strong> khi bạn gửi yêu cầu tư vấn: để 3Credit liên hệ tư vấn. Chỉ thu khi bạn đánh dấu đồng ý.</li>
-<li><strong>Dữ liệu kỹ thuật</strong> (cookie phiên, mã theo dõi lượt bấm): để vận hành website, chống gian lận và đối soát với đối tác. Liên kết sang đối tác chỉ chứa mã theo dõi, không chứa tên, số điện thoại hay thông tin tín dụng.</li>
-</ul>
-<h2>3. Chia sẻ dữ liệu</h2>
-<p>3Credit <strong>không bán</strong> dữ liệu cá nhân. Thông tin liên hệ chỉ được chuyển cho một đối tác cụ thể khi bạn đồng ý riêng cho đối tác đó. 3Credit không tự tra cứu thông tin tín dụng (CIC) của bạn.</p>
-<h2>4. Bảo vệ và lưu trữ</h2>
-<p>Họ tên và số điện thoại được mã hóa khi lưu, chỉ người được phân quyền mới xem được, và mọi lần xem, xuất dữ liệu đều được ghi nhật ký. Dữ liệu được lưu trong thời gian cần thiết cho mục đích đã nêu hoặc theo yêu cầu của pháp luật.</p>
-<h2>5. Quyền của bạn</h2>
-<p>Bạn có quyền được biết, truy cập, chỉnh sửa, rút lại đồng ý và yêu cầu xóa dữ liệu. Gửi yêu cầu tại <a href="/xoa-du-lieu">trang yêu cầu xóa dữ liệu</a>{{if .S.dpo_email}} hoặc email {{.S.dpo_email}}{{end}}.</p>
 {{else if eq .Page "tieu-chi-doi-tac"}}
 <p>3Credit chỉ mở đăng ký cho một sản phẩm khi đối tác đáp ứng các tiêu chí sau:</p>
 <ul>

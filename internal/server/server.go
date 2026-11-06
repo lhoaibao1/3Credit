@@ -86,6 +86,9 @@ func (s *Server) routes() {
 	}
 	s.mux.HandleFunc("POST /xoa-du-lieu", s.deletionSubmit)
 	s.mux.HandleFunc("GET /gioi-thieu", s.about)
+	s.mux.HandleFunc("GET /chinh-sach", s.policyIndex)
+	s.mux.Handle("GET /bao-mat", http.RedirectHandler("/chinh-sach/chinh-sach-bao-mat", http.StatusMovedPermanently))
+	s.mux.HandleFunc("GET /chinh-sach/{slug}", s.policyPage)
 
 	a := func(h http.HandlerFunc) http.Handler { return s.admin(h) }
 	s.mux.Handle("GET /admin/inquiries", a(s.adminInquiries))

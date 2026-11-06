@@ -58,7 +58,7 @@
   <div class="aform">{{range .Keys}}<div class="fld"><label for="s_{{.Key}}">{{.Label}}</label><input id="s_{{.Key}}" name="{{.Key}}" type="text" value="{{index $.Vals .Key}}" maxlength="300"></div>{{end}}</div>
   <button class="btn btn-pri" type="submit" style="margin-top:14px">Lưu</button>
 </form>
-<div class="panel"><h3>Trang pháp lý</h3><p class="note">Nội dung các trang <a href="/dieu-khoan" target="_blank" style="color:var(--or-ink)">Điều khoản</a>, <a href="/bao-mat" target="_blank" style="color:var(--or-ink)">Chính sách dữ liệu</a>, <a href="/tieu-chi-doi-tac" target="_blank" style="color:var(--or-ink)">Tiêu chí đối tác</a> là bản mẫu. Nên nhờ luật sư rà soát trước khi chạy quảng cáo.</p></div>
+<div class="panel"><h3>Trang pháp lý</h3><p class="note">Nội dung các trang <a href="/dieu-khoan" target="_blank" style="color:var(--or-ink)">Điều khoản</a>, <a href="/chinh-sach/chinh-sach-bao-mat" target="_blank" style="color:var(--or-ink)">Chính sách dữ liệu</a>, <a href="/tieu-chi-doi-tac" target="_blank" style="color:var(--or-ink)">Tiêu chí đối tác</a> là bản mẫu. Nên nhờ luật sư rà soát trước khi chạy quảng cáo.</p></div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_deletions"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}

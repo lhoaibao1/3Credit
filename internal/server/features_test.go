@@ -86,7 +86,7 @@ func TestContentAndLegalPages(t *testing.T) {
 	if err := e.st.SeedPosts(); err != nil {
 		t.Fatal(err)
 	}
-	for _, p := range []string{"/kien-thuc", "/kien-thuc/no-xau-la-gi-5-nhom-no-va-cach-xu-ly", "/dieu-khoan", "/bao-mat", "/tieu-chi-doi-tac", "/xoa-du-lieu"} {
+	for _, p := range []string{"/kien-thuc", "/kien-thuc/no-xau-la-gi-5-nhom-no-va-cach-xu-ly", "/dieu-khoan", "/chinh-sach", "/chinh-sach/chinh-sach-bao-mat", "/chinh-sach/quy-che-hoat-dong", "/tieu-chi-doi-tac", "/xoa-du-lieu"} {
 		if code, _ := e.get(t, p, false); code != 200 {
 			t.Errorf("%s = %d", p, code)
 		}

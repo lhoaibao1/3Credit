@@ -145,7 +145,6 @@ func (s *Server) inquirySubmit(w http.ResponseWriter, r *http.Request) {
 
 var legalPages = map[string]string{
 	"/dieu-khoan":       "Điều khoản sử dụng",
-	"/bao-mat":          "Chính sách bảo vệ dữ liệu cá nhân",
 	"/tieu-chi-doi-tac": "Tiêu chí lựa chọn đối tác",
 	"/xoa-du-lieu":      "Yêu cầu xóa dữ liệu cá nhân",
 }
