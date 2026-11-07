@@ -154,18 +154,37 @@ func TestCampaignClickPostbackFlow(t *testing.T) {
 	if !strings.Contains(body, `href="/go/C-SHF-01"`) {
 		t.Fatal("active campaign should show register button")
 	}
-	_, inter := e.get(t, "/go/C-SHF-01", false)
-	cm := regexp.MustCompile(`aff_sub=(clk_[0-9a-f]+)`).FindStringSubmatch(inter)
-	if cm == nil {
-		t.Fatalf("click id not in outbound URL")
+	// clicking Register goes straight to the partner (no interstitial page), carrying only the tracking code
+	goTo := func() *url.URL {
+		resp, err := e.cli.Get(e.ts.URL + "/go/C-SHF-01")
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		if resp.StatusCode != http.StatusSeeOther {
+			t.Fatalf("/go status = %d, want 303 to the partner", resp.StatusCode)
+		}
+		u, err := url.Parse(resp.Header.Get("Location"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return u
 	}
-	clickID := cm[1]
-	if strings.Contains(inter, "aff_sub=clk") && (strings.Contains(inter, "phone") && strings.Contains(inter, "offer=9&amp;phone")) {
-		t.Fatal("PII in URL")
+	dest := goTo()
+	if dest.Host != "partner.example" || dest.Query().Get("offer") != "9" {
+		t.Fatalf("redirect target = %s", dest)
+	}
+	clickID := dest.Query().Get("aff_sub")
+	if !strings.HasPrefix(clickID, "clk_") {
+		t.Fatalf("click id not in outbound URL: %s", dest)
+	}
+	for k := range dest.Query() {
+		if k == "phone" || k == "name" || k == "email" {
+			t.Fatal("PII in URL")
+		}
 	}
 	// dedupe: same session → same click id
-	_, inter2 := e.get(t, "/go/C-SHF-01", false)
-	if !strings.Contains(inter2, clickID) {
+	if again := goTo(); again.Query().Get("aff_sub") != clickID {
 		t.Fatal("click should be deduplicated within the window")
 	}
 	// postback: bad signature rejected, good one recorded once

@@ -3,7 +3,6 @@ package server
 import (
 	"database/sql"
 	"errors"
-	"html/template"
 	"log"
 	"net/http"
 	"net/url"
@@ -337,7 +336,7 @@ func (s *Server) goClick(w http.ResponseWriter, r *http.Request) {
 	if ref != nil {
 		landing = ref.Path
 	}
-	clickID, dest, err := s.tr.Click(o, tracking.ClickMeta{
+	_, dest, err := s.tr.Click(o, tracking.ClickMeta{
 		Session: sid(r), Source: r.URL.Query().Get("utm_source"), Medium: r.URL.Query().Get("utm_medium"),
 		Landing: landing, Device: device(r.UserAgent()), IP: s.clientIP(r),
 	})
@@ -346,10 +345,10 @@ func (s *Server) goClick(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/#tim", http.StatusSeeOther)
 		return
 	}
-	data := s.base(r, "Chuyển sang "+o.Partner.Name+" – 3Credit")
-	data["O"], data["ClickID"], data["URL"] = o, clickID, template.URL(dest)
+	// Straight to the partner: the click is already recorded, and the link carries only the tracking code.
 	w.Header().Set("Cache-Control", "no-store")
-	s.render(w, "go.html", data)
+	w.Header().Set("Referrer-Policy", "no-referrer")
+	http.Redirect(w, r, dest, http.StatusSeeOther)
 }
 
 func (s *Server) leadSubmit(w http.ResponseWriter, r *http.Request) {
