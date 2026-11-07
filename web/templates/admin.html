@@ -8,6 +8,7 @@
   <div class="kpi"><small>Conversion · Hoa hồng</small><b>{{.K.Conversions}} · {{vnd .K.Commission}}</b><span>Tỷ lệ chuyển đổi {{.K.CR}}</span></div>
 </div>
 <section class="panel"><h3>Việc cần làm</h3><ul class="todo">
+  <li><span class="todo-n{{if .K.NoSeg}} warn{{end}}">{{.K.NoSeg}}</span><span>chiến dịch đang chạy nhưng chưa chọn nhóm khách (khách không thấy)</span><a class="btn btn-sm" href="/admin/campaigns">Mở chiến dịch</a></li>
   <li><span class="todo-n{{if .K.NoURL}} warn{{end}}">{{.K.NoURL}}/{{.K.Campaigns}}</span><span>chiến dịch chưa gắn tracking URL</span><a class="btn btn-sm" href="/admin/campaigns">Mở chiến dịch</a></li>
   <li><span class="todo-n{{if .K.LowData}} warn{{end}}">{{.K.LowData}}</span><span>chiến dịch có dưới 50% thông tin sản phẩm được xác minh</span><a class="btn btn-sm" href="/admin/partners">Sửa chính sách</a></li>
   <li><span class="todo-n">{{.K.CreditVerified}}/{{.K.Partners}}</span><span>đối tác có điều kiện CIC/nợ xấu đã xác minh</span><a class="btn btn-sm" href="/admin/partners">Xem đối tác</a></li>
@@ -36,11 +37,12 @@
   <li>Gạt công tắc <b>Bật</b>. Sản phẩm hiện cho khách cùng nút “Đăng ký” ngay, không cần khởi động lại. Chiến dịch chưa bật thì khách không thấy.</li>
 </ol></details>
 <section class="panel flush"><div class="tw" tabindex="0" role="region" aria-label="Bảng danh sách chiến dịch"><table class="at">
-<thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th class="num">Ưu tiên</th><th class="c">Tracking</th><th class="c">Postback</th><th class="c">Lead</th><th>Dữ liệu xác minh</th><th class="c">Bật/tắt</th><th class="r"><span class="sr">Thao tác</span></th></tr></thead>
+<thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th>Nhóm khách</th><th class="num">Ưu tiên</th><th class="c">Tracking</th><th class="c">Postback</th><th class="c">Lead</th><th>Dữ liệu xác minh</th><th class="c">Bật/tắt</th><th class="r"><span class="sr">Thao tác</span></th></tr></thead>
 <tbody>{{range .Offers}}<tr>
   <td><code>{{.Campaign.ID}}</code></td>
   <td><div class="ch">{{template "logo" .Partner}}<div><b>{{.Partner.Name}}</b><small>{{.Campaign.Name}}</small></div></div></td>
   <td>{{template "cst" .Campaign.Status}}</td>
+  <td>{{if .Campaign.TargetSegments}}<small>{{range $i,$g := .Campaign.TargetSegments}}{{if $i}} · {{end}}{{$g}}{{end}}</small>{{else}}<span class="badge warn" title="Chưa chọn nhóm khách nên khách không thấy chiến dịch này">Chưa chọn</span>{{end}}</td>
   <td class="num">{{.Campaign.Priority}}</td>
   <td class="c">{{if .Campaign.TrackingURL}}<span class="yes" title="Đã gắn">✓</span>{{else}}<span class="c-muted">—</span>{{end}}</td>
   <td class="c">{{if .Campaign.PostbackSecret}}<span class="yes" title="Đã đặt">✓</span>{{else}}<span class="c-muted">—</span>{{end}}</td>
@@ -84,7 +86,7 @@
     <div class="fld"><label for="ctcap">Lead cap tổng</label><input id="ctcap" name="total_lead_cap" type="number" min="0" value="{{$c.TotalLeadCap}}"></div>
   </div>
   <h3 class="fsec">Nhắm mục tiêu</h3>
-  <div class="fld"><span class="lb">Segment mục tiêu (để trống = mọi segment)</span><div class="seg">{{range .Segments}}<label class="cmpchk"><input type="checkbox" name="segments" value="{{.ID}}" {{if has $c.TargetSegments .ID}}checked{{end}}> {{.ID}} · {{.Name}}</label>{{end}}</div></div>
+  <div class="fld"><span class="lb">Nhóm khách mục tiêu: chọn ít nhất 1. Chưa chọn thì khách không thấy chiến dịch này</span><div class="seg">{{range .Segments}}<label class="cmpchk"><input type="checkbox" name="segments" value="{{.ID}}" {{if has $c.TargetSegments .ID}}checked{{end}}> {{.ID}} · {{.Name}}</label>{{end}}</div></div>
   <div class="fbar"><button class="btn btn-pri" type="submit">Lưu chiến dịch</button><a class="btn" href="/admin/campaigns">Hủy</a></div>
 </form>
 {{if $c.PostbackSecret}}<section class="panel"><h3>Postback cho đối tác</h3><p class="note">Gửi tới <code>{{.Base}}/api/postback/&lt;network&gt;?click_id=…&amp;conversion_id=…&amp;status=pending|approved|rejected&amp;payout=…&amp;sig=…</code>, với <code>sig = HMAC_SHA256(secret, "click_id|conversion_id|status|payout")</code> dạng hex.</p></section>{{end}}

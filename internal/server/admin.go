@@ -36,7 +36,7 @@ type kpis struct {
 	Campaigns, Partners, Live, Clicks, Leads, Searches, Conversions int
 	Commission                                                      float64
 	CR                                                              string
-	NoURL, LowData, CreditVerified, NoLogo, NoSecret                int
+	NoURL, NoSeg, LowData, CreditVerified, NoLogo, NoSecret         int
 	Inquiries, NewInquiries                                         int
 }
 
@@ -55,6 +55,9 @@ func (s *Server) adminOverview(w http.ResponseWriter, r *http.Request) {
 			k.Live++
 			if o.Campaign.PostbackSecret == "" {
 				k.NoSecret++
+			}
+			if len(o.Campaign.TargetSegments) == 0 {
+				k.NoSeg++
 			}
 		}
 		if o.Campaign.TrackingURL == "" {

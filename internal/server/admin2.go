@@ -220,6 +220,12 @@ func (s *Server) adminCampaignStatus(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/campaigns", msg, false)
 		return
 	}
+	if r.FormValue("status") == "active" {
+		if c, err := s.st.Campaign(id); err == nil && len(c.TargetSegments) == 0 {
+			s.back(w, r, "/admin/campaigns", "Đã bật "+id+", nhưng chưa chọn nhóm khách mục tiêu nên khách chưa thấy. Bấm Sửa, mục Nhắm mục tiêu, chọn ít nhất 1 nhóm.", false)
+			return
+		}
+	}
 	s.back(w, r, "/admin/campaigns", "Đã chuyển "+id+" sang "+r.FormValue("status"), true)
 }
 

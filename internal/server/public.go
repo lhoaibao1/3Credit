@@ -194,9 +194,11 @@ func (s *Server) results(r *http.Request, p model.Profile, logIt bool) (map[stri
 	}, nil
 }
 
+// targets reports whether a campaign is aimed at one of the customer's segments.
+// A campaign with no target segment chosen in the CMS is not set up yet, so nobody sees it.
 func targets(campaignSegs, profileSegs []string) bool {
 	if len(campaignSegs) == 0 {
-		return true
+		return false
 	}
 	for _, a := range campaignSegs {
 		for _, b := range profileSegs {

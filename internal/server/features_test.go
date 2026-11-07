@@ -139,7 +139,7 @@ func TestPolicyFormAndQuickToggle(t *testing.T) {
 		t.Fatalf("version = %d, want 2", v)
 	}
 	// customers only see campaigns switched on in the CMS
-	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff?offer=1' WHERE id='C-SFI-01'`)
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff?offer=1', target_segments='["SEG01","SEG02","SEG03","SEG04","SEG05","SEG06","SEG07","SEG08","SEG09"]' WHERE id='C-SFI-01'`)
 	_, res := e.get(t, "/api/match?need=cash_loan&amount=50&term=24&income=12", false)
 	i := strings.Index(res, "Từ 2%/tháng")
 	if i < 0 {
@@ -170,7 +170,7 @@ func TestCustomersOnlySeeCampaignsSwitchedOn(t *testing.T) {
 	if !strings.Contains(none, "0 sản phẩm được đối chiếu") {
 		t.Fatal("summary must count only visible products")
 	}
-	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff' WHERE id IN ('C-SFI-01','C-VIB-01')`)
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff', target_segments='["SEG01","SEG02","SEG03","SEG04","SEG05","SEG06","SEG07","SEG08","SEG09"]' WHERE id IN ('C-SFI-01','C-VIB-01')`)
 	_, two := e.get(t, "/api/match?need=cash_loan&amount=50&term=24", false)
 	if n := strings.Count(two, "<article"); n != 2 || !strings.Contains(two, "2 sản phẩm được đối chiếu") {
 		t.Fatalf("want exactly the 2 switched-on products, got %d cards", n)
@@ -183,5 +183,26 @@ func TestCustomersOnlySeeCampaignsSwitchedOn(t *testing.T) {
 	_, one := e.get(t, "/api/match?need=cash_loan&amount=50&term=24", false)
 	if n := strings.Count(one, "<article"); n != 1 {
 		t.Fatalf("paused campaign still shown (%d cards)", n)
+	}
+}
+
+func TestTargetSegmentsDecideWhoSeesACampaign(t *testing.T) {
+	e := setup(t)
+	has := func(q string) bool {
+		_, b := e.get(t, "/api/match?need=cash_loan&amount=50&term=24&income=12&"+q, false)
+		return strings.Contains(b, `href="/go/C-SFI-01"`)
+	}
+	// switched on, but no target group chosen yet: nobody sees it
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff', target_segments='[]' WHERE id='C-SFI-01'`)
+	if has("credit=bad_unsettled") || has("credit=good") {
+		t.Fatal("a campaign with no target group must stay hidden")
+	}
+	// aimed at the bad-debt group: only customers in that group see it
+	e.st.DB.Exec(`UPDATE campaigns SET target_segments='["SEG07"]' WHERE id='C-SFI-01'`)
+	if !has("credit=bad_unsettled") {
+		t.Fatal("bad-debt customer should see the campaign aimed at SEG07")
+	}
+	if has("credit=good") {
+		t.Fatal("a customer outside the target group must not see it")
 	}
 }

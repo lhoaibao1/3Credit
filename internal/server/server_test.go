@@ -146,7 +146,7 @@ func TestCampaignClickPostbackFlow(t *testing.T) {
 		t.Fatal("csrf token not found")
 	}
 	form := url.Values{"csrf": {m[1]}, "name": {"Vay tín chấp theo lương"}, "status": {"active"}, "priority": {"2"},
-		"tracking_url": {"https://partner.example/aff?offer=9"}, "subid_param": {"aff_sub"}, "postback_secret": {"topsecret"}}
+		"segments": {"SEG01", "SEG02", "SEG03", "SEG04", "SEG05", "SEG06", "SEG07", "SEG08", "SEG09"}, "tracking_url": {"https://partner.example/aff?offer=9"}, "subid_param": {"aff_sub"}, "postback_secret": {"topsecret"}}
 	if resp := e.post(t, "/admin/campaigns/C-SHF-01", form, true); resp.StatusCode != http.StatusSeeOther {
 		t.Fatalf("save: %d", resp.StatusCode)
 	}
