@@ -138,6 +138,8 @@ func TestPolicyFormAndQuickToggle(t *testing.T) {
 	if v != 2 {
 		t.Fatalf("version = %d, want 2", v)
 	}
+	// customers only see campaigns switched on in the CMS
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff?offer=1' WHERE id='C-SFI-01'`)
 	_, res := e.get(t, "/api/match?need=cash_loan&amount=50&term=24&income=12", false)
 	i := strings.Index(res, "Từ 2%/tháng")
 	if i < 0 {
@@ -156,5 +158,30 @@ func TestPolicyFormAndQuickToggle(t *testing.T) {
 	e.post(t, "/admin/products/new", url.Values{"csrf": {tok}, "partner_id": {"vib"}, "name": {"Thẻ tín dụng VIB"}, "category": {"credit_card"}, "campaign_id": {"C-VIB-CARD"}}, true)
 	if n := e.st.Count(`SELECT COUNT(*) FROM campaigns WHERE id='C-VIB-CARD' AND status='draft'`); n != 1 {
 		t.Fatal("new campaign not created as draft")
+	}
+}
+
+func TestCustomersOnlySeeCampaignsSwitchedOn(t *testing.T) {
+	e := setup(t)
+	_, none := e.get(t, "/api/match?need=cash_loan&amount=50&term=24", false)
+	if strings.Contains(none, "<article") || !strings.Contains(none, "Chưa tìm thấy sản phẩm") {
+		t.Fatal("with no campaign switched on, results must be empty")
+	}
+	if !strings.Contains(none, "0 sản phẩm được đối chiếu") {
+		t.Fatal("summary must count only visible products")
+	}
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff' WHERE id IN ('C-SFI-01','C-VIB-01')`)
+	_, two := e.get(t, "/api/match?need=cash_loan&amount=50&term=24", false)
+	if n := strings.Count(two, "<article"); n != 2 || !strings.Contains(two, "2 sản phẩm được đối chiếu") {
+		t.Fatalf("want exactly the 2 switched-on products, got %d cards", n)
+	}
+	if strings.Contains(two, `href="/go/C-FEC-01"`) {
+		t.Fatal("a campaign that is off must not appear")
+	}
+	// paused again → gone
+	e.st.DB.Exec(`UPDATE campaigns SET status='paused' WHERE id='C-VIB-01'`)
+	_, one := e.get(t, "/api/match?need=cash_loan&amount=50&term=24", false)
+	if n := strings.Count(one, "<article"); n != 1 {
+		t.Fatalf("paused campaign still shown (%d cards)", n)
 	}
 }

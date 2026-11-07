@@ -45,8 +45,12 @@ func TestInsuranceProfile(t *testing.T) {
 	if p = ParseProfile(url.Values{"social_ins": {"x"}, "life_ins": {"forever"}}); p.SocialIns != "" || p.LifeIns != "" {
 		t.Fatalf("unknown codes must be ignored: %+v", p)
 	}
-	if Label("gt12") != "BHXH trên 12 tháng" || Label("lt1y") != "BHNT đã đóng dưới 1 năm" {
+	if Label("social_ins:gt12") != "BHXH trên 12 tháng" || Label("life_ins:lt1y") != "BHNT đã đóng dưới 1 năm" {
 		t.Error("insurance labels")
+	}
+	// "none" is also a credit-history code: insurance must not borrow its label ("Chưa từng vay")
+	if Label("social_ins:none") != "Không tham gia BHXH" || Label("life_ins:none") != "Không có BHNT" || Label("none") != "Chưa từng vay" || Label("social_ins:") != "" {
+		t.Errorf("insurance 'none' labels: %q %q %q", Label("social_ins:none"), Label("life_ins:none"), Label("none"))
 	}
 }
 

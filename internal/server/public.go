@@ -149,14 +149,10 @@ func (s *Server) results(r *http.Request, p model.Profile, logIt bool) (map[stri
 		segIDs[i] = g.ID
 	}
 	now := s.now()
-	// customers see draft/rejected/expired campaigns never; paused never.
+	// Customers only see what the admin switched on in the CMS (active, with a tracking link, inside its dates).
 	var visible []model.Offer
 	for _, o := range offers {
-		st := o.Campaign.Status
-		if st != model.StatusActive && st != model.StatusPending {
-			continue
-		}
-		if o.Campaign.EndAt != nil && now.After(*o.Campaign.EndAt) {
+		if !o.Campaign.Live(now) {
 			continue
 		}
 		if !targets(o.Campaign.TargetSegments, segIDs) {
@@ -399,8 +395,18 @@ func (s *Server) fail(w http.ResponseWriter, err error) {
 }
 
 // Label returns the Vietnamese label for a profile code (need, job, region, credit…).
+// Insurance codes share values with other lists ("none"), so they are looked up as "social_ins:none" / "life_ins:none".
 func Label(code string) string {
-	for _, list := range [][]opt{needs, regions, legacyRegions, jobs, channels, credits, urgencies, vehicles, socialIns, lifeIns} {
+	if k, v, ok := strings.Cut(code, ":"); ok {
+		list := map[string][]opt{"social_ins": socialIns, "life_ins": lifeIns}[k]
+		for _, o := range list {
+			if v != "" && o.V == v {
+				return o.L
+			}
+		}
+		return ""
+	}
+	for _, list := range [][]opt{needs, regions, legacyRegions, jobs, channels, credits, urgencies, vehicles} {
 		for _, o := range list {
 			if o.V == code && code != "" {
 				return o.L

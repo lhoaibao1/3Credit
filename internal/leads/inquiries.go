@@ -163,7 +163,7 @@ func (r *Router) ExportCSV(w io.Writer, status string, label func(string) string
 	for _, i := range list {
 		cw.Write([]string{
 			fmt.Sprint(i.ID), i.CreatedAt.Local().Format("02/01/2006 15:04"), safeCell(i.In.Name), "'" + i.In.Phone, label(i.In.Need),
-			fmt.Sprintf("%.0f", i.In.Amount/1e6), fmt.Sprint(i.In.Term), label(i.In.Job), fmt.Sprintf("%g", i.In.Income), label(i.In.Region), label(i.In.Credit), label(i.In.SocialIns), label(i.In.LifeIns),
+			fmt.Sprintf("%.0f", i.In.Amount/1e6), fmt.Sprint(i.In.Term), label(i.In.Job), fmt.Sprintf("%g", i.In.Income), label(i.In.Region), label(i.In.Credit), label("social_ins:"+i.In.SocialIns), label("life_ins:"+i.In.LifeIns),
 			safeCell(i.In.Message), i.Campaign, i.Source, i.Status, safeCell(i.Note),
 		})
 	}
