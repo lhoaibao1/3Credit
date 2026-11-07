@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/threecredit/platform/internal/db"
 	"github.com/threecredit/platform/internal/leads"
@@ -25,7 +26,10 @@ type env struct {
 	cli *http.Client
 	st  *store.Store
 	lr  *leads.Router
+	tok string // CMS session token for admin requests
 }
+
+func (e *env) auth(req *http.Request) { req.AddCookie(&http.Cookie{Name: cmsCookie, Value: e.tok}) }
 
 func setup(t *testing.T) *env {
 	t.Helper()
@@ -48,14 +52,21 @@ func setup(t *testing.T) *env {
 	t.Cleanup(ts.Close)
 	jar, _ := cookiejar.New(nil)
 	cli := &http.Client{Jar: jar, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	return &env{ts: ts, cli: cli, st: st, lr: lr}
+	if err := st.CreateCMSUser("admin", "test-password-1"); err != nil {
+		t.Fatal(err)
+	}
+	tok, err := st.CMSLogin("admin", "test-password-1", time.Hour)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return &env{ts: ts, cli: cli, st: st, lr: lr, tok: tok}
 }
 
 func (e *env) get(t *testing.T, path string, admin bool) (int, string) {
 	t.Helper()
 	req, _ := http.NewRequest("GET", e.ts.URL+path, nil)
 	if admin {
-		req.SetBasicAuth("admin", "pw")
+		e.auth(req)
 	}
 	resp, err := e.cli.Do(req)
 	if err != nil {
@@ -71,7 +82,7 @@ func (e *env) post(t *testing.T, path string, form url.Values, admin bool) *http
 	req, _ := http.NewRequest("POST", e.ts.URL+path, strings.NewReader(form.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if admin {
-		req.SetBasicAuth("admin", "pw")
+		e.auth(req)
 	}
 	resp, err := e.cli.Do(req)
 	if err != nil {
@@ -115,7 +126,7 @@ func TestCustomerPages(t *testing.T) {
 
 func TestAdminRequiresAuth(t *testing.T) {
 	e := setup(t)
-	if code, _ := e.get(t, "/admin", false); code != http.StatusUnauthorized {
+	if code, _ := e.get(t, "/admin", false); code != http.StatusSeeOther {
 		t.Fatalf("got %d", code)
 	}
 	if code, _ := e.get(t, "/admin", true); code != 200 {

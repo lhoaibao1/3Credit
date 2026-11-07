@@ -1,21 +1,25 @@
 // Command server runs the 3Credit platform.
 //
 //	ADDR             listen address (default :8080)
+//	CMS_HOST         host serving the CMS (default cms.<domain of BASE_URL>, "off" = /admin on the main host)
 //	BASE_URL         public base URL, used for cookies and postback docs
 //	DATA_DIR         directory for the SQLite database and uploads (default ./data)
 //	SESSION_SECRET   secret for CSRF/flash signing (required in production)
 //	DATA_KEY         secret used to encrypt lead payloads (required in production)
-//	ADMIN_USER / ADMIN_PASSWORD   admin login (admin disabled when empty)
+//	ADMIN_PASSWORD   setup code for creating the first CMS account (optional; a code is logged otherwise)
 package main
 
 import (
 	"context"
 	"errors"
 	"log"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -68,14 +72,17 @@ func main() {
 	}
 	tr := tracking.New(d, sess)
 	lr := leads.New(d, key)
+	baseURL := env("BASE_URL", "http://localhost:8080")
 	srv, err := server.New(server.Config{
-		BaseURL: env("BASE_URL", "http://localhost:8080"), DataDir: dataDir, SessionSecret: sess,
+		BaseURL: baseURL, DataDir: dataDir, SessionSecret: sess,
 		AdminUser: os.Getenv("ADMIN_USER"), AdminPassword: os.Getenv("ADMIN_PASSWORD"),
 		TrustCF: os.Getenv("TRUST_CF") == "1",
+		CMSHost: cmsHost(baseURL),
 	}, st, tr, lr)
 	if err != nil {
 		log.Fatal(err)
 	}
+	srv.AnnounceSetup()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go lr.Run(ctx, 30*time.Second)
@@ -91,4 +98,19 @@ func main() {
 	sctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	hs.Shutdown(sctx)
+}
+
+// cmsHost returns CMS_HOST, or cms.<host> when BASE_URL uses a domain name.
+func cmsHost(baseURL string) string {
+	if v := strings.ToLower(strings.TrimSpace(os.Getenv("CMS_HOST"))); v != "" {
+		if v == "off" {
+			return ""
+		}
+		return v
+	}
+	u, err := url.Parse(baseURL)
+	if err != nil || u.Hostname() == "" || net.ParseIP(u.Hostname()) != nil || u.Hostname() == "localhost" {
+		return ""
+	}
+	return "cms." + strings.TrimPrefix(strings.ToLower(u.Hostname()), "www.")
 }

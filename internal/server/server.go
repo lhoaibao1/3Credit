@@ -7,7 +7,6 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/subtle"
 	"encoding/hex"
 	"fmt"
 	"html/template"
@@ -37,7 +36,8 @@ type Config struct {
 	SessionSecret string
 	AdminUser     string
 	AdminPassword string
-	TrustCF       bool // behind Cloudflare: read the visitor IP from CF-Connecting-IP
+	TrustCF       bool   // behind Cloudflare: read the visitor IP from CF-Connecting-IP
+	CMSHost       string // e.g. cms.3credit.asia; empty = CMS on the main host under /admin
 }
 
 type Server struct {
@@ -61,7 +61,7 @@ func New(cfg Config, st *store.Store, tr *tracking.Tracker, lr *leads.Router) (*
 	return s, nil
 }
 
-func (s *Server) Handler() http.Handler { return s.secure(s.session(s.mux)) }
+func (s *Server) Handler() http.Handler { return s.secure(s.route(s.session(s.mux))) }
 
 func (s *Server) routes() {
 	static, _ := fs.Sub(web.FS, "static")
@@ -91,6 +91,13 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /chinh-sach/{slug}", s.policyPage)
 
 	a := func(h http.HandlerFunc) http.Handler { return s.admin(h) }
+	s.mux.HandleFunc("GET /login", s.loginGet)
+	s.mux.HandleFunc("POST /login", s.loginPost)
+	s.mux.HandleFunc("POST /logout", s.logout)
+	s.mux.HandleFunc("GET /setup", s.setupGet)
+	s.mux.HandleFunc("POST /setup", s.setupPost)
+	s.mux.Handle("GET /admin/users", a(s.adminUsers))
+	s.mux.Handle("POST /admin/users", a(s.adminUsersPost))
 	s.mux.Handle("GET /admin/inquiries", a(s.adminInquiries))
 	s.mux.Handle("GET /admin/inquiries.csv", a(s.adminInquiriesCSV))
 	s.mux.Handle("POST /admin/inquiries/{id}", a(s.adminInquiryUpdate))
@@ -188,33 +195,6 @@ func (s *Server) csrf(r *http.Request) string {
 
 func (s *Server) checkCSRF(r *http.Request) bool {
 	return hmac.Equal([]byte(r.FormValue("csrf")), []byte(s.csrf(r)))
-}
-
-func (s *Server) admin(h http.HandlerFunc) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if s.cfg.AdminUser == "" || s.cfg.AdminPassword == "" {
-			http.Error(w, "Trang quản trị bị tắt: đặt ADMIN_USER và ADMIN_PASSWORD.", http.StatusServiceUnavailable)
-			return
-		}
-		u, p, ok := r.BasicAuth()
-		if !ok || subtle.ConstantTimeCompare([]byte(u), []byte(s.cfg.AdminUser)) != 1 || subtle.ConstantTimeCompare([]byte(p), []byte(s.cfg.AdminPassword)) != 1 {
-			w.Header().Set("WWW-Authenticate", `Basic realm="3Credit admin", charset="UTF-8"`)
-			http.Error(w, "Cần đăng nhập", http.StatusUnauthorized)
-			return
-		}
-		w.Header().Set("Cache-Control", "no-store")
-		if r.Method == http.MethodPost {
-			if err := r.ParseMultipartForm(2 << 20); err != nil && err != http.ErrNotMultipart {
-				http.Error(w, "form quá lớn", http.StatusBadRequest)
-				return
-			}
-			if !s.checkCSRF(r) {
-				http.Error(w, "CSRF token không hợp lệ, tải lại trang", http.StatusForbidden)
-				return
-			}
-		}
-		h(w, r)
-	})
 }
 
 // ---------- rendering ----------

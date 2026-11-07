@@ -7,10 +7,10 @@ Nền tảng so sánh, đề xuất và phân phối sản phẩm tài chính. 3
 Cần Go 1.24 trở lên. Không cần CGO, database là SQLite (driver thuần Go).
 
 ```bash
-ADMIN_USER=admin ADMIN_PASSWORD=doimatkhau go run ./cmd/server
+ADMIN_PASSWORD=ma-thiet-lap go run ./cmd/server
 ```
 
-Mở <http://localhost:8080> (trang khách) và <http://localhost:8080/admin> (quản trị).
+Mở <http://localhost:8080> (trang khách) và <http://localhost:8080/setup> để tạo tài khoản CMS đầu tiên (mã thiết lập = `ADMIN_PASSWORD`), sau đó đăng nhập tại `/login`.
 
 Lần chạy đầu, server tự tạo `./data/3credit.db` và nạp dữ liệu từ `internal/store/seed.json`:
 15 đối tác, 16 sản phẩm, 9 segment, lấy từ bản nghiên cứu ngày 05/11/2026.
@@ -22,7 +22,8 @@ Lần chạy đầu, server tự tạo `./data/3credit.db` và nạp dữ liệu
 | `DATA_DIR` | Thư mục database và file tải lên, mặc định `./data` |
 | `SESSION_SECRET` | Khóa ký CSRF và thông báo. **Bắt buộc khi production** |
 | `DATA_KEY` | Khóa mã hóa dữ liệu lead (AES-GCM). **Bắt buộc khi production** |
-| `ADMIN_USER`, `ADMIN_PASSWORD` | Tài khoản quản trị. Để trống thì tắt trang quản trị |
+| `ADMIN_PASSWORD` | Mã thiết lập để tạo tài khoản CMS đầu tiên tại `/setup`. Để trống thì mã được in ra log khi khởi động |
+| `CMS_HOST` | Tên miền của CMS. Mặc định `cms.<domain>` khi `BASE_URL` là tên miền; `off` để dùng `/admin` trên tên miền chính |
 | `APP_ENV=production` | Từ chối khởi động nếu thiếu secret |
 
 ## Triển khai lên server bằng 1 lệnh (truy cập qua IP)
@@ -83,9 +84,20 @@ Dùng Cloudflare Tunnel: server tự kết nối ra Cloudflare, không cần c�
    ```
 5. Cloudflare → **SSL/TLS → Edge Certificates**: bật **Always Use HTTPS**.
 
-Từ đó web chạy ở `https://3credit.asia`, quản trị ở `https://3credit.asia/admin`. Truy cập bằng IP bị tắt. Token chỉ dán trên server, không gửi cho ai.
+Từ đó web chạy ở `https://3credit.asia`, CMS ở `https://cms.3credit.asia`. Truy cập bằng IP bị tắt. Token chỉ dán trên server, không gửi cho ai.
 
-## Dùng hằng ngày (trang quản trị `/admin`)
+## CMS (`cms.3credit.asia`)
+
+CMS chạy trên tên miền riêng `cms.<domain>`, đăng nhập bằng tài khoản riêng (không còn hộp đăng nhập của trình duyệt).
+
+1. Cloudflare → DNS: thêm bản ghi `A`, tên `cms`, trỏ về IP server, bật Proxied (đám mây cam).
+2. Nginx: thêm `cms.3credit.asia` vào `server_name` của vhost 3credit, rồi `nginx -t && systemctl reload nginx`.
+3. Mở `https://cms.3credit.asia/setup`, nhập mã thiết lập (= `ADMIN_PASSWORD` trong `/opt/3credit/.env`), tự đặt tên đăng nhập và mật khẩu. Trang setup tự đóng sau khi có tài khoản đầu tiên.
+4. Thêm tài khoản khác, đổi mật khẩu ở mục **Tài khoản** trong CMS.
+
+Truy cập `3credit.asia/admin` sẽ tự chuyển sang `cms.3credit.asia`.
+
+## Dùng hằng ngày (CMS)
 
 | Việc | Ở đâu |
 |---|---|

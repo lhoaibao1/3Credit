@@ -32,7 +32,7 @@ func (s *Server) adminInquiries(w http.ResponseWriter, r *http.Request) {
 	d := s.adminData(w, r, "inquiries", "Khách cần tư vấn")
 	d["List"], d["Statuses"], d["Filter"], d["Counts"] = list, leads.InquiryStatuses, st, counts
 	d["StatusLabel"] = inquiryLabels
-	s.st.Audit(s.cfg.AdminUser, "view", "inquiries", st, fmt.Sprintf("%d rows", len(list)))
+	s.st.Audit(s.actor(r), "view", "inquiries", st, fmt.Sprintf("%d rows", len(list)))
 	s.render(w, "admin_inquiries", d)
 }
 
@@ -44,7 +44,7 @@ func (s *Server) adminInquiryUpdate(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/inquiries", errText(err), false)
 		return
 	}
-	s.st.Audit(s.cfg.AdminUser, "update", "inquiry", strconv.FormatInt(id, 10), r.FormValue("status"))
+	s.st.Audit(s.actor(r), "update", "inquiry", strconv.FormatInt(id, 10), r.FormValue("status"))
 	s.back(w, r, "/admin/inquiries?status="+r.FormValue("filter"), fmt.Sprintf("Đã cập nhật yêu cầu #%d", id), true)
 }
 
@@ -52,7 +52,7 @@ func (s *Server) adminInquiriesCSV(w http.ResponseWriter, r *http.Request) {
 	st := r.URL.Query().Get("status")
 	w.Header().Set("Content-Type", "text/csv; charset=utf-8")
 	w.Header().Set("Content-Disposition", `attachment; filename="3credit-khach-tu-van-`+time.Now().Format("20060102-1504")+`.csv"`)
-	s.st.Audit(s.cfg.AdminUser, "export", "inquiries", st, "csv")
+	s.st.Audit(s.actor(r), "export", "inquiries", st, "csv")
 	if err := s.lr.ExportCSV(w, st, Label); err != nil {
 		s.fail(w, err)
 	}
@@ -99,7 +99,7 @@ func (s *Server) adminPostSave(w http.ResponseWriter, r *http.Request) {
 		p = old
 	}
 	if r.FormValue("delete") == "1" && p.ID != 0 {
-		s.st.DeletePost(p.ID, s.cfg.AdminUser)
+		s.st.DeletePost(p.ID, s.actor(r))
 		s.back(w, r, "/admin/posts", "Đã xóa bài viết", true)
 		return
 	}
@@ -112,7 +112,7 @@ func (s *Server) adminPostSave(w http.ResponseWriter, r *http.Request) {
 	} else if path != "" {
 		p.CoverPath = path
 	}
-	id, err := s.st.SavePost(p, s.cfg.AdminUser)
+	id, err := s.st.SavePost(p, s.actor(r))
 	if err != nil {
 		s.back(w, r, "/admin/posts/"+idS, "Chưa lưu: "+errText(err), false)
 		return
@@ -171,7 +171,7 @@ func (s *Server) adminSettingsSave(w http.ResponseWriter, r *http.Request) {
 	for _, k := range store.SettingKeys {
 		m[k.Key] = r.FormValue(k.Key)
 	}
-	if err := s.st.SaveSettings(m, s.cfg.AdminUser); err != nil {
+	if err := s.st.SaveSettings(m, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/settings", errText(err), false)
 		return
 	}
@@ -204,7 +204,7 @@ func (s *Server) adminDeletionDo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s.st.DB.Exec(`UPDATE deletion_requests SET status='done' WHERE id=?`, id)
-	s.st.Audit(s.cfg.AdminUser, "erase", "personal_data", strconv.FormatInt(id, 10), fmt.Sprintf("%d records", n))
+	s.st.Audit(s.actor(r), "erase", "personal_data", strconv.FormatInt(id, 10), fmt.Sprintf("%d records", n))
 	s.back(w, r, "/admin/deletions", fmt.Sprintf("Đã xóa %d bản ghi của số điện thoại này", n), true)
 }
 
@@ -212,7 +212,7 @@ func (s *Server) adminDeletionDo(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) adminCampaignStatus(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	if err := s.st.SetCampaignStatus(id, r.FormValue("status"), s.cfg.AdminUser); err != nil {
+	if err := s.st.SetCampaignStatus(id, r.FormValue("status"), s.actor(r)); err != nil {
 		msg := errText(err)
 		if strings.Contains(msg, "tracking URL") {
 			msg = id + ": cần dán tracking URL trước khi bật. Bấm Sửa để thêm link."
@@ -229,7 +229,7 @@ func (s *Server) adminProductNew(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/campaigns", "Mã chiến dịch chỉ gồm chữ, số, dấu gạch ngang", false)
 		return
 	}
-	if err := s.st.CreateProduct(r.FormValue("partner_id"), r.FormValue("name"), r.FormValue("category"), cid, s.cfg.AdminUser); err != nil {
+	if err := s.st.CreateProduct(r.FormValue("partner_id"), r.FormValue("name"), r.FormValue("category"), cid, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/campaigns", "Chưa tạo: "+errText(err), false)
 		return
 	}
@@ -239,7 +239,7 @@ func (s *Server) adminProductNew(w http.ResponseWriter, r *http.Request) {
 func (s *Server) adminPartnerNew(w http.ResponseWriter, r *http.Request) {
 	p := model.Partner{ID: strings.TrimSpace(r.FormValue("id")), Name: r.FormValue("name"), LegalName: strings.TrimSpace(r.FormValue("legal_name")),
 		OrgType: strings.TrimSpace(r.FormValue("org_type")), Group: r.FormValue("group")}
-	if err := s.st.CreatePartner(p, s.cfg.AdminUser); err != nil {
+	if err := s.st.CreatePartner(p, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/partners", "Chưa tạo: "+errText(err), false)
 		return
 	}
@@ -305,7 +305,7 @@ func toForm(v model.PolicyVersion) PolicyForm {
 	I := v.Info
 	for _, x := range []struct {
 		k, l string
-		p *model.Fact
+		p    *model.Fact
 	}{{"rate", "Lãi suất / chi phí", I.Rate}, {"amount", "Hạn mức", I.Amount}, {"term", "Kỳ hạn", I.Term}, {"fee", "Phí", I.Fee}, {"docs", "Hồ sơ, điều kiện khác", I.Docs}, {"speed", "Thời gian xử lý", I.Speed}} {
 		ff := FactForm{Key: x.k, Label: x.l}
 		if x.p != nil {

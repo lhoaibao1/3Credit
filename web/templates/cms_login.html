@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>{{if eq .Mode "setup"}}Tạo tài khoản quản trị{{else}}Đăng nhập{{end}} – 3Credit CMS</title>
+<link rel="icon" href="/static/brand/3credit-favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="/static/app.css?v={{assetv}}">
+</head>
+<body class="cmsl">
+<main class="cmsl-box">
+  <div class="cmsl-brand"><img src="/static/brand/3credit-horizontal.svg" alt="3Credit" width="170" height="44"><span class="cmstag">CMS</span></div>
+  {{if eq .Mode "setup"}}
+  <h1>Tạo tài khoản quản trị</h1>
+  <p class="cmsl-sub">CMS chưa có tài khoản nào. Tài khoản đầu tiên tạo ở đây có toàn quyền quản trị.</p>
+  {{else}}
+  <h1>Đăng nhập</h1>
+  <p class="cmsl-sub">Quản trị nội dung, chiến dịch và khách hàng của 3Credit.</p>
+  {{end}}
+  {{if .Error}}<div class="cmsl-err" role="alert">{{.Error}}</div>{{end}}
+  <form method="post" action="{{if eq .Mode "setup"}}/setup{{else}}/login{{end}}" autocomplete="on">
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <input type="hidden" name="next" value="{{.Next}}">
+    {{if eq .Mode "setup"}}
+    <label>Mã thiết lập<input name="code" required autocomplete="off" spellcheck="false"></label>
+    <small class="cmsl-hint">Là giá trị <code>ADMIN_PASSWORD</code> trong file <code>/opt/3credit/.env</code> trên server.</small>
+    {{end}}
+    <label>Tên đăng nhập<input name="username" required autocomplete="username" autocapitalize="none" spellcheck="false" {{if eq .Mode "setup"}}pattern="[a-z0-9._\-]{3,32}" title="3–32 ký tự: chữ thường, số, . _ -"{{end}} autofocus></label>
+    <label>Mật khẩu<input type="password" name="password" required autocomplete="{{if eq .Mode "setup"}}new-password{{else}}current-password{{end}}" {{if eq .Mode "setup"}}minlength="10"{{end}}></label>
+    {{if eq .Mode "setup"}}<label>Nhập lại mật khẩu<input type="password" name="password2" required autocomplete="new-password" minlength="10"></label>
+    <small class="cmsl-hint">Tối thiểu 10 ký tự.</small>{{end}}
+    <button class="btn btn-pri" type="submit">{{if eq .Mode "setup"}}Tạo tài khoản và vào CMS{{else}}Đăng nhập{{end}}</button>
+  </form>
+  <p class="cmsl-foot">Powered by 3RDVN Technology</p>
+</main>
+</body>
+</html>

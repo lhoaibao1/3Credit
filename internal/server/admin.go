@@ -19,7 +19,7 @@ import (
 
 func (s *Server) adminData(w http.ResponseWriter, r *http.Request, page, title string) map[string]any {
 	d := s.base(r, title+" – 3Credit Admin")
-	d["Admin"], d["Page"], d["User"] = true, page, s.cfg.AdminUser
+	d["Admin"], d["Page"], d["User"], d["SiteURL"] = true, page, s.actor(r), s.cfg.BaseURL
 	d["Title"] = title
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		d["Flash"], d["FlashKind"] = msg, kind
@@ -34,10 +34,10 @@ func (s *Server) back(w http.ResponseWriter, r *http.Request, to, msg string, ok
 
 type kpis struct {
 	Campaigns, Partners, Live, Clicks, Leads, Searches, Conversions int
-	Commission                                                     float64
-	CR                                                             string
-	NoURL, LowData, CreditVerified, NoLogo, NoSecret               int
-	Inquiries, NewInquiries                                        int
+	Commission                                                      float64
+	CR                                                              string
+	NoURL, LowData, CreditVerified, NoLogo, NoSecret                int
+	Inquiries, NewInquiries                                         int
 }
 
 func (s *Server) adminOverview(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +109,7 @@ func (s *Server) adminCampaignNew(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/campaigns", "Mã chiến dịch chỉ gồm chữ, số, dấu gạch ngang (3–32 ký tự)", false)
 		return
 	}
-	if err := s.st.CreateCampaign(id, r.FormValue("product_id"), strings.TrimSpace(r.FormValue("name")), s.cfg.AdminUser); err != nil {
+	if err := s.st.CreateCampaign(id, r.FormValue("product_id"), strings.TrimSpace(r.FormValue("name")), s.actor(r)); err != nil {
 		s.back(w, r, "/admin/campaigns", "Không tạo được: "+errText(err), false)
 		return
 	}
@@ -170,7 +170,7 @@ func (s *Server) adminCampaignSave(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/campaigns/"+id, "Giá trị không được âm", false)
 		return
 	}
-	if err := s.st.SaveCampaign(c, s.cfg.AdminUser); err != nil {
+	if err := s.st.SaveCampaign(c, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/campaigns/"+id, "Chưa lưu: "+errText(err), false)
 		return
 	}
@@ -244,7 +244,7 @@ func (s *Server) adminPartnerSave(w http.ResponseWriter, r *http.Request) {
 		}
 		p.LogoPath = "/uploads/partners/" + name + "?v=" + strconv.FormatInt(time.Now().Unix(), 10)
 	}
-	if err := s.st.UpdatePartner(*p, s.cfg.AdminUser); err != nil {
+	if err := s.st.UpdatePartner(*p, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/partners", "Chưa lưu: "+errText(err), false)
 		return
 	}
@@ -286,7 +286,7 @@ func (s *Server) adminPolicySave(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	v.Source, v.VerifiedOn = strings.TrimSpace(r.FormValue("source")), strings.TrimSpace(r.FormValue("verified_on"))
-	v.ChangedBy, v.ChangeNote = s.cfg.AdminUser, strings.TrimSpace(r.FormValue("change_note"))
+	v.ChangedBy, v.ChangeNote = s.actor(r), strings.TrimSpace(r.FormValue("change_note"))
 	if v.ChangeNote == "" {
 		s.back(w, r, to, "Cần ghi nội dung thay đổi", false)
 		return
@@ -318,7 +318,7 @@ func (s *Server) adminSegmentSave(w http.ResponseWriter, r *http.Request) {
 		s.back(w, r, "/admin/segments", "Mã segment gồm chữ in hoa, số, _ hoặc - (3–20 ký tự) và cần có tên", false)
 		return
 	}
-	if err := s.st.SaveSegment(g, s.cfg.AdminUser); err != nil {
+	if err := s.st.SaveSegment(g, s.actor(r)); err != nil {
 		s.back(w, r, "/admin/segments", errText(err), false)
 		return
 	}
@@ -468,4 +468,3 @@ func (s *Server) adminAudit(w http.ResponseWriter, r *http.Request) {
 	d["Audit"] = a
 	s.render(w, "admin_audit", d)
 }
-

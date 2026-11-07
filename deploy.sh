@@ -211,14 +211,12 @@ fi
 echo
 say "3Credit đã chạy!"
 echo "    Trang khách : $URL"
-echo "    Quản trị    : $URL/admin"
-echo "    Tài khoản   : $ADMIN_USER"
+if [ -n "$DOMAIN" ]; then CMS_URL="https://cms.$DOMAIN"; else CMS_URL="$URL"; fi
+echo "    CMS         : $CMS_URL/login"
 [ -n "$CF_TUNNEL_TOKEN" ] && echo "    Tunnel      : $TUNNEL_MSG"
-if [ "${NEW_INSTALL:-0}" = 1 ]; then
-  echo "    Mật khẩu    : $ADMIN_PASSWORD   (lưu lại ngay, xem lại trong $APP_DIR/.env)"
-else
-  echo "    Mật khẩu    : xem trong $APP_DIR/.env"
-fi
+echo "    Lần đầu vào CMS: tự tạo tài khoản tại $CMS_URL/setup"
+echo "                     Mã thiết lập = ADMIN_PASSWORD trong $APP_DIR/.env:"
+echo "                     $(grep -E '^ADMIN_PASSWORD=' "$APP_DIR/.env" | cut -d= -f2-)"
 echo
 echo "    Tự cập nhật: $AUTO_MSG"
 echo "    Lịch sử cập nhật: journalctl -u 3credit-update -n 50"

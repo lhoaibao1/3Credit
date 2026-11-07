@@ -45,7 +45,7 @@ func TestInquiryFlow(t *testing.T) {
 	}
 	// CSV export: BOM, phone kept as text, formula neutralised
 	req, _ := http.NewRequest("GET", e.ts.URL+"/admin/inquiries.csv", nil)
-	req.SetBasicAuth("admin", "pw")
+	e.auth(req)
 	resp, _ := e.cli.Do(req)
 	b, _ := io.ReadAll(resp.Body)
 	resp.Body.Close()
