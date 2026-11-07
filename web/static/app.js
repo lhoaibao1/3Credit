@@ -4,7 +4,21 @@ var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){retu
 var root=document.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* theme */
-var tg=$('#tgl');if(tg)tg.addEventListener('click',function(){var dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('3c-theme',root.dataset.theme)}catch(e){}});
+var mq=matchMedia('(prefers-color-scheme: dark)'),tg=$('#tgl');
+function isDark(){return root.dataset.theme?root.dataset.theme==='dark':mq.matches}
+function syncTheme(){if(!tg)return;var d=isDark();tg.setAttribute('aria-pressed',String(d));tg.title=d?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối'}
+if(tg){tg.addEventListener('click',function(){root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('3c-theme',root.dataset.theme)}catch(e){}syncTheme()});
+  syncTheme();if(mq.addEventListener)mq.addEventListener('change',syncTheme)}
+
+/* mobile menu: Esc, outside click and link click close it */
+var mn=$('details.mnav');
+if(mn){var shut=function(f){if(mn.open){mn.removeAttribute('open');if(f)$('summary',mn).focus()}};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')shut(true)});
+  document.addEventListener('click',function(e){if(!mn.contains(e.target))shut();else if(e.target.closest('.mnav-panel a'))shut()})}
+
+/* CMS tabs (mobile row): bring the current tab into view without scrolling the page */
+var an=$('nav.anav'),cur=an&&$('[aria-current]',an);
+if(cur&&innerWidth<1024)an.scrollLeft=cur.offsetLeft-an.offsetLeft-(an.clientWidth-cur.offsetWidth)/2;
 
 /* live matching */
 var form=$('#pf'),res=$('#results');
