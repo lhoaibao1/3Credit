@@ -1,21 +1,21 @@
 {{define "admin_inquiries"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
 <div class="panel">
-  <div class="sh" style="margin-bottom:12px"><div class="t"><h3 style="margin:0">Khách để lại số điện thoại</h3><p class="note">Khách đã đồng ý để 3Credit liên hệ tư vấn. Chỉ chuyển cho đối tác khi khách đồng ý thêm (ghi lại trong ghi chú).</p></div>
+  <div class="sh mb-s"><div class="t"><h3 class="m0">Khách để lại số điện thoại</h3><p class="note">Khách đã đồng ý để 3Credit liên hệ tư vấn. Chỉ chuyển cho đối tác khi khách đồng ý thêm (ghi lại trong ghi chú).</p></div>
     <a class="btn btn-pri btn-sm" href="/admin/inquiries.csv{{if .Filter}}?status={{.Filter}}{{end}}">Tải Excel (CSV)</a></div>
-  <div class="anav" style="margin-bottom:14px">
+  <div class="pills hscroll row mb-m">
     <a href="/admin/inquiries" {{if eq .Filter ""}}aria-current="page"{{end}}>Tất cả</a>
     {{range .Statuses}}<a href="/admin/inquiries?status={{.}}" {{if eq . $.Filter}}aria-current="page"{{end}}>{{index $.StatusLabel .}} · {{index $.Counts .}}</a>{{end}}
   </div>
-  {{if .List}}<div class="tw"><table class="at">
+  {{if .List}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng khách để lại số điện thoại, cuộn ngang"><table class="at">
     <thead><tr><th>#</th><th>Thời gian</th><th>Khách</th><th>Nhu cầu</th><th>Hồ sơ tự khai</th><th>Lời nhắn / nguồn</th><th>Xử lý</th></tr></thead>
     <tbody>{{range .List}}<tr>
       <td>{{.ID}}</td>
       <td>{{.CreatedAt.Local.Format "02/01 15:04"}}</td>
-      <td><b>{{.In.Name}}</b><br><a href="tel:{{.In.Phone}}" style="font-family:var(--num);color:var(--or-ink)">{{.In.Phone}}</a></td>
+      <td><b>{{.In.Name}}</b><br><a href="tel:{{.In.Phone}}" class="lnk mono">{{.In.Phone}}</a></td>
       <td>{{if .In.Need}}{{vi .In.Need}}<br><small>{{money .In.Amount}} · {{.In.Term}} tháng</small>{{else}}<small>—</small>{{end}}</td>
       <td><small>{{if .In.Job}}{{vi .In.Job}} · {{.In.Income}} tr/tháng · {{vi .In.Region}}<br>Tín dụng: {{if .In.Credit}}{{vi .In.Credit}}{{else}}không khai{{end}}{{else}}—{{end}}</small></td>
       <td><small>{{.In.Message}}{{if .In.Message}}<br>{{end}}{{.Source}}{{if .Campaign}} · {{.Campaign}}{{end}}</small></td>
-      <td><form method="post" action="/admin/inquiries/{{.ID}}" style="display:grid;gap:6px;min-width:210px">
+      <td><form method="post" action="/admin/inquiries/{{.ID}}" class="stack-xs">
         <input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="filter" value="{{$.Filter}}">
         <select name="status" aria-label="Trạng thái #{{.ID}}">{{$cur := .Status}}{{range $.Statuses}}<option value="{{.}}" {{if eq . $cur}}selected{{end}}>{{index $.StatusLabel .}}</option>{{end}}</select>
         <input type="text" name="note" value="{{.Note}}" placeholder="Ghi chú cuộc gọi" aria-label="Ghi chú #{{.ID}}">
@@ -26,8 +26,8 @@
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_posts"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><div class="sh" style="margin-bottom:12px"><div class="t"><h3 style="margin:0">Bài viết</h3></div><a class="btn btn-pri btn-sm" href="/admin/posts/new">Viết bài mới</a></div>
-{{if .Posts}}<div class="tw"><table class="at"><thead><tr><th>Tiêu đề</th><th>Chuyên mục</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead>
+<div class="panel"><div class="sh mb-s"><div class="t"><h3 class="m0">Bài viết</h3></div><a class="btn btn-pri btn-sm" href="/admin/posts/new">Viết bài mới</a></div>
+{{if .Posts}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng bài viết, cuộn ngang"><table class="at"><thead><tr><th>Tiêu đề</th><th>Chuyên mục</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead>
 <tbody>{{range .Posts}}<tr><td><b>{{.Title}}</b><br><small>/kien-thuc/{{.Slug}}</small></td><td>{{.Category}}</td><td>{{if .Published}}<span class="pst active">Đã đăng</span>{{else}}<span class="pst draft">Nháp</span>{{end}}</td><td>{{.UpdatedAt.Local.Format "02/01/2006"}}</td>
 <td><div class="qs"><a class="btn btn-line btn-sm" href="/admin/posts/{{.ID}}">Sửa</a>{{if .Published}}<a class="btn btn-line btn-sm" href="/kien-thuc/{{.Slug}}" target="_blank" rel="noopener">Xem</a>{{end}}</div></td></tr>{{end}}</tbody></table></div>
 {{else}}<div class="empty">Chưa có bài viết.</div>{{end}}</div>
@@ -43,28 +43,28 @@
     <div class="fld"><label for="pcat">Chuyên mục</label><input id="pcat" name="category" type="text" value="{{.P.Category}}" list="cats" maxlength="40"><datalist id="cats"><option value="Kiến thức"><option value="Lãi suất"><option value="Tín dụng"><option value="Nợ xấu"><option value="Cảnh báo"><option value="Thẻ tín dụng"></datalist></div>
     <div class="fld"><label for="pcover">Ảnh bìa (PNG/JPG/WebP, tối đa 600 KB){{if .P.CoverPath}} · đã có{{end}}</label><input id="pcover" name="cover" type="file" accept="image/png,image/jpeg,image/webp"></div>
     <div class="fld full"><label for="psum">Tóm tắt (hiện ở danh sách và Google)</label><input id="psum" name="summary" type="text" value="{{.P.Summary}}" maxlength="300"></div>
-    <div class="fld full"><label for="pbody">Nội dung. Định dạng: dòng trống giữa các đoạn · <code>## Tiêu đề mục</code> · <code>- gạch đầu dòng</code> · <code>**chữ đậm**</code> · <code>*chữ nghiêng*</code></label><textarea id="pbody" name="body" style="min-height:420px;font-family:var(--font);font-size:.95rem">{{.P.Body}}</textarea></div>
+    <div class="fld full"><label for="pbody">Nội dung. Định dạng: dòng trống giữa các đoạn · <code>## Tiêu đề mục</code> · <code>- gạch đầu dòng</code> · <code>**chữ đậm**</code> · <code>*chữ nghiêng*</code></label><textarea id="pbody" name="body" class="ta-prose">{{.P.Body}}</textarea></div>
     <label class="cmpchk full"><input type="checkbox" name="published" value="1" {{if .P.Published}}checked{{end}}> Đăng công khai</label>
   </div>
-  <div class="cf" style="margin-top:16px"><button class="btn btn-pri" type="submit">Lưu</button>
+  <div class="cf mt-m"><button class="btn btn-pri" type="submit">Lưu</button>
   {{if .P.ID}}<button class="btn btn-line" type="submit" name="delete" value="1" formnovalidate>Xóa bài</button>{{end}}</div>
 </form>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_settings"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
 <form class="panel" method="post" action="/admin/settings"><h3>Thông tin công ty</h3>
-  <p class="note" style="margin-bottom:12px">Hiển thị ở chân trang, trang Điều khoản, Chính sách dữ liệu và trong ô đồng ý của khách. Cần điền trước khi chạy quảng cáo.</p>
+  <p class="note mb-s">Hiển thị ở chân trang, trang Điều khoản, Chính sách dữ liệu và trong ô đồng ý của khách. Cần điền trước khi chạy quảng cáo.</p>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="aform">{{range .Keys}}<div class="fld"><label for="s_{{.Key}}">{{.Label}}</label><input id="s_{{.Key}}" name="{{.Key}}" type="text" value="{{index $.Vals .Key}}" maxlength="300"></div>{{end}}</div>
-  <button class="btn btn-pri" type="submit" style="margin-top:14px">Lưu</button>
+  <button class="btn btn-pri mt-s" type="submit">Lưu</button>
 </form>
-<div class="panel"><h3>Trang pháp lý</h3><p class="note">Nội dung các trang <a href="/dieu-khoan" target="_blank" style="color:var(--or-ink)">Điều khoản</a>, <a href="/chinh-sach/chinh-sach-bao-mat" target="_blank" style="color:var(--or-ink)">Chính sách dữ liệu</a>, <a href="/tieu-chi-doi-tac" target="_blank" style="color:var(--or-ink)">Tiêu chí đối tác</a> là bản mẫu. Nên nhờ luật sư rà soát trước khi chạy quảng cáo.</p></div>
+<div class="panel"><h3>Trang pháp lý</h3><p class="note">Nội dung các trang <a href="/dieu-khoan" target="_blank" class="lnk">Điều khoản</a>, <a href="/chinh-sach/chinh-sach-bao-mat" target="_blank" class="lnk">Chính sách dữ liệu</a>, <a href="/tieu-chi-doi-tac" target="_blank" class="lnk">Tiêu chí đối tác</a> là bản mẫu. Nên nhờ luật sư rà soát trước khi chạy quảng cáo.</p></div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_deletions"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
 <div class="panel"><h3>Yêu cầu xóa dữ liệu</h3>
-{{if .List}}<div class="tw"><table class="at"><thead><tr><th>#</th><th>Thời gian</th><th>Số điện thoại</th><th>Ghi chú</th><th>Trạng thái</th><th></th></tr></thead>
+{{if .List}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng yêu cầu xóa dữ liệu, cuộn ngang"><table class="at"><thead><tr><th>#</th><th>Thời gian</th><th>Số điện thoại</th><th>Ghi chú</th><th>Trạng thái</th><th></th></tr></thead>
 <tbody>{{range .List}}<tr><td>{{.ID}}</td><td>{{.CreatedAt.Local.Format "02/01 15:04"}}</td><td>{{.PhoneMasked}}</td><td>{{.Note}}</td><td>{{if eq .Status "done"}}<span class="pst active">Đã xóa</span>{{else}}<span class="pst pending">Chờ xử lý</span>{{end}}</td>
 <td>{{if ne .Status "done"}}<form method="post" action="/admin/deletions/{{.ID}}"><input type="hidden" name="csrf" value="{{$.CSRF}}"><button class="btn btn-pri btn-sm" type="submit">Xóa dữ liệu của số này</button></form>{{end}}</td></tr>{{end}}</tbody></table></div>
-{{else}}<div class="empty">Chưa có yêu cầu. Khách gửi ở trang <a href="/xoa-du-lieu" style="color:var(--or-ink)">/xoa-du-lieu</a>.</div>{{end}}</div>
+{{else}}<div class="empty">Chưa có yêu cầu. Khách gửi ở trang <a href="/xoa-du-lieu" class="lnk">/xoa-du-lieu</a>.</div>{{end}}</div>
 </div></main>{{template "foot" .}}{{end}}

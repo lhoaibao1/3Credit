@@ -1,19 +1,24 @@
 {{define "anav"}}
-<div class="sh" style="margin-bottom:14px"><div class="t"><span class="eyebrow">Quản trị</span><h2>{{.Title}}</h2></div><span class="tag">Đăng nhập: {{.User}}</span></div>
-<nav class="anav" aria-label="Quản trị">
+<div class="sh adm-head"><div class="t"><span class="eyebrow">Quản trị</span><h2>{{.Title}}</h2></div><span class="tag">Đăng nhập: {{.User}}</span></div>
+<nav class="anav hscroll row" aria-label="Quản trị">
+  <span class="anav-g">Vận hành</span>
   <a href="/admin" {{if eq .Page "overview"}}aria-current="page"{{end}}>Tổng quan</a>
   <a href="/admin/inquiries" {{if eq .Page "inquiries"}}aria-current="page"{{end}}>Khách cần tư vấn</a>
+  <a href="/admin/leads" {{if eq .Page "leads"}}aria-current="page"{{end}}>Lead đối tác</a>
+  <span class="anav-g">Chiến dịch</span>
   <a href="/admin/campaigns" {{if eq .Page "campaigns"}}aria-current="page"{{end}}>Chiến dịch</a>
   <a href="/admin/partners" {{if eq .Page "partners"}}aria-current="page"{{end}}>Đối tác</a>
+  <span class="anav-g">Nội dung</span>
   <a href="/admin/posts" {{if eq .Page "posts"}}aria-current="page"{{end}}>Bài viết</a>
+  <span class="anav-g">Dữ liệu</span>
   <a href="/admin/segments" {{if eq .Page "segments"}}aria-current="page"{{end}}>Segment</a>
   <a href="/admin/matching" {{if eq .Page "matching"}}aria-current="page"{{end}}>Matching</a>
   <a href="/admin/tracking" {{if eq .Page "tracking"}}aria-current="page"{{end}}>Tracking</a>
-  <a href="/admin/leads" {{if eq .Page "leads"}}aria-current="page"{{end}}>Lead đối tác</a>
+  <span class="anav-g">Hệ thống</span>
   <a href="/admin/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Tài khoản</a>
-  <a href="/admin/deletions" {{if eq .Page "deletions"}}aria-current="page"{{end}}>Xóa dữ liệu</a>
   <a href="/admin/settings" {{if eq .Page "settings"}}aria-current="page"{{end}}>Cài đặt</a>
   <a href="/admin/audit" {{if eq .Page "audit"}}aria-current="page"{{end}}>Nhật ký</a>
+  <a href="/admin/deletions" {{if eq .Page "deletions"}}aria-current="page"{{end}}>Xóa dữ liệu</a>
 </nav>
 {{if .Flash}}<div class="flash {{.FlashKind}}" role="status">{{.Flash}}</div>{{end}}
 {{end}}
@@ -22,7 +27,7 @@
 <div class="kpis">
   <div class="kpi"><small>Tổng chiến dịch</small><b>{{.K.Campaigns}}</b><span>{{.K.Partners}} đối tác</span></div>
   <div class="kpi"><small>Đang chạy</small><b>{{.K.Live}}</b><span>Active + có tracking URL</span></div>
-  <div class="kpi"><small>Khách cần tư vấn</small><b>{{.K.Inquiries}}</b><span><a href="/admin/inquiries?status=new" style="color:var(--or-ink);font-weight:800">{{.K.NewInquiries}} chưa gọi →</a></span></div>
+  <div class="kpi"><small>Khách cần tư vấn</small><b>{{.K.Inquiries}}</b><span><a href="/admin/inquiries?status=new" class="lnk">{{.K.NewInquiries}} chưa gọi →</a></span></div>
   <div class="kpi"><small>Click · Tìm kiếm</small><b>{{.K.Clicks}} · {{.K.Searches}}</b><span>{{.K.Leads}} lead gửi đối tác</span></div>
   <div class="kpi"><small>Conversion · Hoa hồng</small><b>{{.K.Conversions}} · {{vnd .K.Commission}}</b><span>Tỷ lệ chuyển đổi {{.K.CR}}</span></div>
 </div>
@@ -36,16 +41,16 @@
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_campaigns"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Danh sách chiến dịch</h3><div class="tw"><table class="at">
+<div class="panel"><h3>Danh sách chiến dịch</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng danh sách chiến dịch, cuộn ngang"><table class="at">
 <thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th>Ưu tiên</th><th>Tracking</th><th>Postback</th><th>Lead</th><th>Dữ liệu xác minh</th><th></th></tr></thead>
 <tbody>{{range .Offers}}<tr>
   <td><code>{{.Campaign.ID}}</code></td>
-  <td><div class="ch" style="flex-wrap:nowrap">{{template "logo" .Partner}}<div><b>{{.Partner.Name}}</b><br><small>{{.Campaign.Name}}</small></div></div></td>
+  <td><div class="ch nw">{{template "logo" .Partner}}<div><b>{{.Partner.Name}}</b><br><small>{{.Campaign.Name}}</small></div></div></td>
   <td><span class="pst {{.Campaign.Status}}">{{.Campaign.Status}}</span></td>
   <td>{{.Campaign.Priority}}</td>
-  <td>{{if .Campaign.TrackingURL}}✓{{else}}<span style="color:var(--muted)">—</span>{{end}}</td>
-  <td>{{if .Campaign.PostbackSecret}}✓{{else}}<span style="color:var(--muted)">—</span>{{end}}</td>
-  <td>{{if .Campaign.LeadEndpoint}}✓{{else}}<span style="color:var(--muted)">—</span>{{end}}</td>
+  <td>{{if .Campaign.TrackingURL}}✓{{else}}<span class="c-muted">—</span>{{end}}</td>
+  <td>{{if .Campaign.PostbackSecret}}✓{{else}}<span class="c-muted">—</span>{{end}}</td>
+  <td>{{if .Campaign.LeadEndpoint}}✓{{else}}<span class="c-muted">—</span>{{end}}</td>
   <td><span class="cbar"><span class="bar"><i style="width:{{verified .}}%"></i></span>{{verified .}}%</span></td>
   <td><div class="qs">
     {{if eq .Campaign.Status "active"}}<form method="post" action="/admin/campaigns/{{.Campaign.ID}}/status"><input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="status" value="paused"><button class="btn btn-line btn-sm" type="submit">Tắt</button></form>
@@ -67,7 +72,7 @@
     <div class="fld"><label for="ncat">Loại</label><select id="ncat" name="category">{{range .Categories}}<option value="{{.V}}">{{.L}}</option>{{end}}</select></div>
     <div class="fld"><label for="ncid">Mã camp (không bắt buộc)</label><input id="ncid" name="campaign_id" type="text" pattern="[A-Za-z0-9-]{3,32}" placeholder="tự tạo nếu để trống"></div>
   </div>
-  <p class="note" style="margin:10px 0">Chưa có đối tác trong danh sách? Thêm ở trang <a href="/admin/partners" style="color:var(--or-ink)">Đối tác</a>.</p>
+  <p class="note my-s">Chưa có đối tác trong danh sách? Thêm ở trang <a href="/admin/partners" class="lnk">Đối tác</a>.</p>
   <button class="btn btn-pri btn-sm" type="submit">Tạo</button>
 </form>
 </div></main>{{template "foot" .}}{{end}}
@@ -95,13 +100,13 @@
     <div class="fld full"><label for="clead">Lead endpoint nội bộ (https, để trống = chỉ chuyển hướng)</label><input id="clead" name="lead_endpoint" type="url" value="{{$c.LeadEndpoint}}" placeholder="https://crm.example/api/leads"></div>
     <div class="fld full"><label for="cauth">Header xác thực lead endpoint (Tên: giá trị){{if $c.LeadAuthHeader}} · đã đặt{{end}}</label><input id="cauth" name="lead_auth_header" type="password" autocomplete="new-password" placeholder="để trống = giữ nguyên"></div>
   </div>
-  <div class="cf" style="margin-top:16px"><button class="btn btn-pri" type="submit">Lưu</button><a class="btn btn-line" href="/admin/policies/{{.O.Product.ID}}">Chính sách sản phẩm (v{{.O.Policy.Version}})</a><a class="btn btn-line" href="/san-pham/{{$c.ID}}" target="_blank" rel="noopener">Xem trang khách</a></div>
+  <div class="cf mt-m"><button class="btn btn-pri" type="submit">Lưu</button><a class="btn btn-line" href="/admin/policies/{{.O.Product.ID}}">Chính sách sản phẩm (v{{.O.Policy.Version}})</a><a class="btn btn-line" href="/san-pham/{{$c.ID}}" target="_blank" rel="noopener">Xem trang khách</a></div>
 </form>
 {{if $c.PostbackSecret}}<div class="panel"><h3>Postback cho đối tác</h3><p class="note">Gửi tới <code>{{.Base}}/api/postback/&lt;network&gt;?click_id=…&amp;conversion_id=…&amp;status=pending|approved|rejected&amp;payout=…&amp;sig=…</code>, với <code>sig = HMAC_SHA256(secret, "click_id|conversion_id|status|payout")</code> dạng hex.</p></div>{{end}}
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_partners"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Đối tác</h3><div class="tw"><table class="at">
+<div class="panel"><h3>Đối tác</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng đối tác, cuộn ngang"><table class="at">
 <thead><tr><th>Logo</th><th>Đối tác</th><th>Nhóm</th><th>Pháp nhân</th><th>Tích hợp</th><th>Cập nhật</th></tr></thead>
 <tbody>{{range .Partners}}<tr>
   <td>{{template "logo" .}}</td>
@@ -110,7 +115,7 @@
   <td>{{.LegalName}}{{template "conf" .LegalConf}}</td>
   <td><span class="pst {{if eq .Integration "live"}}active{{else}}pending{{end}}">{{.Integration}}</span></td>
   <td>
-    <form method="post" action="/admin/partners/{{.ID}}" enctype="multipart/form-data" style="display:grid;gap:6px;min-width:260px">
+    <form method="post" action="/admin/partners/{{.ID}}" enctype="multipart/form-data" class="stack-xs">
       <input type="hidden" name="csrf" value="{{$.CSRF}}">
       <input type="text" name="legal_name" value="{{.LegalName}}" aria-label="Pháp nhân {{.Name}}">
       <div class="two"><select name="legal_conf" aria-label="Mức tin cậy pháp nhân"><option value="" {{if eq .LegalConf ""}}selected{{end}}>? chưa xác minh</option><option value="A" {{if eq .LegalConf "A"}}selected{{end}}>A</option><option value="B" {{if eq .LegalConf "B"}}selected{{end}}>B</option><option value="C" {{if eq .LegalConf "C"}}selected{{end}}>C</option></select>
@@ -120,7 +125,7 @@
     </form>
   </td>
 </tr>{{end}}</tbody></table></div>
-<form method="post" action="/admin/partners/new" class="aform" style="margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
+<form method="post" action="/admin/partners/new" class="aform sep">
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="fld"><label for="pid">Mã (chữ thường)</label><input id="pid" name="id" type="text" required pattern="[a-z0-9-]{2,30}" placeholder="vietcombank"></div>
   <div class="fld"><label for="pname">Tên hiển thị</label><input id="pname" name="name" type="text" required maxlength="60"></div>
@@ -129,8 +134,8 @@
   <div class="fld"><label for="pgrp">Nhóm</label><select id="pgrp" name="group"><option value="A">A – Ngân hàng, công ty tài chính</option><option value="B">B – Vay nhanh, giải pháp khác</option></select></div>
   <div class="fld"><span class="lb">&nbsp;</span><button class="btn btn-pri btn-sm" type="submit">Thêm đối tác</button></div>
 </form>
-<p class="note" style="margin-top:10px">Logo: PNG, SVG hoặc WebP, tối đa 200 KB. SVG chứa script sẽ bị từ chối. Chỉ dùng logo đối tác cung cấp hoặc cho phép trong hợp đồng.</p></div>
-<div class="panel"><h3>Sản phẩm &amp; chính sách</h3><div class="tw"><table class="at"><thead><tr><th>Sản phẩm</th><th>Loại</th><th>Phiên bản</th><th>Kiểm tra</th><th>Nguồn</th><th></th></tr></thead>
+<p class="note mt-s">Logo: PNG, SVG hoặc WebP, tối đa 200 KB. SVG chứa script sẽ bị từ chối. Chỉ dùng logo đối tác cung cấp hoặc cho phép trong hợp đồng.</p></div>
+<div class="panel"><h3>Sản phẩm &amp; chính sách</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng sản phẩm &amp; chính sách, cuộn ngang"><table class="at"><thead><tr><th>Sản phẩm</th><th>Loại</th><th>Phiên bản</th><th>Kiểm tra</th><th>Nguồn</th><th></th></tr></thead>
 <tbody>{{range .Offers}}<tr><td><b>{{.Partner.Name}}</b> · {{.Product.Name}}</td><td>{{.Product.Category}}</td><td>v{{.Policy.Version}}</td><td>{{.Policy.VerifiedOn}}</td><td>{{.Policy.Source}}</td><td><a class="btn btn-line btn-sm" href="/admin/policies/{{.Product.ID}}">Lịch sử / sửa</a></td></tr>{{end}}</tbody></table></div></div>
 </div></main>{{template "foot" .}}{{end}}
 
@@ -139,9 +144,9 @@
 {{$f := .F}}
 <form class="panel" method="post" action="/admin/policies/{{.ProductID}}">
   <h3>Chính sách: {{.ProductName}}</h3>
-  <p class="note" style="margin-bottom:14px">Mỗi lần lưu tạo phiên bản mới, bản cũ được giữ lại. Ô “Nguồn tin cậy”: <b>A</b> = đọc trên web chính thức / hợp đồng đối tác, <b>B</b> = nguồn chính thức gián tiếp, <b>C</b> = báo chí (chỉ tham khảo, không loại khách), <b>—</b> = không áp dụng điều kiện này. Chỉ A, B mới dùng để loại sản phẩm khỏi kết quả.</p>
+  <p class="note mb-s">Mỗi lần lưu tạo phiên bản mới, bản cũ được giữ lại. Ô “Nguồn tin cậy”: <b>A</b> = đọc trên web chính thức / hợp đồng đối tác, <b>B</b> = nguồn chính thức gián tiếp, <b>C</b> = báo chí (chỉ tham khảo, không loại khách), <b>—</b> = không áp dụng điều kiện này. Chỉ A, B mới dùng để loại sản phẩm khỏi kết quả.</p>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
-  <h4 style="margin:6px 0 10px">Điều kiện đối chiếu</h4>
+  <h4 class="h4-sub first">Điều kiện đối chiếu</h4>
   <div class="aform">
     <div class="fld"><label>Hạn mức (triệu): tối thiểu – tối đa</label><div class="two"><input name="amount_min" type="number" step="any" min="0" value="{{$f.AmountMin}}" aria-label="Hạn mức tối thiểu"><input name="amount_max" type="number" step="any" min="0" value="{{$f.AmountMax}}" aria-label="Hạn mức tối đa"></div></div>
     <div class="fld"><label>Kỳ hạn (tháng): tối thiểu – tối đa</label><div class="two"><input name="term_min" type="number" min="0" value="{{$f.TermMin}}" aria-label="Kỳ hạn tối thiểu"><input name="term_max" type="number" min="0" value="{{$f.TermMax}}" aria-label="Kỳ hạn tối đa"></div></div>
@@ -162,57 +167,57 @@
     <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận)</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
     <div class="fld"><label>Nguồn – lịch sử tín dụng</label>{{template "confsel" (pair "credit_conf" $f.CreditConf)}}</div>
   </div>
-  <h4 style="margin:22px 0 10px">Thông tin hiển thị cho khách</h4>
+  <h4 class="h4-sub">Thông tin hiển thị cho khách</h4>
   <div class="aform">
-    {{range $f.Facts}}<div class="fld" style="grid-column:span 2"><label>{{.Label}}</label><input name="info_{{.Key}}" type="text" value="{{.Text}}" maxlength="200"></div><div class="fld"><label>Nguồn</label>{{template "confsel" (pair (printf "info_%s_conf" .Key) .Conf)}}</div>{{end}}
-    <div class="fld full"><label for="pflags">Cảnh báo cho khách (mỗi dòng một cảnh báo)</label><textarea id="pflags" name="flags" style="min-height:70px;font-family:var(--font)">{{$f.Flags}}</textarea></div>
+    {{range $f.Facts}}<div class="fld span2"><label>{{.Label}}</label><input name="info_{{.Key}}" type="text" value="{{.Text}}" maxlength="200"></div><div class="fld"><label>Nguồn</label>{{template "confsel" (pair (printf "info_%s_conf" .Key) .Conf)}}</div>{{end}}
+    <div class="fld full"><label for="pflags">Cảnh báo cho khách (mỗi dòng một cảnh báo)</label><textarea id="pflags" name="flags" class="ta-sm">{{$f.Flags}}</textarea></div>
     <div class="fld"><label for="psrc">Nguồn tham khảo (URL / hợp đồng)</label><input id="psrc" name="source" type="text" value="{{$f.Source}}" required></div>
     <div class="fld"><label for="pver">Ngày kiểm tra</label><input id="pver" name="verified_on" type="date" value="{{.Today}}" required></div>
     <div class="fld"><label for="pnote">Nội dung thay đổi</label><input id="pnote" name="change_note" type="text" required maxlength="200" placeholder="Cập nhật lãi suất theo hợp đồng 11/2026"></div>
   </div>
-  <button class="btn btn-pri" type="submit" style="margin-top:16px">Lưu phiên bản mới</button>
+  <button class="btn btn-pri mt-m" type="submit">Lưu phiên bản mới</button>
 </form>
-<div class="panel"><h3>Lịch sử phiên bản</h3><div class="tw"><table class="at"><thead><tr><th>Phiên bản</th><th>Ngày kiểm tra</th><th>Nguồn</th><th>Người cập nhật</th><th>Nội dung</th><th>Thời điểm</th></tr></thead>
+<div class="panel"><h3>Lịch sử phiên bản</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng lịch sử phiên bản, cuộn ngang"><table class="at"><thead><tr><th>Phiên bản</th><th>Ngày kiểm tra</th><th>Nguồn</th><th>Người cập nhật</th><th>Nội dung</th><th>Thời điểm</th></tr></thead>
 <tbody>{{range .History}}<tr><td>v{{.Version}}</td><td>{{.VerifiedOn}}</td><td>{{.Source}}</td><td>{{.ChangedBy}}</td><td>{{.ChangeNote}}</td><td>{{.CreatedAt.Format "02/01/2006 15:04"}}</td></tr>{{end}}</tbody></table></div></div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "confsel"}}<select name="{{.A}}" aria-label="Mức tin cậy nguồn"><option value="" {{if eq .B ""}}selected{{end}}>— không áp dụng</option><option value="A" {{if eq .B "A"}}selected{{end}}>A – web chính thức / hợp đồng</option><option value="B" {{if eq .B "B"}}selected{{end}}>B – chính thức gián tiếp</option><option value="C" {{if eq .B "C"}}selected{{end}}>C – tham khảo</option><option value="U" {{if eq .B "U"}}selected{{end}}>? – chưa rõ nguồn</option></select>{{end}}
 
 {{define "admin_segments"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Segment</h3><div class="tw"><table class="at"><thead><tr><th>Mã</th><th>Tên</th><th>Luật</th><th>Phiên bản</th><th>Bật</th></tr></thead>
-<tbody>{{range .Segments}}<tr><td><code>{{.ID}}</code></td><td>{{.Name}}</td><td><code style="font-size:.76rem">{{.Rule}}</code></td><td>v{{.Version}}</td><td>{{if .Active}}✓{{else}}—{{end}}</td></tr>{{end}}</tbody></table></div></div>
+<div class="panel"><h3>Segment</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng segment, cuộn ngang"><table class="at"><thead><tr><th>Mã</th><th>Tên</th><th>Luật</th><th>Phiên bản</th><th>Bật</th></tr></thead>
+<tbody>{{range .Segments}}<tr><td><code>{{.ID}}</code></td><td>{{.Name}}</td><td><code class="mono-sm">{{.Rule}}</code></td><td>v{{.Version}}</td><td>{{if .Active}}✓{{else}}—{{end}}</td></tr>{{end}}</tbody></table></div></div>
 <form class="panel" method="post" action="/admin/segments"><h3>Thêm hoặc sửa segment</h3>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="aform">
     <div class="fld"><label for="sid">Mã (trùng mã = sửa)</label><input id="sid" name="id" type="text" required pattern="[A-Z0-9_-]{3,20}" placeholder="SEG10"></div>
     <div class="fld"><label for="sname">Tên</label><input id="sname" name="name" type="text" required maxlength="80"></div>
-    <div class="fld"><label class="cmpchk" style="margin-top:22px"><input type="checkbox" name="active" value="1" checked> Bật</label></div>
-    <div class="fld full"><label for="srule">Luật JSON. Trường: need, amount, term, age, region, job, income, channel, credit, urgency, vehicle. Toán tử: eq, ne, in, nin, gt, gte, lt, lte; nhóm all / any / not.</label><textarea id="srule" name="rule" spellcheck="false" style="min-height:120px">{"all":[{"field":"job","op":"eq","value":"freelancer"},{"field":"income","op":"gte","value":10}]}</textarea></div>
+    <div class="fld"><label class="cmpchk mt-chk"><input type="checkbox" name="active" value="1" checked> Bật</label></div>
+    <div class="fld full"><label for="srule">Luật JSON. Trường: need, amount, term, age, region, job, income, channel, credit, urgency, vehicle. Toán tử: eq, ne, in, nin, gt, gte, lt, lte; nhóm all / any / not.</label><textarea id="srule" name="rule" spellcheck="false" class="ta-md">{"all":[{"field":"job","op":"eq","value":"freelancer"},{"field":"income","op":"gte","value":10}]}</textarea></div>
   </div>
-  <button class="btn btn-pri" type="submit" style="margin-top:14px">Lưu segment</button>
+  <button class="btn btn-pri mt-s" type="submit">Lưu segment</button>
 </form>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_matching"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Hồ sơ mẫu → kết quả matching (tất cả chiến dịch)</h3><div class="tw"><table class="at"><thead><tr><th>Hồ sơ mẫu</th><th>Đáp ứng</th><th>Cần kiểm tra</th><th>Chưa xác minh</th><th>Không phù hợp</th><th>Xếp đầu</th></tr></thead>
-<tbody>{{range .Presets}}<tr><td>{{.Name}}</td><td><b style="color:var(--ok)">{{index .Counts "eligible"}}</b></td><td>{{index .Counts "potential"}}</td><td>{{index .Counts "unverified"}}</td><td>{{index .Counts "not"}}</td><td>{{if .Top}}{{.Top.Offer.Partner.Name}} · {{.Top.Offer.Product.Name}}<br><span class="st {{.Top.Status}}">{{.Top.Status.Label}}</span>{{else}}<span style="color:var(--low)">Không có sản phẩm</span>{{end}}</td></tr>{{end}}</tbody></table></div>
-<p class="note" style="margin-top:10px">Hồ sơ có 0 sản phẩm “Đáp ứng” là khoảng trống cần bổ sung chính sách đối tác hoặc chiến dịch.</p></div>
-<div class="panel"><h3>Theo segment (từ lượt tìm kiếm thật)</h3><div class="tw"><table class="at"><thead><tr><th>Segment</th><th>Lượt tìm</th><th>Không có sản phẩm “Đáp ứng”</th><th>TB sản phẩm “Đáp ứng”</th></tr></thead>
+<div class="panel"><h3>Hồ sơ mẫu → kết quả matching (tất cả chiến dịch)</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng hồ sơ mẫu → kết quả matching (tất cả chiến dịch), cuộn ngang"><table class="at"><thead><tr><th>Hồ sơ mẫu</th><th>Đáp ứng</th><th>Cần kiểm tra</th><th>Chưa xác minh</th><th>Không phù hợp</th><th>Xếp đầu</th></tr></thead>
+<tbody>{{range .Presets}}<tr><td>{{.Name}}</td><td><b class="c-ok">{{index .Counts "eligible"}}</b></td><td>{{index .Counts "potential"}}</td><td>{{index .Counts "unverified"}}</td><td>{{index .Counts "not"}}</td><td>{{if .Top}}{{.Top.Offer.Partner.Name}} · {{.Top.Offer.Product.Name}}<br><span class="st {{.Top.Status}}">{{.Top.Status.Label}}</span>{{else}}<span class="c-low">Không có sản phẩm</span>{{end}}</td></tr>{{end}}</tbody></table></div>
+<p class="note mt-s">Hồ sơ có 0 sản phẩm “Đáp ứng” là khoảng trống cần bổ sung chính sách đối tác hoặc chiến dịch.</p></div>
+<div class="panel"><h3>Theo segment (từ lượt tìm kiếm thật)</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng theo segment (từ lượt tìm kiếm thật), cuộn ngang"><table class="at"><thead><tr><th>Segment</th><th>Lượt tìm</th><th>Không có sản phẩm “Đáp ứng”</th><th>TB sản phẩm “Đáp ứng”</th></tr></thead>
 <tbody>{{range .SegStats}}<tr><td>{{.Segment}}</td><td>{{.Searches}}</td><td>{{.ZeroElig}}</td><td>{{printf "%.1f" .AvgEligible}}</td></tr>{{end}}</tbody></table></div></div>
-<div class="panel"><h3>Chiến dịch được xếp đầu nhiều nhất</h3>{{if .Top}}<div class="tw"><table class="at"><thead><tr><th>Chiến dịch</th><th>Số lần</th></tr></thead><tbody>{{range .Top}}<tr><td><code>{{.Key}}</code></td><td>{{.Count}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có lượt tìm kiếm.</div>{{end}}</div>
+<div class="panel"><h3>Chiến dịch được xếp đầu nhiều nhất</h3>{{if .Top}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng chiến dịch được xếp đầu nhiều nhất, cuộn ngang"><table class="at"><thead><tr><th>Chiến dịch</th><th>Số lần</th></tr></thead><tbody>{{range .Top}}<tr><td><code>{{.Key}}</code></td><td>{{.Count}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có lượt tìm kiếm.</div>{{end}}</div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_tracking"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Hiệu quả theo chiến dịch</h3>{{if .Perf}}<div class="tw"><table class="at"><thead><tr><th>Chiến dịch</th><th>Click</th><th>Conversion (approved)</th><th>CR</th><th>Hoa hồng approved</th></tr></thead><tbody>{{range .Perf}}<tr><td><code>{{.Campaign}}</code></td><td>{{.Clicks}}</td><td>{{.Conversions}}</td><td>{{.CR}}</td><td>{{vnd .Payout}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có click.</div>{{end}}</div>
-<div class="panel"><h3>Click gần đây</h3>{{if .Clicks}}<div class="tw"><table class="at"><thead><tr><th>Click ID</th><th>Chiến dịch</th><th>Đối tác</th><th>Nguồn</th><th>Thiết bị</th><th>Thời gian</th></tr></thead><tbody>{{range .Clicks}}<tr><td><code>{{.ID}}</code></td><td>{{.Campaign}}</td><td>{{.Partner}}</td><td>{{.Source}}</td><td>{{.Device}}</td><td>{{.At.Format "02/01 15:04"}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có click.</div>{{end}}</div>
-<div class="panel"><h3>Conversion</h3>{{if .Convs}}<div class="tw"><table class="at"><thead><tr><th>Network</th><th>Conversion ID</th><th>Click</th><th>Chiến dịch</th><th>Trạng thái</th><th>Hoa hồng</th><th>Thanh toán</th></tr></thead><tbody>{{range .Convs}}<tr><td>{{.Network}}</td><td><code>{{.ID}}</code></td><td><code>{{.Click}}</code></td><td>{{.Campaign}}</td><td><span class="pst {{.Status}}">{{.Status}}</span></td><td>{{vnd .Payout}}</td><td>{{.PayoutStatus}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có conversion. Dữ liệu chỉ đến từ postback có chữ ký hợp lệ.</div>{{end}}</div>
-<div class="panel"><h3>Postback log</h3>{{if .PB}}<div class="tw"><table class="at"><thead><tr><th>Thời gian</th><th>Network</th><th>Tham số</th><th>Chữ ký</th><th>Kết quả</th></tr></thead><tbody>{{range .PB}}<tr><td>{{.At.Format "02/01 15:04:05"}}</td><td>{{.Network}}</td><td><code style="font-size:.74rem">{{.Query}}</code></td><td>{{if .OK}}✓{{else}}✕{{end}}</td><td>{{.Result}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có postback.</div>{{end}}</div>
+<div class="panel"><h3>Hiệu quả theo chiến dịch</h3>{{if .Perf}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng hiệu quả theo chiến dịch, cuộn ngang"><table class="at"><thead><tr><th>Chiến dịch</th><th>Click</th><th>Conversion (approved)</th><th>CR</th><th>Hoa hồng approved</th></tr></thead><tbody>{{range .Perf}}<tr><td><code>{{.Campaign}}</code></td><td>{{.Clicks}}</td><td>{{.Conversions}}</td><td>{{.CR}}</td><td>{{vnd .Payout}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có click.</div>{{end}}</div>
+<div class="panel"><h3>Click gần đây</h3>{{if .Clicks}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng click gần đây, cuộn ngang"><table class="at"><thead><tr><th>Click ID</th><th>Chiến dịch</th><th>Đối tác</th><th>Nguồn</th><th>Thiết bị</th><th>Thời gian</th></tr></thead><tbody>{{range .Clicks}}<tr><td><code>{{.ID}}</code></td><td>{{.Campaign}}</td><td>{{.Partner}}</td><td>{{.Source}}</td><td>{{.Device}}</td><td>{{.At.Format "02/01 15:04"}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có click.</div>{{end}}</div>
+<div class="panel"><h3>Conversion</h3>{{if .Convs}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng conversion, cuộn ngang"><table class="at"><thead><tr><th>Network</th><th>Conversion ID</th><th>Click</th><th>Chiến dịch</th><th>Trạng thái</th><th>Hoa hồng</th><th>Thanh toán</th></tr></thead><tbody>{{range .Convs}}<tr><td>{{.Network}}</td><td><code>{{.ID}}</code></td><td><code>{{.Click}}</code></td><td>{{.Campaign}}</td><td><span class="pst {{.Status}}">{{.Status}}</span></td><td>{{vnd .Payout}}</td><td>{{.PayoutStatus}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có conversion. Dữ liệu chỉ đến từ postback có chữ ký hợp lệ.</div>{{end}}</div>
+<div class="panel"><h3>Postback log</h3>{{if .PB}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng postback log, cuộn ngang"><table class="at"><thead><tr><th>Thời gian</th><th>Network</th><th>Tham số</th><th>Chữ ký</th><th>Kết quả</th></tr></thead><tbody>{{range .PB}}<tr><td>{{.At.Format "02/01 15:04:05"}}</td><td>{{.Network}}</td><td><code class="mono-sm">{{.Query}}</code></td><td>{{if .OK}}✓{{else}}✕{{end}}</td><td>{{.Result}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có postback.</div>{{end}}</div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_leads"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Lead</h3><p class="note" style="margin-bottom:10px">Số điện thoại được che. Dữ liệu lead mã hóa AES-GCM khi lưu.</p>{{if .Leads}}<div class="tw"><table class="at"><thead><tr><th>ID</th><th>Chiến dịch</th><th>SĐT</th><th>Trạng thái</th><th>Lần gửi</th><th>Lỗi gần nhất</th><th>Tạo lúc</th></tr></thead><tbody>{{range .Leads}}<tr><td>{{.ID}}</td><td>{{.CampaignID}}</td><td>{{.MaskedPhone}}</td><td><span class="pst {{.Status}}">{{.Status}}</span></td><td>{{.Attempts}}</td><td>{{.LastError}}</td><td>{{.CreatedAt.Format "02/01 15:04"}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có lead. Lead chỉ được nhận khi chiến dịch có lead endpoint và khách đồng ý chia sẻ.</div>{{end}}</div>
+<div class="panel"><h3>Lead</h3><p class="note mb-s">Số điện thoại được che. Dữ liệu lead mã hóa AES-GCM khi lưu.</p>{{if .Leads}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng lead, cuộn ngang"><table class="at"><thead><tr><th>ID</th><th>Chiến dịch</th><th>SĐT</th><th>Trạng thái</th><th>Lần gửi</th><th>Lỗi gần nhất</th><th>Tạo lúc</th></tr></thead><tbody>{{range .Leads}}<tr><td>{{.ID}}</td><td>{{.CampaignID}}</td><td>{{.MaskedPhone}}</td><td><span class="pst {{.Status}}">{{.Status}}</span></td><td>{{.Attempts}}</td><td>{{.LastError}}</td><td>{{.CreatedAt.Format "02/01 15:04"}}</td></tr>{{end}}</tbody></table></div>{{else}}<div class="empty">Chưa có lead. Lead chỉ được nhận khi chiến dịch có lead endpoint và khách đồng ý chia sẻ.</div>{{end}}</div>
 </div></main>{{template "foot" .}}{{end}}
 
 {{define "admin_audit"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="panel"><h3>Nhật ký thay đổi</h3><div class="tw"><table class="at"><thead><tr><th>Thời điểm</th><th>Người</th><th>Hành động</th><th>Đối tượng</th><th>Chi tiết</th></tr></thead><tbody>{{range .Audit}}<tr><td>{{.At.Format "02/01 15:04"}}</td><td>{{.Actor}}</td><td>{{.Action}}</td><td>{{.Entity}} <code>{{.EntityID}}</code></td><td>{{.Detail}}</td></tr>{{else}}<tr><td colspan="5">Chưa có thay đổi.</td></tr>{{end}}</tbody></table></div></div>
+<div class="panel"><h3>Nhật ký thay đổi</h3><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng nhật ký thay đổi, cuộn ngang"><table class="at"><thead><tr><th>Thời điểm</th><th>Người</th><th>Hành động</th><th>Đối tượng</th><th>Chi tiết</th></tr></thead><tbody>{{range .Audit}}<tr><td>{{.At.Format "02/01 15:04"}}</td><td>{{.Actor}}</td><td>{{.Action}}</td><td>{{.Entity}} <code>{{.EntityID}}</code></td><td>{{.Detail}}</td></tr>{{else}}<tr><td colspan="5">Chưa có thay đổi.</td></tr>{{end}}</tbody></table></div></div>
 </div></main>{{template "foot" .}}{{end}}

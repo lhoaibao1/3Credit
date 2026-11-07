@@ -1,18 +1,17 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:28px"><div class="in">{{template "anav" .}}
-{{if .Flash}}<div class="flash {{.FlashKind}}" role="status">{{.Flash}}</div>{{end}}
+<main id="admin"><div class="in">{{template "anav" .}}
 <div class="panel"><h3>Tài khoản CMS</h3>
-<div class="tw"><table class="at"><thead><tr><th>Tên đăng nhập</th><th>Tạo lúc</th><th>Đăng nhập gần nhất</th><th></th></tr></thead><tbody>
+<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng tài khoản CMS, cuộn ngang"><table class="at"><thead><tr><th>Tên đăng nhập</th><th>Tạo lúc</th><th>Đăng nhập gần nhất</th><th></th></tr></thead><tbody>
 {{range .Users}}<tr><td><b>{{.Username}}</b>{{if eq .Username $.User}} <span class="tag">bạn</span>{{end}}</td><td>{{.CreatedAt.Format "02/01/2006 15:04"}}</td><td>{{if .LastLogin.Valid}}{{.LastLogin.Time.Format "02/01/2006 15:04"}}{{else}}—{{end}}</td>
 <td>{{if ne .Username $.User}}<form method="post" action="/admin/users"><input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="action" value="delete"><input type="hidden" name="username" value="{{.Username}}"><button class="btn btn-line btn-sm" type="submit">Xóa</button></form>{{end}}</td></tr>{{end}}
 </tbody></table></div></div>
-<div class="grid2" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:18px">
-<form class="panel aform" style="grid-template-columns:1fr" method="post" action="/admin/users"><h3>Thêm tài khoản</h3>
+<div class="ugrid">
+<form class="panel aform one" method="post" action="/admin/users"><h3>Thêm tài khoản</h3>
 <input type="hidden" name="csrf" value="{{.CSRF}}"><input type="hidden" name="action" value="create">
 <label>Tên đăng nhập<input name="username" required pattern="[a-z0-9._\-]{3,32}" autocomplete="off"></label>
 <label>Mật khẩu (tối thiểu 10 ký tự)<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
 <button class="btn btn-pri" type="submit">Tạo tài khoản</button></form>
-<form class="panel aform" style="grid-template-columns:1fr" method="post" action="/admin/users"><h3>Đổi mật khẩu của bạn</h3>
+<form class="panel aform one" method="post" action="/admin/users"><h3>Đổi mật khẩu của bạn</h3>
 <input type="hidden" name="csrf" value="{{.CSRF}}"><input type="hidden" name="action" value="password">
 <label>Mật khẩu hiện tại<input type="password" name="current" required autocomplete="current-password"></label>
 <label>Mật khẩu mới<input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
