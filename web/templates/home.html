@@ -63,18 +63,16 @@
         <div class="fld"><label for="fTerm">Kỳ hạn <output id="oTerm">{{.P.Term}} tháng</output></label><input type="range" id="fTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>
         <div class="two">
           <div class="fld"><label for="fAge">Tuổi</label><input type="number" id="fAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
-          <div class="fld"><label for="fRegion">Nơi sống</label><select id="fRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+          <div class="fld"><label for="fVeh">Đăng ký xe</label><select id="fVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
         </div>
+        <div class="fld"><label for="fRegion">Nơi sống</label><select id="fRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
         <div class="fld"><label for="fJob">Công việc</label><select id="fJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
         <div class="two">
           <div class="fld"><label for="fIncome">Thu nhập/tháng</label><select id="fIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
           <div class="fld"><label for="fChannel">Nhận lương</label><select id="fChannel" name="channel">{{range .Channels}}<option value="{{.V}}" {{if eq .V $.P.Channel}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
         </div>
         <div class="fld"><label for="fCredit">Lịch sử tín dụng (tự khai)</label><select id="fCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="two">
-          <div class="fld"><label for="fUrg">Mức gấp</label><select id="fUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-          <div class="fld"><label for="fVeh">Đăng ký xe</label><select id="fVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        </div>
+        <div class="fld"><label for="fUrg">Mức gấp</label><select id="fUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
         <noscript><button class="btn btn-pri" type="submit">Xem đề xuất</button></noscript>
         <p class="note">Hồ sơ không gồm thông tin định danh. 3Credit lưu ẩn danh để cải thiện đề xuất.</p>
       </form>

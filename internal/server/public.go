@@ -20,14 +20,23 @@ import (
 type opt struct{ V, L string }
 
 var (
-	needs     = []opt{{"cash_loan", "Vay tiền"}, {"credit_card", "Thẻ tín dụng"}, {"secured", "Vay bằng xe"}, {"compare", "Tất cả"}}
-	regions   = []opt{{"hn", "Hà Nội"}, {"hcm", "TP. Hồ Chí Minh"}, {"dn", "Đà Nẵng"}, {"hp", "Hải Phòng"}, {"ct", "Cần Thơ"}, {"other", "Tỉnh/thành khác"}}
-	jobs      = []opt{{"salaried_office", "Nhân viên văn phòng"}, {"civil_servant", "Công chức, viên chức, y tế, giáo dục"}, {"worker", "Công nhân, lao động phổ thông"}, {"self_employed", "Chủ hộ kinh doanh"}, {"online_seller", "Kinh doanh online"}, {"freelancer", "Làm tự do (freelancer)"}, {"driver_gig", "Tài xế công nghệ"}, {"student", "Sinh viên"}, {"retired", "Nghỉ hưu"}}
-	incomes   = []opt{{"2", "Dưới 3 triệu"}, {"4", "3–5 triệu"}, {"6", "5–7 triệu"}, {"9", "7–10 triệu"}, {"12", "10–15 triệu"}, {"20", "15–25 triệu"}, {"30", "Trên 25 triệu"}}
-	channels  = []opt{{"bank_transfer", "Chuyển khoản"}, {"cash", "Tiền mặt"}, {"mixed", "Cả hai"}}
-	credits   = []opt{{"", "Không muốn trả lời"}, {"good", "Tốt, chưa từng trễ hạn"}, {"none", "Chưa từng vay"}, {"past_late_resolved", "Từng trễ hạn, đã xử lý xong"}, {"group2", "Đang nợ nhóm 2"}, {"bad_settled", "Từng nợ xấu, đã tất toán"}, {"bad_unsettled", "Đang có nợ xấu chưa tất toán"}}
-	urgencies = []opt{{"flexible", "Không gấp"}, {"this_week", "Trong tuần"}, {"today", "Cần ngay hôm nay"}}
-	vehicles  = []opt{{"none", "Không có"}, {"motorbike", "Xe máy"}, {"car", "Ô tô"}}
+	needs = []opt{{"cash_loan", "Vay tiền"}, {"credit_card", "Thẻ tín dụng"}, {"secured", "Vay bằng xe"}, {"compare", "Tất cả"}}
+	// regions: the 34 provincial-level units in force since 01/7/2025 (6 centrally-run cities first, then provinces A–Z).
+	// Codes are stable; never rename one, policies and stored profiles reference them.
+	regions = []opt{
+		{"hn", "Hà Nội"}, {"hcm", "TP. Hồ Chí Minh"}, {"hp", "Hải Phòng"}, {"dn", "Đà Nẵng"}, {"ct", "Cần Thơ"}, {"hue", "Huế"},
+		{"angiang", "An Giang"}, {"bacninh", "Bắc Ninh"}, {"camau", "Cà Mau"}, {"caobang", "Cao Bằng"}, {"daklak", "Đắk Lắk"}, {"dienbien", "Điện Biên"}, {"dongnai", "Đồng Nai"}, {"dongthap", "Đồng Tháp"}, {"gialai", "Gia Lai"}, {"hatinh", "Hà Tĩnh"},
+		{"hungyen", "Hưng Yên"}, {"khanhhoa", "Khánh Hòa"}, {"laichau", "Lai Châu"}, {"lamdong", "Lâm Đồng"}, {"langson", "Lạng Sơn"}, {"laocai", "Lào Cai"}, {"nghean", "Nghệ An"}, {"ninhbinh", "Ninh Bình"}, {"phutho", "Phú Thọ"}, {"quangngai", "Quảng Ngãi"},
+		{"quangninh", "Quảng Ninh"}, {"quangtri", "Quảng Trị"}, {"sonla", "Sơn La"}, {"tayninh", "Tây Ninh"}, {"thainguyen", "Thái Nguyên"}, {"thanhhoa", "Thanh Hóa"}, {"tuyenquang", "Tuyên Quang"}, {"vinhlong", "Vĩnh Long"},
+	}
+	// legacyRegions are still accepted when reading old URLs and stored data, but are not offered for selection.
+	legacyRegions = []opt{{"other", "Tỉnh/thành khác"}}
+	jobs          = []opt{{"salaried_office", "Nhân viên văn phòng"}, {"civil_servant", "Công chức, viên chức, y tế, giáo dục"}, {"worker", "Công nhân, lao động phổ thông"}, {"self_employed", "Chủ hộ kinh doanh"}, {"online_seller", "Kinh doanh online"}, {"freelancer", "Làm tự do (freelancer)"}, {"driver_gig", "Tài xế công nghệ"}, {"student", "Sinh viên"}, {"retired", "Nghỉ hưu"}}
+	incomes       = []opt{{"2", "Dưới 3 triệu"}, {"4", "3–5 triệu"}, {"6", "5–7 triệu"}, {"9", "7–10 triệu"}, {"12", "10–15 triệu"}, {"20", "15–25 triệu"}, {"30", "Trên 25 triệu"}}
+	channels      = []opt{{"bank_transfer", "Chuyển khoản"}, {"cash", "Tiền mặt"}, {"mixed", "Cả hai"}}
+	credits       = []opt{{"", "Không muốn trả lời"}, {"good", "Tốt, chưa từng trễ hạn"}, {"none", "Chưa từng vay"}, {"past_late_resolved", "Từng trễ hạn, đã xử lý xong"}, {"group2", "Đang nợ nhóm 2"}, {"bad_settled", "Từng nợ xấu, đã tất toán"}, {"bad_unsettled", "Đang có nợ xấu chưa tất toán"}}
+	urgencies     = []opt{{"flexible", "Không gấp"}, {"this_week", "Trong tuần"}, {"today", "Cần ngay hôm nay"}}
+	vehicles      = []opt{{"none", "Không có"}, {"motorbike", "Xe máy"}, {"car", "Ô tô"}}
 )
 
 func pick(v string, opts []opt, def string) string {
@@ -37,6 +46,23 @@ func pick(v string, opts []opt, def string) string {
 		}
 	}
 	return def
+}
+
+// pickRegion accepts any current region code and the legacy codes; anything else falls back to HCM.
+func pickRegion(v string) string {
+	if pick(v, legacyRegions, "") != "" {
+		return v
+	}
+	return pick(v, regions, "hcm")
+}
+
+// RegionCodes lists the selectable region codes (for policy rules and admin forms).
+func RegionCodes() []string {
+	out := make([]string, len(regions))
+	for i, o := range regions {
+		out[i] = o.V
+	}
+	return out
 }
 
 func clampInt(s string, lo, hi, def int) int {
@@ -65,7 +91,7 @@ func ParseProfile(v url.Values) model.Profile {
 		Amount:  float64(clampInt(v.Get("amount"), 1, 500, 50)) * 1e6,
 		Term:    clampInt(v.Get("term"), 1, 60, 24),
 		Age:     clampInt(v.Get("age"), 16, 90, 28),
-		Region:  pick(v.Get("region"), regions, "hcm"),
+		Region:  pickRegion(v.Get("region")),
 		Job:     pick(v.Get("job"), jobs, "salaried_office"),
 		Income:  inc,
 		Channel: pick(v.Get("channel"), channels, "bank_transfer"),
@@ -159,7 +185,7 @@ func (s *Server) results(r *http.Request, p model.Profile, logIt bool) (map[stri
 	return map[string]any{
 		"P": p, "Results": rs, "Counts": counts, "Segments": segs, "Groups": gs, "Nots": nots,
 		"Adverse": matching.AdverseCredit(p.Credit), "CreditText": creditText[p.Credit],
-		"Query": q(profileQuery(p)),
+		"Query": q(profileQuery(p)), "Needs": needs,
 	}, nil
 }
 
@@ -353,7 +379,7 @@ func (s *Server) fail(w http.ResponseWriter, err error) {
 
 // Label returns the Vietnamese label for a profile code (need, job, region, credit…).
 func Label(code string) string {
-	for _, list := range [][]opt{needs, regions, jobs, channels, credits, urgencies, vehicles} {
+	for _, list := range [][]opt{needs, regions, legacyRegions, jobs, channels, credits, urgencies, vehicles} {
 		for _, o := range list {
 			if o.V == code && code != "" {
 				return o.L
