@@ -259,6 +259,8 @@ type PolicyForm struct {
 	VehicleConf                      string
 	Credit                           []string
 	CreditConf                       string
+	SocialMin, SocialConf            string
+	LifeMin, LifeConf                string
 	Facts                            []FactForm
 	Flags, Source                    string
 }
@@ -301,6 +303,12 @@ func toForm(v model.PolicyVersion) PolicyForm {
 	}
 	if R.Credit != nil {
 		f.Credit, f.CreditConf = R.Credit.Values, conf(R.Credit.Conf)
+	}
+	if R.SocialIns != nil {
+		f.SocialMin, f.SocialConf = num(R.SocialIns.Min), conf(R.SocialIns.Conf)
+	}
+	if R.LifeIns != nil {
+		f.LifeMin, f.LifeConf = num(R.LifeIns.Min), conf(R.LifeIns.Conf)
 	}
 	I := v.Info
 	for _, x := range []struct {
@@ -397,6 +405,17 @@ func fromForm(r *http.Request) (model.Rules, model.Info, error) {
 			return R, model.Info{}, fmt.Errorf("Lịch sử tín dụng: chọn ít nhất một trường hợp được nhận")
 		}
 		R.Credit = &model.ListRule{Values: cs, Conf: c}
+	}
+	if c, used := pconf(r.FormValue("social_conf")); used {
+		mn, ok := pf(r, "social_min")
+		if !ok {
+			return R, model.Info{}, fmt.Errorf("BHXH: cần số tháng đóng tối thiểu")
+		}
+		R.SocialIns = &model.MinRule{Min: mn, Conf: c}
+	}
+	if c, used := pconf(r.FormValue("life_conf")); used {
+		mn, _ := pf(r, "life_min") // empty = only needs a contract
+		R.LifeIns = &model.MinRule{Min: mn, Conf: c}
 	}
 	var I model.Info
 	fact := func(k string) *model.Fact {

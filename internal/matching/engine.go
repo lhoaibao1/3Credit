@@ -9,6 +9,7 @@ package matching
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 
@@ -18,10 +19,10 @@ import (
 type Status string
 
 const (
-	Eligible   Status = "eligible"    // meets every verified condition we know
-	Potential  Status = "potential"   // no verified failure, but something must be checked
-	Unverified Status = "unverified"  // no verified condition to compare against
-	NotElig    Status = "not"         // fails a verified condition
+	Eligible   Status = "eligible"   // meets every verified condition we know
+	Potential  Status = "potential"  // no verified failure, but something must be checked
+	Unverified Status = "unverified" // no verified condition to compare against
+	NotElig    Status = "not"        // fails a verified condition
 )
 
 var statusOrder = map[Status]int{Eligible: 0, Potential: 1, Unverified: 2, NotElig: 3}
@@ -108,6 +109,40 @@ func (e *eval) check(ok bool, conf model.Confidence, okTxt, badTxt string) {
 	}
 }
 
+// insurance answers are bands; a band passes when its lower end meets the minimum,
+// fails when its upper end is below it, and is unknown otherwise (or when not declared).
+type span struct{ lo, hi float64 }
+
+var (
+	socialSpan = map[string]span{"none": {0, 0}, "lt6": {0.001, 5.999}, "6to12": {6, 12}, "gt12": {12.001, math.Inf(1)}}
+	lifeSpan   = map[string]span{"none": {-1, -1}, "lt1y": {0, 0.999}, "ge1y": {1, math.Inf(1)}}
+)
+
+// insCheck returns 1 = meets, -1 = does not meet, 0 = unknown.
+func insCheck(s span, min float64) int {
+	switch {
+	case s == span{}:
+		return 0
+	case s.lo >= min:
+		return 1
+	case s.hi < min:
+		return -1
+	}
+	return 0
+}
+
+// tri is check() with an "unknown" outcome that only asks the customer to verify.
+func (e *eval) tri(v int, conf model.Confidence, okTxt, badTxt, unkTxt string) {
+	if v == 0 {
+		e.gaps = append(e.gaps, unkTxt)
+		if conf.Verified() {
+			e.soft++ // a published condition we cannot confirm keeps the offer at "cần kiểm tra"
+		}
+		return
+	}
+	e.check(v > 0, conf, okTxt, badTxt)
+}
+
 func rangeText(r *model.Range, unit func(float64) string) string {
 	if r.Min > 0 {
 		return unit(r.Min) + "–" + unit(r.Max)
@@ -185,6 +220,21 @@ func Evaluate(o model.Offer, p model.Profile, live bool) Result {
 		e.check(p.Vehicle != "" && p.Vehicle != "none", R.Vehicle.Conf,
 			"Bạn có giấy đăng ký xe làm tài sản", "Cần giấy đăng ký xe máy hoặc ô tô")
 	}
+	if R.SocialIns != nil {
+		m := trimNum(R.SocialIns.Min)
+		e.tri(insCheck(socialSpan[p.SocialIns], R.SocialIns.Min), R.SocialIns.Conf,
+			"Thời gian đóng BHXH đạt yêu cầu tối thiểu "+m+" tháng",
+			"Cần đóng BHXH tối thiểu "+m+" tháng",
+			"Cần kiểm tra thời gian đóng BHXH (yêu cầu tối thiểu "+m+" tháng)")
+	}
+	if R.LifeIns != nil {
+		want := "Cần có hợp đồng bảo hiểm nhân thọ"
+		if R.LifeIns.Min > 0 {
+			want += " đã đóng phí tối thiểu " + trimNum(R.LifeIns.Min) + " năm"
+		}
+		e.tri(insCheck(lifeSpan[p.LifeIns], R.LifeIns.Min), R.LifeIns.Conf,
+			"Hợp đồng bảo hiểm nhân thọ đạt yêu cầu", want, "Cần kiểm tra hợp đồng bảo hiểm nhân thọ ("+strings.ToLower(want[:1])+want[1:]+")")
+	}
 	adverse := AdverseCredit(p.Credit)
 	if R.Credit != nil && R.Credit.Conf.Verified() {
 		if p.Credit != "" {
@@ -220,6 +270,7 @@ func Evaluate(o model.Offer, p model.Profile, live bool) Result {
 		R.Age != nil && R.Age.Conf.Verified(), R.Income != nil && R.Income.Conf.Verified(),
 		R.Channel != nil && R.Channel.Conf.Verified(), R.Jobs != nil && R.Jobs.Conf.Verified(),
 		R.Vehicle != nil && R.Vehicle.Conf.Verified(),
+		R.SocialIns != nil && R.SocialIns.Conf.Verified(), R.LifeIns != nil && R.LifeIns.Conf.Verified(),
 	} {
 		if v {
 			known++

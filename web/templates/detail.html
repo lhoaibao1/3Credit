@@ -2,7 +2,7 @@
 {{$r := .R}}{{$o := .R.Offer}}
 <main class="sec page">
   <div class="in stack w-980">
-    <div class="crumb"><a href="/?{{.Query}}#tim">← Quay lại kết quả</a></div>
+    <div class="crumb"><a href="/?{{.Query}}&amp;xem=1#tim">← Quay lại kết quả</a></div>
     <div class="card">
       <div class="ch">{{template "logo" $o.Partner}}<div><h1 class="h-detail">{{$o.Product.Name}}</h1><small>{{$o.Partner.Name}} · {{$o.Partner.OrgType}}</small></div><span class="st {{$r.Status}}">{{$r.Status.Label}}</span></div>
       <div class="kv">

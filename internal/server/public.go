@@ -36,6 +36,8 @@ var (
 	channels      = []opt{{"bank_transfer", "Chuyển khoản"}, {"cash", "Tiền mặt"}, {"mixed", "Cả hai"}}
 	credits       = []opt{{"", "Không muốn trả lời"}, {"good", "Tốt, chưa từng trễ hạn"}, {"none", "Chưa từng vay"}, {"past_late_resolved", "Từng trễ hạn, đã xử lý xong"}, {"group2", "Đang nợ nhóm 2"}, {"bad_settled", "Từng nợ xấu, đã tất toán"}, {"bad_unsettled", "Đang có nợ xấu chưa tất toán"}}
 	urgencies     = []opt{{"flexible", "Không gấp"}, {"this_week", "Trong tuần"}, {"today", "Cần ngay hôm nay"}}
+	socialIns     = []opt{{"none", "Không tham gia BHXH"}, {"lt6", "BHXH dưới 6 tháng"}, {"6to12", "BHXH 6–12 tháng"}, {"gt12", "BHXH trên 12 tháng"}}
+	lifeIns       = []opt{{"none", "Không có BHNT"}, {"lt1y", "BHNT đã đóng dưới 1 năm"}, {"ge1y", "BHNT đã đóng từ 1 năm"}}
 	vehicles      = []opt{{"none", "Không có"}, {"motorbike", "Xe máy"}, {"car", "Ô tô"}}
 )
 
@@ -87,17 +89,19 @@ func ParseProfile(v url.Values) model.Profile {
 		credit = pick(v.Get("credit"), credits, "")
 	}
 	return model.Profile{
-		Need:    pick(v.Get("need"), needs, "cash_loan"),
-		Amount:  float64(clampInt(v.Get("amount"), 1, 500, 50)) * 1e6,
-		Term:    clampInt(v.Get("term"), 1, 60, 24),
-		Age:     clampInt(v.Get("age"), 16, 90, 28),
-		Region:  pickRegion(v.Get("region")),
-		Job:     pick(v.Get("job"), jobs, "salaried_office"),
-		Income:  inc,
-		Channel: pick(v.Get("channel"), channels, "bank_transfer"),
-		Credit:  credit,
-		Urgency: pick(v.Get("urgency"), urgencies, "flexible"),
-		Vehicle: pick(v.Get("vehicle"), vehicles, "none"),
+		Need:      pick(v.Get("need"), needs, "cash_loan"),
+		Amount:    float64(clampInt(v.Get("amount"), 1, 500, 50)) * 1e6,
+		Term:      clampInt(v.Get("term"), 1, 60, 24),
+		Age:       clampInt(v.Get("age"), 16, 90, 28),
+		Region:    pickRegion(v.Get("region")),
+		Job:       pick(v.Get("job"), jobs, "salaried_office"),
+		Income:    inc,
+		Channel:   pick(v.Get("channel"), channels, "bank_transfer"),
+		Credit:    credit,
+		Urgency:   pick(v.Get("urgency"), urgencies, "flexible"),
+		Vehicle:   pick(v.Get("vehicle"), vehicles, "none"),
+		SocialIns: pick(v.Get("social_ins"), socialIns, ""),
+		LifeIns:   pick(v.Get("life_ins"), lifeIns, ""),
 	}
 }
 
@@ -114,6 +118,12 @@ func profileQuery(p model.Profile) url.Values {
 	v.Set("credit", p.Credit)
 	v.Set("urgency", p.Urgency)
 	v.Set("vehicle", p.Vehicle)
+	if p.SocialIns != "" {
+		v.Set("social_ins", p.SocialIns)
+	}
+	if p.LifeIns != "" {
+		v.Set("life_ins", p.LifeIns)
+	}
 	return v
 }
 
@@ -204,8 +214,12 @@ func targets(campaignSegs, profileSegs []string) bool {
 }
 
 func (s *Server) home(w http.ResponseWriter, r *http.Request) {
-	p := ParseProfile(r.URL.Query())
-	data, err := s.results(r, p, len(r.URL.Query()) > 0)
+	qv := r.URL.Query()
+	p := ParseProfile(qv)
+	// Results appear only once the visitor finished the question flow (xem=1);
+	// links such as /?need=cash_loan#tim just preselect the first answer.
+	done := qv.Get("xem") == "1"
+	data, err := s.results(r, p, done)
 	if err != nil {
 		s.fail(w, err)
 		return
@@ -220,7 +234,15 @@ func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 	}
 	data["Partners"] = partners
 	data["Posts"], _ = s.st.Posts(true, 4)
+	step := 1
+	if qv.Get("need") != "" {
+		step = 2
+	}
+	data["Done"], data["Step"] = done, step
 	data["Back"], data["Source"] = "/?"+profileQuery(p).Encode(), "trang-chu"
+	if done {
+		data["Back"] = data["Back"].(string) + "&xem=1"
+	}
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		data["Flash"], data["FlashKind"] = msg, kind
 	}
@@ -379,7 +401,7 @@ func (s *Server) fail(w http.ResponseWriter, err error) {
 
 // Label returns the Vietnamese label for a profile code (need, job, region, credit…).
 func Label(code string) string {
-	for _, list := range [][]opt{needs, regions, legacyRegions, jobs, channels, credits, urgencies, vehicles} {
+	for _, list := range [][]opt{needs, regions, legacyRegions, jobs, channels, credits, urgencies, vehicles, socialIns, lifeIns} {
 		for _, o := range list {
 			if o.V == code && code != "" {
 				return o.L

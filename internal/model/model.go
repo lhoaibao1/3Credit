@@ -4,26 +4,27 @@ package model
 import "time"
 
 // Confidence of a policy value, see docs/research/source-register.md.
-//   A = read directly on the partner's official website
-//   B = official but indirect (banking association, other partner page)
-//   C = press / aggregator, reference only
-//   "" = not verified
+//
+//	A = read directly on the partner's official website
+//	B = official but indirect (banking association, other partner page)
+//	C = press / aggregator, reference only
+//	"" = not verified
 type Confidence string
 
 // Verified reports whether a value may be used as a hard eligibility rule.
 func (c Confidence) Verified() bool { return c == "A" || c == "B" }
 
 type Partner struct {
-	ID         string     `json:"id"`
-	Name       string     `json:"name"`
-	LegalName  string     `json:"legal_name"`
-	OrgType    string     `json:"org_type"`
-	Group      string     `json:"group"`
-	LegalConf  Confidence `json:"legal_conf"`
-	LogoPath   string     `json:"logo_path"`
-	Website    string     `json:"website"`
-	Integration string    `json:"integration"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	LegalName   string     `json:"legal_name"`
+	OrgType     string     `json:"org_type"`
+	Group       string     `json:"group"`
+	LegalConf   Confidence `json:"legal_conf"`
+	LogoPath    string     `json:"logo_path"`
+	Website     string     `json:"website"`
+	Integration string     `json:"integration"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 type Product struct {
@@ -47,6 +48,12 @@ type IncomeRule struct {
 	Conf     Confidence `json:"conf"`
 }
 
+// MinRule is a "at least N" condition (months of social insurance, years of life-insurance premiums).
+type MinRule struct {
+	Min  float64    `json:"min"`
+	Conf Confidence `json:"conf"`
+}
+
 type ListRule struct {
 	Values []string   `json:"values"`
 	Mode   string     `json:"mode,omitempty"` // allow | boost
@@ -62,15 +69,17 @@ type FlagRule struct {
 // Rules are the eligibility conditions of one policy version.
 // A nil field means "not verified / not published".
 type Rules struct {
-	Amount  *Range      `json:"amount,omitempty"` // VNĐ
-	Term    *Range      `json:"term,omitempty"`   // months
-	Age     *Range      `json:"age,omitempty"`
-	Income  *IncomeRule `json:"income,omitempty"`
-	Channel *ListRule   `json:"channel,omitempty"`
-	Jobs    *ListRule   `json:"jobs,omitempty"`
-	Regions *ListRule   `json:"regions,omitempty"`
-	Vehicle *FlagRule   `json:"vehicle,omitempty"`
-	Credit  *ListRule   `json:"credit,omitempty"` // accepted credit_history values
+	Amount    *Range      `json:"amount,omitempty"` // VNĐ
+	Term      *Range      `json:"term,omitempty"`   // months
+	Age       *Range      `json:"age,omitempty"`
+	Income    *IncomeRule `json:"income,omitempty"`
+	Channel   *ListRule   `json:"channel,omitempty"`
+	Jobs      *ListRule   `json:"jobs,omitempty"`
+	Regions   *ListRule   `json:"regions,omitempty"`
+	Vehicle   *FlagRule   `json:"vehicle,omitempty"`
+	Credit    *ListRule   `json:"credit,omitempty"`     // accepted credit_history values
+	SocialIns *MinRule    `json:"social_ins,omitempty"` // minimum months of social insurance (BHXH)
+	LifeIns   *MinRule    `json:"life_ins,omitempty"`   // minimum years of life-insurance premiums paid (BHNT)
 }
 
 // Fact is a displayable policy value with its confidence.
@@ -158,17 +167,19 @@ type Offer struct {
 
 // Profile is what a customer self-declares. It never contains PII.
 type Profile struct {
-	Need    string  `json:"need"`    // cash_loan | credit_card | secured | compare
-	Amount  float64 `json:"amount"`  // VNĐ
-	Term    int     `json:"term"`    // months
-	Age     int     `json:"age"`
-	Region  string  `json:"region"`
-	Job     string  `json:"job"`
-	Income  float64 `json:"income"`  // triệu / tháng
-	Channel string  `json:"channel"` // bank_transfer | cash | mixed
-	Credit  string  `json:"credit"`  // "" | good | none | past_late_resolved | group2 | bad_settled | bad_unsettled
-	Urgency string  `json:"urgency"` // flexible | this_week | today
-	Vehicle string  `json:"vehicle"` // none | motorbike | car
+	Need      string  `json:"need"`   // cash_loan | credit_card | secured | compare
+	Amount    float64 `json:"amount"` // VNĐ
+	Term      int     `json:"term"`   // months
+	Age       int     `json:"age"`
+	Region    string  `json:"region"`
+	Job       string  `json:"job"`
+	Income    float64 `json:"income"`               // triệu / tháng
+	Channel   string  `json:"channel"`              // bank_transfer | cash | mixed
+	Credit    string  `json:"credit"`               // "" | good | none | past_late_resolved | group2 | bad_settled | bad_unsettled
+	Urgency   string  `json:"urgency"`              // flexible | this_week | today
+	Vehicle   string  `json:"vehicle"`              // none | motorbike | car
+	SocialIns string  `json:"social_ins,omitempty"` // "" | none | lt6 | 6to12 | gt12 (BHXH, months)
+	LifeIns   string  `json:"life_ins,omitempty"`   // "" | none | lt1y | ge1y (BHNT premiums paid)
 }
 
 type Segment struct {

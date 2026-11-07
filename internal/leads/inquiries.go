@@ -27,6 +27,8 @@ type InquiryInput struct {
 	Income     float64 `json:"income"`
 	Region     string  `json:"region"`
 	Credit     string  `json:"credit"`
+	SocialIns  string  `json:"social_ins,omitempty"`
+	LifeIns    string  `json:"life_ins,omitempty"`
 	Message    string  `json:"message"`
 	CampaignID string  `json:"campaign_id"`
 	SourcePage string  `json:"source_page"`
@@ -157,11 +159,11 @@ func (r *Router) ExportCSV(w io.Writer, status string, label func(string) string
 	}
 	w.Write([]byte("\xEF\xBB\xBF"))
 	cw := csv.NewWriter(w)
-	cw.Write([]string{"ID", "Thời gian", "Họ tên", "Số điện thoại", "Nhu cầu", "Số tiền (triệu)", "Kỳ hạn (tháng)", "Công việc", "Thu nhập (triệu)", "Khu vực", "Lịch sử tín dụng (tự khai)", "Lời nhắn", "Sản phẩm quan tâm", "Trang", "Trạng thái", "Ghi chú"})
+	cw.Write([]string{"ID", "Thời gian", "Họ tên", "Số điện thoại", "Nhu cầu", "Số tiền (triệu)", "Kỳ hạn (tháng)", "Công việc", "Thu nhập (triệu)", "Khu vực", "Lịch sử tín dụng (tự khai)", "BHXH", "BHNT", "Lời nhắn", "Sản phẩm quan tâm", "Trang", "Trạng thái", "Ghi chú"})
 	for _, i := range list {
 		cw.Write([]string{
 			fmt.Sprint(i.ID), i.CreatedAt.Local().Format("02/01/2006 15:04"), safeCell(i.In.Name), "'" + i.In.Phone, label(i.In.Need),
-			fmt.Sprintf("%.0f", i.In.Amount/1e6), fmt.Sprint(i.In.Term), label(i.In.Job), fmt.Sprintf("%g", i.In.Income), label(i.In.Region), label(i.In.Credit),
+			fmt.Sprintf("%.0f", i.In.Amount/1e6), fmt.Sprint(i.In.Term), label(i.In.Job), fmt.Sprintf("%g", i.In.Income), label(i.In.Region), label(i.In.Credit), label(i.In.SocialIns), label(i.In.LifeIns),
 			safeCell(i.In.Message), i.Campaign, i.Source, i.Status, safeCell(i.Note),
 		})
 	}

@@ -95,6 +95,10 @@ func fieldValue(p model.Profile, f string) (any, bool) {
 		return p.Urgency, true
 	case "vehicle":
 		return p.Vehicle, true
+	case "social_ins":
+		return p.SocialIns, true
+	case "life_ins":
+		return p.LifeIns, true
 	}
 	return nil, false
 }

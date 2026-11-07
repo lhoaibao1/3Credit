@@ -52,32 +52,63 @@
 
 <section class="sec" id="tim">
   <div class="in">
-    <div class="sh"><div class="t"><span class="eyebrow">Tìm sản phẩm</span><h2>Hồ sơ của bạn, <span class="or">đề xuất của bạn</span></h2><p>Đây là đánh giá theo điều kiện công bố, không phải kết quả duyệt vay.</p></div></div>
-    <div class="wiz">
-      <form class="wform" id="pf" method="get" action="/#tim">
-        <h3>Thông tin của bạn</h3>
-        <div class="fld"><span class="lb">Bạn cần</span><div class="seg">
-          {{range .Needs}}<label class="dc"><input type="radio" name="need" value="{{.V}}" {{if eq .V $.P.Need}}checked{{end}} hidden><button type="button" data-need="{{.V}}" aria-pressed="{{eq .V $.P.Need}}">{{.L}}</button></label>{{end}}
-        </div></div>
-        <div class="fld"><label for="fAmount">Số tiền <output id="oAmount">{{money .P.Amount}}</output></label><input type="range" id="fAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
-        <div class="fld"><label for="fTerm">Kỳ hạn <output id="oTerm">{{.P.Term}} tháng</output></label><input type="range" id="fTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>
-        <div class="two">
-          <div class="fld"><label for="fAge">Tuổi</label><input type="number" id="fAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
-          <div class="fld"><label for="fVeh">Đăng ký xe</label><select id="fVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+    <div class="sh"><div class="t"><span class="eyebrow">Tìm sản phẩm</span><h2>Hồ sơ của bạn, <span class="or">đề xuất của bạn</span></h2><p>Trả lời vài câu ngắn, 3Credit đối chiếu với điều kiện đối tác công bố. Đây không phải kết quả duyệt vay.</p></div></div>
+    {{if .Done}}<div class="psum" id="psum">
+      <div><b>Hồ sơ bạn đã khai</b>
+        <p>{{if eq .P.Need "credit_card"}}Thẻ tín dụng · hạn mức {{money .P.Amount}}{{else}}{{vi .P.Need}} · {{money .P.Amount}} · {{.P.Term}} tháng{{end}} · {{.P.Age}} tuổi · {{vi .P.Region}} · {{vi .P.Job}} · {{range .Incomes}}{{if eq .V (printf "%g" $.P.Income)}}{{.L}}/tháng{{end}}{{end}} · {{vi .P.Channel}}{{if .P.SocialIns}} · {{vi .P.SocialIns}}{{end}}{{if .P.LifeIns}} · {{vi .P.LifeIns}}{{end}} · Tín dụng: {{if .P.Credit}}{{vi .P.Credit}}{{else}}không khai{{end}}{{if and (ne .P.Vehicle "none") (or (eq .P.Need "secured") (eq .P.Need "compare"))}} · Đăng ký {{vi .P.Vehicle}}{{end}}</p></div>
+      <a class="btn btn-line btn-sm" href="/?{{.Query}}#tim" data-edit>Sửa thông tin</a>
+    </div>{{end}}
+    <form class="wz" id="pf" method="get" action="/#tim" data-start="{{.Step}}"{{if .Done}} hidden{{end}} novalidate>
+      <input type="hidden" name="xem" value="1">
+      <div class="wz-head" aria-hidden="true"><span class="wz-n">Bước <b id="wzN">1</b>/6</span><span class="wz-bar"><i id="wzBar"></i></span></div>
+      <p class="wz-err" id="wzErr" role="alert" hidden>Vui lòng chọn một câu trả lời để tiếp tục.</p>
+
+      <fieldset class="wz-step" data-step="1"><legend>Bạn cần gì?</legend>
+        <div class="opts big">
+          {{range .Needs}}<label class="opt"><input type="radio" name="need" value="{{.V}}" {{if eq .V $.P.Need}}checked{{end}} required><span><i><svg width="22" height="22"><use href="{{if eq .V "cash_loan"}}#i-cash{{else if eq .V "credit_card"}}#i-card{{else if eq .V "secured"}}#i-key{{else}}#i-scale{{end}}"/></svg></i><b>{{if eq .V "compare"}}Chưa rõ – so sánh tất cả{{else}}{{.L}}{{end}}</b><small>{{if eq .V "cash_loan"}}Vay tiêu dùng, vay qua app{{else if eq .V "credit_card"}}Theo thu nhập, nhu cầu chi tiêu{{else if eq .V "secured"}}Dùng giấy đăng ký xe máy, ô tô{{else}}Xem mọi loại sản phẩm{{end}}</small></span></label>{{end}}
         </div>
-        <div class="fld"><label for="fRegion">Nơi sống</label><select id="fRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+      </fieldset>
+
+      <fieldset class="wz-step" data-step="2"><legend><span class="if-loan">Bạn cần bao nhiêu và trong bao lâu?</span><span class="if-card">Bạn mong muốn hạn mức thẻ bao nhiêu?</span></legend>
+        <div class="fld"><label for="fAmount"><span class="if-loan">Số tiền</span><span class="if-card">Hạn mức mong muốn</span> <output id="oAmount">{{money .P.Amount}}</output></label><input type="range" id="fAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
+        <div class="fld if-loan"><label for="fTerm">Kỳ hạn <output id="oTerm">{{.P.Term}} tháng</output></label><input type="range" id="fTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>
+      </fieldset>
+
+      <fieldset class="wz-step" data-step="3"><legend>Bạn bao nhiêu tuổi và sống ở đâu?</legend>
+        <div class="fld"><label for="fAge">Tuổi</label><input type="number" id="fAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
+        <div class="fld"><label for="fRegion">Nơi sống (tỉnh/thành)</label><select id="fRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+      </fieldset>
+
+      <fieldset class="wz-step" data-step="4"><legend>Công việc và thu nhập</legend>
         <div class="fld"><label for="fJob">Công việc</label><select id="fJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="two">
-          <div class="fld"><label for="fIncome">Thu nhập/tháng</label><select id="fIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-          <div class="fld"><label for="fChannel">Nhận lương</label><select id="fChannel" name="channel">{{range .Channels}}<option value="{{.V}}" {{if eq .V $.P.Channel}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        </div>
-        <div class="fld"><label for="fCredit">Lịch sử tín dụng (tự khai)</label><select id="fCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="fld"><label for="fUrg">Mức gấp</label><select id="fUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <noscript><button class="btn btn-pri" type="submit">Xem đề xuất</button></noscript>
-        <p class="note">Hồ sơ không gồm thông tin định danh. 3Credit lưu ẩn danh để cải thiện đề xuất.</p>
-      </form>
-      <div class="res" id="results" aria-live="polite">{{template "results" .}}</div>
-    </div>
+        <div class="fld"><span class="lb" id="lbInc">Thu nhập mỗi tháng</span><div class="opts" role="radiogroup" aria-labelledby="lbInc">{{range .Incomes}}<label class="opt"><input type="radio" name="income" value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+        <div class="fld"><span class="lb" id="lbCh">Bạn nhận lương bằng</span><div class="opts" role="radiogroup" aria-labelledby="lbCh">{{range .Channels}}<label class="opt"><input type="radio" name="channel" value="{{.V}}" {{if eq .V $.P.Channel}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+      </fieldset>
+
+      <fieldset class="wz-step" data-step="5"><legend>Bảo hiểm của bạn</legend>
+        <div class="fld"><span class="lb" id="lbSoc">Bảo hiểm xã hội (BHXH) bạn đã đóng</span><div class="opts" role="radiogroup" aria-labelledby="lbSoc" data-req>
+          <label class="opt"><input type="radio" name="social_ins" value="none" {{if eq .P.SocialIns "none"}}checked{{end}}><span>Không tham gia</span></label><label class="opt"><input type="radio" name="social_ins" value="lt6" {{if eq .P.SocialIns "lt6"}}checked{{end}}><span>Dưới 6 tháng</span></label><label class="opt"><input type="radio" name="social_ins" value="6to12" {{if eq .P.SocialIns "6to12"}}checked{{end}}><span>6–12 tháng</span></label><label class="opt"><input type="radio" name="social_ins" value="gt12" {{if eq .P.SocialIns "gt12"}}checked{{end}}><span>Trên 12 tháng</span></label>
+        </div></div>
+        <div class="fld"><span class="lb" id="lbLife">Bảo hiểm nhân thọ (BHNT)</span><div class="opts" role="radiogroup" aria-labelledby="lbLife" data-req>
+          <label class="opt"><input type="radio" name="life_ins" value="none" {{if eq .P.LifeIns "none"}}checked{{end}}><span>Không có</span></label><label class="opt"><input type="radio" name="life_ins" value="lt1y" {{if eq .P.LifeIns "lt1y"}}checked{{end}}><span>Có, đã đóng phí dưới 1 năm</span></label><label class="opt"><input type="radio" name="life_ins" value="ge1y" {{if eq .P.LifeIns "ge1y"}}checked{{end}}><span>Có, đã đóng phí từ 1 năm trở lên</span></label>
+        </div></div>
+        <p class="note">Một số đối tác xét hồ sơ dựa trên thời gian đóng BHXH hoặc hợp đồng BHNT. Bạn không cần cung cấp số sổ hay số hợp đồng.</p>
+      </fieldset>
+
+      <fieldset class="wz-step" data-step="6"><legend>Lịch sử tín dụng và mức gấp</legend>
+        <div class="fld"><span class="lb" id="lbCr">Lịch sử tín dụng (tự khai)</span><div class="opts col" role="radiogroup" aria-labelledby="lbCr">{{range .Credits}}<label class="opt"><input type="radio" name="credit" value="{{.V}}" {{if eq .V $.P.Credit}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+        <div class="fld if-veh"><span class="lb" id="lbVeh">Bạn có giấy đăng ký xe đứng tên mình?</span><div class="opts" role="radiogroup" aria-labelledby="lbVeh">{{range .Vehicles}}<label class="opt"><input type="radio" name="vehicle" value="{{.V}}" {{if eq .V $.P.Vehicle}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+        <div class="fld"><span class="lb" id="lbUrg">Bạn cần tiền gấp đến mức nào?</span><div class="opts" role="radiogroup" aria-labelledby="lbUrg">{{range .Urgencies}}<label class="opt"><input type="radio" name="urgency" value="{{.V}}" {{if eq .V $.P.Urgency}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+      </fieldset>
+
+      <div class="wz-nav">
+        <button class="btn btn-line" type="button" data-back>Quay lại</button>
+        <button class="btn btn-pri" type="button" data-next>Tiếp tục</button>
+        <button class="btn btn-pri" type="submit" data-done>Xem gói vay phù hợp</button>
+      </div>
+      <p class="note">Hồ sơ không gồm thông tin định danh. 3Credit lưu ẩn danh để cải thiện đề xuất.</p>
+    </form>
+    {{if .Done}}<div class="res" id="results" aria-live="polite">{{template "results" .}}</div>{{end}}
   </div>
 </section>
 

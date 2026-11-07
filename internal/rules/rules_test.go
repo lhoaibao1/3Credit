@@ -7,7 +7,7 @@ import (
 )
 
 func TestEval(t *testing.T) {
-	p := model.Profile{Job: "freelancer", Income: 12, Channel: "cash", Credit: "bad_settled"}
+	p := model.Profile{Job: "freelancer", Income: 12, Channel: "cash", Credit: "bad_settled", SocialIns: "gt12", LifeIns: "none"}
 	cases := []struct {
 		rule string
 		want bool
@@ -17,6 +17,8 @@ func TestEval(t *testing.T) {
 		{`{"all":[{"field":"income","op":"gte","value":10},{"field":"channel","op":"ne","value":"bank_transfer"}]}`, true},
 		{`{"any":[{"field":"credit","op":"eq","value":"good"},{"field":"credit","op":"in","value":["bad_settled"]}]}`, true},
 		{`{"not":{"field":"income","op":"lt","value":5}}`, true},
+		{`{"field":"social_ins","op":"in","value":["6to12","gt12"]}`, true},
+		{`{"field":"life_ins","op":"ne","value":"none"}`, false},
 	}
 	for _, c := range cases {
 		r, err := Parse(c.rule)

@@ -13,7 +13,7 @@
       <td>{{.CreatedAt.Local.Format "02/01 15:04"}}</td>
       <td><b>{{.In.Name}}</b><br><a href="tel:{{.In.Phone}}" class="lnk mono">{{.In.Phone}}</a></td>
       <td>{{if .In.Need}}{{vi .In.Need}}<br><small>{{money .In.Amount}} · {{.In.Term}} tháng</small>{{else}}<small>—</small>{{end}}</td>
-      <td><small>{{if .In.Job}}{{vi .In.Job}} · {{.In.Income}} tr/tháng · {{vi .In.Region}}<br>Tín dụng: {{if .In.Credit}}{{vi .In.Credit}}{{else}}không khai{{end}}{{else}}—{{end}}</small></td>
+      <td><small>{{if .In.Job}}{{vi .In.Job}} · {{.In.Income}} tr/tháng · {{vi .In.Region}}<br>Tín dụng: {{if .In.Credit}}{{vi .In.Credit}}{{else}}không khai{{end}}{{if .In.SocialIns}}<br>{{vi .In.SocialIns}}{{end}}{{if .In.LifeIns}} · {{vi .In.LifeIns}}{{end}}{{else}}—{{end}}</small></td>
       <td><small>{{.In.Message}}{{if .In.Message}}<br>{{end}}{{.Source}}{{if .Campaign}} · {{.Campaign}}{{end}}</small></td>
       <td><form method="post" action="/admin/inquiries/{{.ID}}" class="stack-xs">
         <input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="filter" value="{{$.Filter}}">

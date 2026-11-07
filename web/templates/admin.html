@@ -153,6 +153,15 @@
     <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận)</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
     <div class="fld"><label>Nguồn – lịch sử tín dụng</label>{{template "confsel" (pair "credit_conf" $f.CreditConf)}}</div>
   </div>
+  <h3 class="fsec">Bảo hiểm (không bắt buộc)</h3>
+  <div class="aform">
+    <div class="fld"><label for="psoc">Yêu cầu đóng BHXH tối thiểu (tháng)</label><input id="psoc" name="social_min" type="number" min="0" step="1" value="{{$f.SocialMin}}" placeholder="ví dụ 12"></div>
+    <div class="fld"><label>Nguồn – BHXH</label>{{template "confsel" (pair "social_conf" $f.SocialConf)}}</div>
+    <div class="fld"></div>
+    <div class="fld"><label for="plife">Yêu cầu có HĐ BHNT đã đóng phí tối thiểu (năm)</label><input id="plife" name="life_min" type="number" min="0" step="any" value="{{$f.LifeMin}}" placeholder="để trống = chỉ cần có hợp đồng"></div>
+    <div class="fld"><label>Nguồn – BHNT</label>{{template "confsel" (pair "life_conf" $f.LifeConf)}}</div>
+  </div>
+  <p class="note mt-s">Chọn “— không áp dụng” ở ô Nguồn nếu đối tác không công bố điều kiện bảo hiểm. Chỉ nguồn A, B mới loại hồ sơ không đạt.</p>
   <h3 class="fsec">Thông tin hiển thị cho khách</h3>
   <div class="aform">
     {{range $f.Facts}}<div class="fld span2"><label>{{.Label}}</label><input name="info_{{.Key}}" type="text" value="{{.Text}}" maxlength="200"></div><div class="fld"><label>Nguồn</label>{{template "confsel" (pair (printf "info_%s_conf" .Key) .Conf)}}</div>{{end}}
@@ -178,7 +187,7 @@
     <div class="fld"><label for="sid">Mã (trùng mã = sửa)</label><input id="sid" name="id" type="text" required pattern="[A-Z0-9_-]{3,20}" placeholder="SEG10"></div>
     <div class="fld"><label for="sname">Tên</label><input id="sname" name="name" type="text" required maxlength="80"></div>
     <div class="fld"><label class="cmpchk mt-chk"><input type="checkbox" name="active" value="1" checked> Bật</label></div>
-    <div class="fld full"><label for="srule">Luật JSON. Trường: need, amount, term, age, region, job, income, channel, credit, urgency, vehicle. Toán tử: eq, ne, in, nin, gt, gte, lt, lte; nhóm all / any / not.</label><textarea id="srule" name="rule" spellcheck="false" class="ta-md">{"all":[{"field":"job","op":"eq","value":"freelancer"},{"field":"income","op":"gte","value":10}]}</textarea></div>
+    <div class="fld full"><label for="srule">Luật JSON. Trường: need, amount, term, age, region, job, income, channel, credit, urgency, vehicle, social_ins (none|lt6|6to12|gt12), life_ins (none|lt1y|ge1y). Toán tử: eq, ne, in, nin, gt, gte, lt, lte; nhóm all / any / not.</label><textarea id="srule" name="rule" spellcheck="false" class="ta-md">{"all":[{"field":"job","op":"eq","value":"freelancer"},{"field":"income","op":"gte","value":10}]}</textarea></div>
   </div>
   <div class="fbar"><button class="btn btn-pri" type="submit">Lưu segment</button></div>
 </form>

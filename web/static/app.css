@@ -284,6 +284,51 @@ details.nots summary{cursor:pointer;font-weight:800}
 .cta-card{border-radius:var(--r-md);padding:18px 20px;background:var(--or-soft);display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .cta-card b{display:block}
 
+
+/* ---- question flow (#tim): one step at a time; results only after the final submit ---- */
+.wz{max-width:760px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow-2);display:grid;gap:20px;min-width:0}
+.wz-head{display:none}
+.wz.js .wz-head{display:flex;align-items:center;gap:14px}
+.wz-n{font-weight:800;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}.wz-n b{color:var(--ink)}
+.wz-bar{flex:1;height:6px;border-radius:var(--r-xs);background:var(--gray-soft);overflow:hidden}.wz-bar i{display:block;height:100%;width:17%;background:var(--or);border-radius:var(--r-xs);transition:width .25s}
+.wz-step{border:0;margin:0;padding:0;min-width:0;display:grid;gap:18px}
+.wz-step legend{float:left;width:100%;padding:0;margin:0 0 2px;font-size:clamp(1.3rem,2.6vw,1.65rem);font-weight:900;letter-spacing:-.02em;line-height:1.2}
+.wz:not(.js) .wz-step+.wz-step{border-top:1px solid var(--line);padding-top:20px}
+.wz .fld label,.wz .fld .lb{font-size:.92rem;color:var(--ink);font-weight:800}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts.col{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.opts.big{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{position:relative;cursor:pointer;min-width:0}
+.opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.opt span{display:flex;align-items:center;min-height:48px;height:100%;padding:10px 16px;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);background:var(--surface);font-weight:700;transition:border-color .15s,background .15s}
+.opt:hover span{border-color:var(--or)}
+.opt input:checked+span{border-color:var(--or);background:var(--or-soft);box-shadow:inset 0 0 0 1px var(--or)}
+.opt input:focus-visible+span{outline:3px solid var(--focus);outline-offset:2px}
+.opts.big .opt span{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:center;padding:16px;min-height:80px}
+.opts.big i{grid-row:span 2;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--or-soft);color:var(--or-ink);font-style:normal}
+.opts.big b{font-size:1.04rem;line-height:1.25}.opts.big small{color:var(--muted);font-weight:600;font-size:.86rem}
+.if-card{display:none}.wz.card .if-card{display:inline}.wz.card .if-loan{display:none}
+.wz.js .if-veh{display:none}.wz.js.veh .if-veh{display:grid}
+.wz-err{color:var(--low);font-weight:800;margin:0}
+.wz-nav{display:flex;gap:10px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:18px}
+.wz-nav .btn{min-height:48px;padding-inline:24px}
+.wz:not(.js) [data-next],.wz:not(.js) [data-back]{display:none}
+.wz.js [data-done]{display:none}.wz.js.last [data-done]{display:inline-flex}.wz.js.last [data-next]{display:none}
+.wz.js.first [data-back]{visibility:hidden}
+.psum{display:flex;gap:16px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px;margin-bottom:18px;box-shadow:var(--shadow-1)}
+.psum p{color:var(--muted);margin-top:4px}
+.psum .btn{flex:none}
+#tim>.in>.res,#tim .psum{max-width:980px;margin-inline:auto}
+@media (max-width:600px){
+  .wz{padding:20px 16px;gap:16px}
+  .opts.big{grid-template-columns:1fr}
+  .opts.big .opt span{min-height:68px;padding:12px 14px}
+  .opt{flex:1 1 auto}
+  .wz-nav .btn{flex:1;padding-inline:12px}
+  .wz.js.first [data-back]{display:none}
+  .psum{flex-direction:column;align-items:stretch}
+}
+
 /* ---- compare tray, sheet, tables ---- */
 .tray{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;background:var(--deep);color:var(--on-deep);border:1px solid var(--deep-line);border-radius:var(--r-pill);padding:8px 8px 8px 18px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-2);max-width:calc(100% - 32px)}
 .tray span{font-weight:800;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

@@ -129,6 +129,7 @@ func (s *Server) inquirySubmit(w http.ResponseWriter, r *http.Request) {
 		pv, _ := url.ParseQuery(raw)
 		p := ParseProfile(pv)
 		in.Need, in.Amount, in.Term, in.Job, in.Income, in.Region, in.Credit = p.Need, p.Amount, p.Term, p.Job, p.Income, p.Region, p.Credit
+		in.SocialIns, in.LifeIns = p.SocialIns, p.LifeIns
 	}
 	_, dup, err := s.lr.SubmitInquiry(sid(r), r.FormValue("consent") == "yes", in)
 	if err != nil {
