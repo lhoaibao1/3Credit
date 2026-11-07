@@ -197,12 +197,45 @@ func TestTargetSegmentsDecideWhoSeesACampaign(t *testing.T) {
 	if has("credit=bad_unsettled") || has("credit=good") {
 		t.Fatal("a campaign with no target group must stay hidden")
 	}
-	// aimed at the bad-debt group: only customers in that group see it
-	e.st.DB.Exec(`UPDATE campaigns SET target_segments='["SEG07"]' WHERE id='C-SFI-01'`)
-	if !has("credit=bad_unsettled") {
-		t.Fatal("bad-debt customer should see the campaign aimed at SEG07")
+	// aimed at the good-credit group: only customers in that group see it
+	e.st.DB.Exec(`UPDATE campaigns SET target_segments='["SEG05"]' WHERE id='C-SFI-01'`)
+	if !has("credit=good") {
+		t.Fatal("good-credit customer should see the campaign aimed at SEG05")
 	}
-	if has("credit=good") {
+	if has("credit=none") {
 		t.Fatal("a customer outside the target group must not see it")
+	}
+}
+
+func TestBadDebtCustomersOnlySeeProductsSetToAcceptIt(t *testing.T) {
+	e := setup(t)
+	e.st.DB.Exec(`UPDATE campaigns SET status='active', tracking_url='https://partner.example/aff', target_segments='["SEG01","SEG02","SEG03","SEG04","SEG05","SEG06","SEG07","SEG08","SEG09"]' WHERE id='C-SFI-01'`)
+	has := func(credit string) bool {
+		_, b := e.get(t, "/api/match?need=cash_loan&amount=50&term=24&income=12&credit="+credit, false)
+		return strings.Contains(b, `href="/go/C-SFI-01"`)
+	}
+	// nothing set in the CMS about bad debt: a customer with bad debt must not be offered this product
+	if has("bad_unsettled") || has("group2") {
+		t.Fatal("product not set to accept bad debt was offered to a bad-debt customer")
+	}
+	if !has("good") {
+		t.Fatal("customers with good credit are not filtered by this rule")
+	}
+	// admin ticks "Đang có nợ xấu chưa tất toán" in the policy form and picks a source
+	tok := e.csrfFrom(t, "/admin/policies/P-SFI-01", true)
+	e.post(t, "/admin/policies/P-SFI-01", url.Values{"csrf": {tok},
+		"amount_min": {"10"}, "amount_max": {"100"}, "amount_conf": {"A"},
+		"credit": {"bad_unsettled"}, "credit_conf": {"B"},
+		"source": {"Hợp đồng"}, "verified_on": {"2026-11-05"}, "change_note": {"nhận nợ xấu"}}, true)
+	if !has("bad_unsettled") {
+		t.Fatal("product set to accept bad_unsettled should be offered")
+	}
+	if has("group2") || has("bad_settled") {
+		t.Fatal("only the ticked debt type is accepted, not the others")
+	}
+	// the CMS list says which debt types each product accepts
+	_, list := e.get(t, "/admin/campaigns", true)
+	if !strings.Contains(list, "Đang có nợ xấu chưa tất toán") {
+		t.Fatal("campaign list should show the debt types a product accepts")
 	}
 }

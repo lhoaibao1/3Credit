@@ -223,7 +223,17 @@ type cardData struct {
 func (s *Server) funcs() template.FuncMap {
 	return template.FuncMap{
 		"assetv": func() string { return assetVersion },
-		"eco":    func() []store.EcoMember { return store.Ecosystem },
+		// adverseOK lists the group-2 / bad-debt types this product is set to accept (labels, for the CMS list)
+		"adverseOK": func(o model.Offer) []string {
+			var out []string
+			for _, c := range []string{"group2", "bad_settled", "bad_unsettled"} {
+				if matching.AcceptsCredit(o, c) {
+					out = append(out, Label(c))
+				}
+			}
+			return out
+		},
+		"eco": func() []store.EcoMember { return store.Ecosystem },
 		// iconlogo: partner logos that are app icons/marks without the brand name, shown with the name beside them
 		"iconlogo": func(p string) bool { return iconLogos[p] },
 		"initials": func(n string) string {

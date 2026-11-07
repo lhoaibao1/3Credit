@@ -37,12 +37,13 @@
   <li>Gạt công tắc <b>Bật</b>. Sản phẩm hiện cho khách cùng nút “Đăng ký” ngay, không cần khởi động lại. Chiến dịch chưa bật thì khách không thấy.</li>
 </ol></details>
 <section class="panel flush"><div class="tw" tabindex="0" role="region" aria-label="Bảng danh sách chiến dịch"><table class="at">
-<thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th>Nhóm khách</th><th class="num">Ưu tiên</th><th class="c">Tracking</th><th class="c">Postback</th><th class="c">Lead</th><th>Dữ liệu xác minh</th><th class="c">Bật/tắt</th><th class="r"><span class="sr">Thao tác</span></th></tr></thead>
+<thead><tr><th>Mã</th><th>Đối tác · sản phẩm</th><th>Trạng thái</th><th>Nhóm khách</th><th>Nhận nợ</th><th class="num">Ưu tiên</th><th class="c">Tracking</th><th class="c">Postback</th><th class="c">Lead</th><th>Dữ liệu xác minh</th><th class="c">Bật/tắt</th><th class="r"><span class="sr">Thao tác</span></th></tr></thead>
 <tbody>{{range .Offers}}<tr>
   <td><code>{{.Campaign.ID}}</code></td>
   <td><div class="ch">{{template "logo" .Partner}}<div><b>{{.Partner.Name}}</b><small>{{.Campaign.Name}}</small></div></div></td>
   <td>{{template "cst" .Campaign.Status}}</td>
   <td>{{if .Campaign.TargetSegments}}<small>{{range $i,$g := .Campaign.TargetSegments}}{{if $i}} · {{end}}{{$g}}{{end}}</small>{{else}}<span class="badge warn" title="Chưa chọn nhóm khách nên khách không thấy chiến dịch này">Chưa chọn</span>{{end}}</td>
+  <td>{{with adverseOK .}}<small>{{range $i,$x := .}}{{if $i}}, {{end}}{{$x}}{{end}}</small>{{else}}<span class="c-muted" title="Chưa set nhận nợ nhóm 2 / nợ xấu: khách có nợ không thấy sản phẩm này">—</span>{{end}}</td>
   <td class="num">{{.Campaign.Priority}}</td>
   <td class="c">{{if .Campaign.TrackingURL}}<span class="yes" title="Đã gắn">✓</span>{{else}}<span class="c-muted">—</span>{{end}}</td>
   <td class="c">{{if .Campaign.PostbackSecret}}<span class="yes" title="Đã đặt">✓</span>{{else}}<span class="c-muted">—</span>{{end}}</td>
@@ -152,7 +153,7 @@
     <div class="fld"><label>Cách áp dụng nghề nghiệp</label><select name="jobs_mode"><option value="allow" {{if eq $f.JobsMode "allow"}}selected{{end}}>Chỉ nhận các nghề đã chọn</option><option value="boost" {{if eq $f.JobsMode "boost"}}selected{{end}}>Nhận mọi nghề, ưu tiên nghề đã chọn</option></select></div>
     <div class="fld"><label>Lý do hiển thị cho khách</label><input name="jobs_why" type="text" value="{{$f.JobsWhy}}" placeholder="Dành cho khách hàng có thu nhập từ lương"></div>
     <div class="fld"><label>Nguồn – nghề nghiệp</label>{{template "confsel" (pair "jobs_conf" $f.JobsConf)}}</div>
-    <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận)</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
+    <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận). Khách có nợ nhóm 2 hoặc nợ xấu chỉ thấy sản phẩm đã tick đúng loại của họ và chọn nguồn bên dưới</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
     <div class="fld"><label>Nguồn – lịch sử tín dụng</label>{{template "confsel" (pair "credit_conf" $f.CreditConf)}}</div>
   </div>
   <h3 class="fsec">Bảo hiểm (không bắt buộc)</h3>

@@ -74,8 +74,15 @@ var creditText = map[string]string{
 	"bad_unsettled": "nợ xấu chưa tất toán",
 }
 
-// AdverseCredit reports whether the declared history needs a verified credit policy.
+// AdverseCredit reports whether the declared history is group-2 debt or bad debt.
 func AdverseCredit(c string) bool { _, ok := creditText[c]; return ok }
+
+// AcceptsCredit reports whether the admin set this product, in the CMS policy, as accepting the
+// given credit history (the box is ticked and a source is chosen). Nothing set means "not accepted".
+func AcceptsCredit(o model.Offer, credit string) bool {
+	r := o.Policy.Rules.Credit
+	return r != nil && contains(r.Values, credit)
+}
 
 func money(v float64) string {
 	if v >= 1e9 {
@@ -303,6 +310,10 @@ func Match(offers []model.Offer, p model.Profile, live func(model.Campaign) bool
 	out := make([]Result, 0, len(offers))
 	for _, o := range offers {
 		if !contains(cats, o.Product.Category) {
+			continue
+		}
+		// A customer with group-2 or bad debt is only offered products the CMS marks as accepting that debt type.
+		if AdverseCredit(p.Credit) && !AcceptsCredit(o, p.Credit) {
 			continue
 		}
 		out = append(out, Evaluate(o, p, live(o.Campaign)))

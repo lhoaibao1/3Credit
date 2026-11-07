@@ -156,7 +156,7 @@ td form{margin:0}
 .panel:not(.flush) .tw{margin:0 -18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .panel:not(.flush) .tw:last-child{margin-bottom:-16px;border-bottom:0;border-radius:0 0 var(--r-lg) var(--r-lg)}
 table.at{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
-.at th,.at td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.at th,.at td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 .at th{position:sticky;top:0;z-index:2;background:var(--raised);color:var(--muted);font-size:12px;font-weight:800;white-space:nowrap;height:38px}
 .at td{height:46px}
 .at tbody tr:last-child td{border-bottom:0}
@@ -174,7 +174,7 @@ table.at{border-collapse:separate;border-spacing:0;width:100%;font-size:14px}
 .lg.img.wide{padding:1px}
 .lg.img img{width:100%;height:100%;object-fit:contain;display:block}
 .cbar{display:inline-flex;align-items:center;gap:8px;font-family:var(--num);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.bar{display:block;width:80px;height:6px;border-radius:3px;background:var(--gray-soft);overflow:hidden}.bar i{display:block;height:100%;background:var(--or)}
+.bar{display:block;width:56px;height:6px;border-radius:3px;background:var(--gray-soft);overflow:hidden}.bar i{display:block;height:100%;background:var(--or)}
 .qs{display:flex;gap:6px;flex-wrap:nowrap}.qs form{display:inline}
 
 /* ---- tabs, pills, folds ---- */
