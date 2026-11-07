@@ -1,15 +1,15 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:36px">
+<main class="sec page">
   <article class="in article">
     <div class="crumb"><a href="/kien-thuc">← Kiến thức</a></div>
-    <small class="tag" style="justify-self:start">{{.Post.Category}}{{if .Post.PublishedAt}} · {{.Post.PublishedAt.Format "02/01/2006"}}{{end}}</small>
+    <small class="tag js">{{.Post.Category}}{{if .Post.PublishedAt}} · {{.Post.PublishedAt.Format "02/01/2006"}}{{end}}</small>
     <h1>{{.Post.Title}}</h1>
-    {{if .Post.Summary}}<p style="font-size:1.12rem;color:var(--muted)">{{.Post.Summary}}</p>{{end}}
-    {{if .Post.CoverPath}}<img src="{{.Post.CoverPath}}" alt="" style="width:100%;border-radius:20px;max-width:100%">{{end}}
+    {{if .Post.Summary}}<p class="lede m0">{{.Post.Summary}}</p>{{end}}
+    {{if .Post.CoverPath}}<img src="{{.Post.CoverPath}}" alt="" class="cover">{{end}}
     <div class="prose">{{.BodyHTML}}</div>
     <div class="cta-card"><div><b>Cần tìm khoản vay phù hợp?</b><span class="note">So sánh theo hồ sơ của bạn, có giải thích vì sao phù hợp.</span></div><a class="btn btn-pri btn-sm" href="/#tim">Tìm sản phẩm</a></div>
   </article>
-  {{if .More}}<div class="in" style="margin-top:48px"><div class="sh"><div class="t"><h2 style="font-size:1.5rem">Bài viết khác</h2></div></div><div class="posts">{{range .More}}{{if ne .Slug $.Post.Slug}}{{template "postcard" .}}{{end}}{{end}}</div></div>{{end}}
+  {{if .More}}<div class="in mt-xl"><div class="sh"><div class="t"><h2 class="h-blk">Bài viết khác</h2></div></div><div class="posts">{{range .More}}{{if ne .Slug $.Post.Slug}}{{template "postcard" .}}{{end}}{{end}}</div></div>{{end}}
 </main>
 {{template "consult" .}}
 {{template "foot" .}}

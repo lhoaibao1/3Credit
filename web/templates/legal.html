@@ -1,10 +1,10 @@
 {{template "head" .}}
 {{$co := or .S.company_name "đơn vị vận hành 3Credit"}}
-<main class="sec" style="padding-top:40px">
+<main class="sec page">
   <div class="in legalpage">
     <div class="crumb"><a href="/">← Trang chủ</a></div>
-    <h1 style="font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:8px">{{.PageTitle}}</h1>
-    <p class="note" style="margin-bottom:22px">Áp dụng cho website 3Credit. Cập nhật: 05/11/2026.</p>
+    <h1 class="h-page">{{.PageTitle}}</h1>
+    <p class="note mb-m">Áp dụng cho website 3Credit. Cập nhật: 05/11/2026.</p>
     <div class="prose">
 {{if eq .Page "dieu-khoan"}}
 <h2>1. 3Credit là gì</h2>
@@ -32,12 +32,12 @@
 {{else if eq .Page "xoa-du-lieu"}}
 <p>Nhập số điện thoại bạn đã dùng trên 3Credit. Chúng tôi sẽ xóa các yêu cầu tư vấn và thông tin liên hệ gắn với số này, và phản hồi trong thời hạn luật định.</p>
 </div>
-<form class="leadbox" method="post" action="/xoa-du-lieu" style="margin-top:12px">
+<form class="leadbox mt-s" method="post" action="/xoa-du-lieu">
   {{if .Flash}}<div class="flash {{.FlashKind}}" role="status">{{.Flash}}</div>{{end}}
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="fld"><label for="dphone">Số điện thoại</label><input id="dphone" name="phone" type="tel" required pattern="0[0-9]{9}" placeholder="09xxxxxxxx"></div>
   <div class="fld"><label for="dnote">Ghi chú (không bắt buộc)</label><input id="dnote" name="note" type="text" maxlength="300"></div>
-  <button class="btn btn-pri" type="submit" style="justify-self:start">Gửi yêu cầu xóa</button>
+  <button class="btn btn-pri js" type="submit">Gửi yêu cầu xóa</button>
 </form>
 <div class="prose">
 {{end}}

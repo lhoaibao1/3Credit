@@ -1,16 +1,16 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:40px">
+<main class="sec page">
   <div class="in legalpage">
     <div class="crumb"><a href="/">← Trang chủ</a>{{if .Policy}} · <a href="/chinh-sach">Quy chế và chính sách</a>{{end}}</div>
     {{if .Policy}}
-    <h1 style="font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:8px">{{.Policy.Title}}</h1>
-    <p class="note" style="margin-bottom:22px">Áp dụng cho website 3Credit (3credit.asia). Hiệu lực từ 06/11/2026.</p>
+    <h1 class="h-page">{{.Policy.Title}}</h1>
+    <p class="note mb-m">Áp dụng cho website 3Credit (3credit.asia). Hiệu lực từ 06/11/2026.</p>
     <div class="prose">{{.BodyHTML}}</div>
     {{else}}
-    <h1 style="font-size:clamp(1.9rem,4vw,2.6rem);margin-bottom:8px">Quy chế và chính sách</h1>
-    <p class="note" style="margin-bottom:22px">Các quy chế, chính sách áp dụng cho website 3Credit (3credit.asia), do Công ty TNHH Công nghệ 3RDVN vận hành.</p>
+    <h1 class="h-page">Quy chế và chính sách</h1>
+    <p class="note mb-m">Các quy chế, chính sách áp dụng cho website 3Credit (3credit.asia), do Công ty TNHH Công nghệ 3RDVN vận hành.</p>
     {{end}}
-    <div class="prose" style="margin-top:28px"><h2>{{if .Policy}}Chính sách khác{{else}}Danh mục{{end}}</h2><ul>{{range .Policies}}<li><a href="/chinh-sach/{{.Slug}}">{{.Title}}</a></li>{{end}}<li><a href="/dieu-khoan">Điều khoản sử dụng</a></li><li><a href="/tieu-chi-doi-tac">Tiêu chí lựa chọn đối tác</a></li></ul></div>
+    <div class="prose mt-l"><h2>{{if .Policy}}Chính sách khác{{else}}Danh mục{{end}}</h2><ul>{{range .Policies}}<li><a href="/chinh-sach/{{.Slug}}">{{.Title}}</a></li>{{end}}<li><a href="/dieu-khoan">Điều khoản sử dụng</a></li><li><a href="/tieu-chi-doi-tac">Tiêu chí lựa chọn đối tác</a></li></ul></div>
   </div>
 </main>
 {{template "foot" .}}

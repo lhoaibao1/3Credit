@@ -1,9 +1,9 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:36px">
-  <div class="in" style="display:grid;gap:18px">
+<main class="sec page">
+  <div class="in stack">
     <div class="crumb"><a href="/?{{.Query}}#tim">← Quay lại kết quả</a></div>
     <div class="sh"><div class="t"><span class="eyebrow">So sánh</span><h2>So sánh {{len .Items}} sản phẩm</h2><p>Mỗi giá trị kèm mức tin cậy nguồn. “Chưa xác minh” nghĩa là đối tác chưa công bố hoặc 3Credit chưa kiểm tra được.</p></div></div>
-    <div class="card"><div class="tw"><table class="ct">
+    <div class="card"><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng so sánh, cuộn ngang"><table class="ct">
       <thead><tr><th></th>{{range .Items}}<th><div class="ch">{{template "logo" .Offer.Partner}}<div>{{.Offer.Product.Name}}<br><small>{{.Offer.Partner.Name}}</small></div></div></th>{{end}}</tr></thead>
       <tbody>
         <tr><th scope="row">Trạng thái</th>{{range .Items}}<td><span class="st {{.Status}}">{{.Status.Label}}</span></td>{{end}}</tr>

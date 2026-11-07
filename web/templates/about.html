@@ -1,38 +1,38 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:40px">
-  <div class="in" style="display:grid;gap:40px">
+<main class="sec page">
+  <div class="in stack-lg">
     <div>
       <div class="crumb"><a href="/">← Trang chủ</a></div>
       <span class="eyebrow">Giới thiệu</span>
-      <h1 style="font-size:clamp(2rem,4.4vw,3rem);margin-top:10px;max-width:22ch">3Credit, sản phẩm so sánh tài chính của <span class="or">3RDVN Technology</span></h1>
-      <p style="color:var(--muted);font-size:1.08rem;max-width:62ch;margin-top:14px">3Credit giúp người dùng tìm và so sánh khoản vay, thẻ tín dụng theo chính hồ sơ của mình, kèm lý do vì sao phù hợp. 3Credit được xây dựng và vận hành bởi cùng đội ngũ công nghệ phát triển 3RDHub Vietnam, nền tảng tiếp thị liên kết của 3RDVN Technology.</p>
+      <h1 class="h-about">3Credit, sản phẩm so sánh tài chính của <span class="or">3RDVN Technology</span></h1>
+      <p class="lede">3Credit giúp người dùng tìm và so sánh khoản vay, thẻ tín dụng theo chính hồ sơ của mình, kèm lý do vì sao phù hợp. 3Credit được xây dựng và vận hành bởi cùng đội ngũ công nghệ phát triển 3RDHub Vietnam, nền tảng tiếp thị liên kết của 3RDVN Technology.</p>
     </div>
 
     <section>
-      <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Thông tin pháp nhân</h2></div></div>
+      <div class="sh"><div class="t"><h2 class="h-blk">Thông tin pháp nhân</h2></div></div>
       <div class="legalbox">
         <div>Đơn vị chủ quản</div><div>{{if .S.company_name}}{{.S.company_name}}{{else}}3RDVN Technology{{end}}</div>
         <div>Mã số doanh nghiệp</div><div>{{if .S.tax_id}}{{.S.tax_id}}{{else}}Đang cập nhật{{end}}</div>
         <div>Địa chỉ</div><div>{{if .S.address}}{{.S.address}}{{else}}Đang cập nhật{{end}}</div>
         <div>Hotline</div><div>{{if .S.hotline}}{{.S.hotline}}{{else}}Đang cập nhật{{end}}</div>
         <div>Email</div><div>{{if .S.email}}{{.S.email}}{{else}}Đang cập nhật{{end}}</div>
-        <div>Website công ty</div><div><a href="https://3rdvn.io.vn" target="_blank" rel="noopener" style="color:var(--or-ink);font-weight:800">3rdvn.io.vn</a></div>
+        <div>Website công ty</div><div><a href="https://3rdvn.io.vn" target="_blank" rel="noopener" class="lnk">3rdvn.io.vn</a></div>
       </div>
-      <p class="note" style="margin-top:12px">3Credit không phải tổ chức tín dụng, không trực tiếp cho vay và không quyết định phê duyệt hồ sơ.</p>
+      <p class="note mt-s">3Credit không phải tổ chức tín dụng, không trực tiếp cho vay và không quyết định phê duyệt hồ sơ.</p>
     </section>
 
     <section>
-      <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Hệ sinh thái 3RDVN</h2><p>Các sản phẩm cùng thuộc 3RDVN Technology.</p></div></div>
+      <div class="sh"><div class="t"><h2 class="h-blk">Hệ sinh thái 3RDVN</h2><p>Các sản phẩm cùng thuộc 3RDVN Technology.</p></div></div>
       {{template "ecogrid" .}}
     </section>
 
     <section>
-      <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Dịch vụ của 3RDVN Technology</h2></div><a class="btn btn-line btn-sm" href="https://3rdhubvietnam.tech/vi/san-pham" target="_blank" rel="noopener">Xem chi tiết</a></div>
+      <div class="sh"><div class="t"><h2 class="h-blk">Dịch vụ của 3RDVN Technology</h2></div><a class="btn btn-line btn-sm" href="https://3rdhubvietnam.tech/vi/san-pham" target="_blank" rel="noopener">Xem chi tiết</a></div>
       <div class="svc">{{range .Services}}<div><b>{{.Name}}</b><span>{{.Desc}}</span></div>{{end}}</div>
     </section>
 
     <section>
-      <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Đối tác tài chính trên 3Credit</h2><p>Sản phẩm của các đối tác dưới đây được đối chiếu theo điều kiện công bố. Danh sách không có nghĩa là các đối tác đã xác nhận hợp tác với 3Credit cho từng sản phẩm.</p></div></div>
+      <div class="sh"><div class="t"><h2 class="h-blk">Đối tác tài chính trên 3Credit</h2><p>Sản phẩm của các đối tác dưới đây được đối chiếu theo điều kiện công bố. Danh sách không có nghĩa là các đối tác đã xác nhận hợp tác với 3Credit cho từng sản phẩm.</p></div></div>
       <div class="netlogos">{{range .Partners}}{{if .LogoPath}}<span class="nl{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="nl"><b>{{.Name}}</b></span>{{end}}{{end}}</div>
     </section>
 

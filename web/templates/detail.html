@@ -1,10 +1,10 @@
 {{template "head" .}}
 {{$r := .R}}{{$o := .R.Offer}}
-<main class="sec" style="padding-top:36px">
-  <div class="in" style="display:grid;gap:18px;max-width:980px">
+<main class="sec page">
+  <div class="in stack w-980">
     <div class="crumb"><a href="/?{{.Query}}#tim">← Quay lại kết quả</a></div>
-    <div class="card" style="gap:18px">
-      <div class="ch">{{template "logo" $o.Partner}}<div><h1 style="font-size:clamp(1.5rem,3vw,2rem)">{{$o.Product.Name}}</h1><small>{{$o.Partner.Name}} · {{$o.Partner.OrgType}}</small></div><span class="st {{$r.Status}}">{{$r.Status.Label}}</span></div>
+    <div class="card">
+      <div class="ch">{{template "logo" $o.Partner}}<div><h1 class="h-detail">{{$o.Product.Name}}</h1><small>{{$o.Partner.Name}} · {{$o.Partner.OrgType}}</small></div><span class="st {{$r.Status}}">{{$r.Status.Label}}</span></div>
       <div class="kv">
         <div>Pháp nhân</div><div>{{$o.Partner.LegalName}}{{template "conf" $o.Partner.LegalConf}}</div>
         <div>Lãi suất / chi phí</div><div>{{template "fact" $o.Policy.Info.Rate}}</div>
@@ -36,7 +36,7 @@
       <div class="two"><div class="fld"><label for="lname">Họ và tên</label><input id="lname" name="name" type="text" autocomplete="name" required maxlength="80"></div>
       <div class="fld"><label for="lphone">Số điện thoại</label><input id="lphone" name="phone" type="tel" autocomplete="tel" required pattern="0[0-9]{9}" placeholder="09xxxxxxxx"></div></div>
       <label class="cb"><input type="checkbox" name="consent" value="yes" required> <span>Tôi đồng ý để 3Credit chia sẻ họ tên, số điện thoại, số tiền và kỳ hạn muốn vay cho <b>{{$o.Partner.Name}}</b> ({{$o.Partner.LegalName}}) với mục đích duy nhất là tư vấn sản phẩm này. Thông tin không được chia sẻ cho bên nào khác. Tôi có thể rút lại đồng ý bất cứ lúc nào.</span></label>
-      <button class="btn btn-pri" type="submit" style="justify-self:start">Gửi thông tin</button>
+      <button class="btn btn-pri js" type="submit">Gửi thông tin</button>
     </form>
     {{end}}
   </div>

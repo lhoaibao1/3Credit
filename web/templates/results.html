@@ -10,9 +10,9 @@
 {{else if and (eq (index .Counts "eligible") 0) (not .Adverse)}}<div class="alert"><b>Chưa có sản phẩm “đáp ứng điều kiện đã biết”</b>Với hồ sơ hiện tại, các sản phẩm còn thiếu dữ liệu chính sách đã xác minh hoặc có điều kiện cần bạn kiểm tra thêm.</div>{{end}}
 {{$q := .Query}}
 {{range .Groups}}{{if .Items}}
-<div class="grp"><h4><span class="st {{.Key}}">{{.Title}}</span> {{len .Items}}</h4>
-{{range .Items}}{{template "card" (card . $q)}}{{end}}
-</div>
+<details class="grp"{{if or (eq .Key "eligible") (eq (index $.Counts "eligible") 0)}} open{{end}}><summary><h4><span class="st {{.Key}}">{{.Title}}</span> {{len .Items}}</h4></summary>
+<div class="grpb">{{range .Items}}{{template "card" (card . $q)}}{{end}}</div>
+</details>
 {{end}}{{end}}
 <div class="cta-card"><div><b>Không chắc nên chọn sản phẩm nào?</b><span class="note">Để lại số điện thoại, chuyên viên 3Credit gọi lại tư vấn miễn phí.</span></div><a class="btn btn-pri btn-sm" href="#tu-van">Nhờ tư vấn</a></div>
 {{if .Nots}}<details class="nots"><summary>Không phù hợp ({{len .Nots}}), xem lý do</summary>{{range .Nots}}<div class="nrow"><b>{{.Offer.Partner.Name}} · {{.Offer.Product.Name}}</b><span>{{join .Fails "; "}}</span></div>{{end}}</details>{{end}}
@@ -22,10 +22,11 @@
 <article class="card">
   <div class="ch">{{template "logo" $o.Partner}}<div><h3>{{$o.Product.Name}}</h3><small>{{$o.Partner.Name}} · {{$o.Partner.OrgType}}</small></div><span class="st {{$r.Status}}">{{$r.Status.Label}}</span></div>
   <div class="specs"><div><small>Lãi suất / chi phí</small><b>{{template "fact" $o.Policy.Info.Rate}}</b></div><div><small>Hạn mức</small><b>{{template "fact" $o.Policy.Info.Amount}}</b></div><div><small>Kỳ hạn</small><b>{{template "fact" $o.Policy.Info.Term}}</b></div><div><small>Phí</small><b>{{template "fact" $o.Policy.Info.Fee}}</b></div></div>
-  <div class="why">
+  {{with $r.Pass}}<p class="why1">{{index . 0}}</p>{{end}}
+  <details class="whyd"><summary>Xem lý do</summary><div class="why">
     <div><h5>Vì sao đề xuất</h5><ul class="chk">{{range $r.Pass}}<li class="y">{{.}}</li>{{end}}{{range $r.Reference}}<li class="y">{{.}}</li>{{end}}{{if and (not $r.Pass) (not $r.Reference)}}<li class="q">Chưa có điều kiện đã xác minh để đối chiếu</li>{{end}}</ul></div>
     <div><h5>Cần kiểm tra{{if $r.Fails}} / không đạt{{end}}</h5><ul class="chk">{{range $r.Fails}}<li class="n">{{.}}</li>{{end}}{{range first $r.Gaps 4}}<li class="q">{{.}}</li>{{end}}{{if gt (len $r.Gaps) 4}}<li class="q">và {{sub (len $r.Gaps) 4}} mục khác (xem chi tiết)</li>{{end}}</ul></div>
-  </div>
+  </div></details>
   <div class="cf">
     <div class="meter">Mức phù hợp {{$r.Fit}}/100 · Độ tin cậy dữ liệu {{pct $r.Confidence}}%<span class="bar"><i style="width:{{barw $r}}%"></i></span></div>
     <label class="cmpchk"><input type="checkbox" data-cmp="{{$r.CampaignID}}"> So sánh</label>

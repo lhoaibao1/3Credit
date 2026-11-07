@@ -1,8 +1,8 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:48px">
-  <div class="in" style="max-width:720px">
-    <div class="card" style="gap:16px">
-      <div class="ch">{{template "logo" .O.Partner}}<div><h1 style="font-size:1.6rem">Chuyển sang {{.O.Partner.Name}}</h1><small>{{.O.Product.Name}}</small></div></div>
+<main class="sec page">
+  <div class="in w-720">
+    <div class="card">
+      <div class="ch">{{template "logo" .O.Partner}}<div><h1 class="h-blk">Chuyển sang {{.O.Partner.Name}}</h1><small>{{.O.Product.Name}}</small></div></div>
       <p>Bạn sẽ đăng ký trên trang chính thức của {{.O.Partner.Name}}. 3Credit <b>không</b> gửi tên, số điện thoại, CCCD hay thông tin tín dụng của bạn qua liên kết này, chỉ gửi mã theo dõi <code>{{.ClickID}}</code>.</p>
       <p class="note">{{.O.Partner.Name}} là bên xét duyệt. Hãy đọc kỹ lãi suất, phí và tổng chi phí trước khi ký.</p>
       <div class="cf"><a class="btn btn-pri" href="{{.URL}}" rel="sponsored nofollow noopener noreferrer">Tiếp tục tới {{.O.Partner.Name}}</a><a class="btn btn-line" href="/#tim">Quay lại</a></div>

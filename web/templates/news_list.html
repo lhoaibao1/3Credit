@@ -1,7 +1,7 @@
 {{template "head" .}}
-<main class="sec" style="padding-top:40px">
+<main class="sec page">
   <div class="in">
-    <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h1 style="font-size:clamp(2rem,4vw,2.8rem)">Kiến thức tài chính <span class="or">dễ hiểu</span></h1><p>Lãi suất, tín dụng, nợ xấu và cách tránh lừa đảo, viết cho người không làm ngân hàng.</p></div></div>
+    <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h1 class="h-list">Kiến thức tài chính <span class="or">dễ hiểu</span></h1><p>Lãi suất, tín dụng, nợ xấu và cách tránh lừa đảo, viết cho người không làm ngân hàng.</p></div></div>
     {{if .Posts}}<div class="posts">{{range .Posts}}{{template "postcard" .}}{{end}}</div>{{else}}<div class="empty">Chưa có bài viết.</div>{{end}}
   </div>
 </main>

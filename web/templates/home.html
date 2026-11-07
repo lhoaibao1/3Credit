@@ -1,6 +1,6 @@
 {{template "head" .}}
 <header class="hero">
-  <div class="glow g1"></div><div class="glow g2"></div>
+  <div class="glow g1"></div>
   <canvas id="fx" aria-hidden="true"></canvas>
   <div class="in">
     <div>
@@ -18,14 +18,12 @@
     <div class="cardstack" aria-hidden="true">
       <div class="ccard back"><span class="cc-stripe"></span><span class="cc-cvv">CVV ···</span></div>
       <div class="ccard front">
-        <div class="cc-top"><span class="cc-brand"><svg width="100" height="26" style="color:#fff"><use href="#logo"/></svg></span><svg class="cc-nfc" width="26" height="26"><use href="#i-nfc"/></svg></div>
+        <div class="cc-top"><span class="cc-brand"><svg width="100" height="26"><use href="#logo"/></svg></span><svg class="cc-nfc" width="26" height="26"><use href="#i-nfc"/></svg></div>
         <svg class="cc-chip" width="44" height="34" viewBox="4 6 16 12"><use href="#i-chip"/></svg>
         <div class="cc-num">3368&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;2026</div>
         <div class="cc-bot"><span><small>CHỦ THẺ</small>KHÁCH HÀNG 3CREDIT</span><span><small>HIỆU LỰC</small>11/30</span></div>
       </div>
-      <div class="fchip f-score"><svg width="34" height="34"><use href="#i-gauge"/></svg><span><small>Điểm tín dụng</small><b>Khá</b> · minh họa</span></div>
       <div class="fchip f-ok"><svg width="20" height="20"><use href="#i-shield"/></svg>Đáp ứng điều kiện đã biết</div>
-      <div class="fchip f-rate"><svg width="20" height="20"><use href="#i-percent"/></svg>So sánh lãi quy ra năm (APR)</div>
       <div class="ecard fcheck">
         <small>Vì sao đề xuất</small>
         <ul class="chk"><li class="y">Hạn mức đủ cho 50 triệu</li><li class="y">Kỳ hạn 24 tháng phù hợp</li><li class="q">CIC: đối tác chưa công bố</li></ul>
@@ -33,8 +31,8 @@
     </div>
   </div>
   <div class="in partners" id="doi-tac">
-    <p style="color:#9FAAD3;font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Sản phẩm đang được đối chiếu từ {{len .Partners}} đối tác</p>
-    <div class="logos">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
+    <p class="hero-kicker">Sản phẩm đang được đối chiếu từ {{len .Partners}} đối tác</p>
+    <div class="logos hscroll" tabindex="0" role="region" aria-label="Logo đối tác, cuộn ngang">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
   </div>
 </header>
 
@@ -59,7 +57,7 @@
       <form class="wform" id="pf" method="get" action="/#tim">
         <h3>Thông tin của bạn</h3>
         <div class="fld"><span class="lb">Bạn cần</span><div class="seg">
-          {{range .Needs}}<label style="display:contents"><input type="radio" name="need" value="{{.V}}" {{if eq .V $.P.Need}}checked{{end}} hidden><button type="button" data-need="{{.V}}" aria-pressed="{{eq .V $.P.Need}}">{{.L}}</button></label>{{end}}
+          {{range .Needs}}<label class="dc"><input type="radio" name="need" value="{{.V}}" {{if eq .V $.P.Need}}checked{{end}} hidden><button type="button" data-need="{{.V}}" aria-pressed="{{eq .V $.P.Need}}">{{.L}}</button></label>{{end}}
         </div></div>
         <div class="fld"><label for="fAmount">Số tiền <output id="oAmount">{{money .P.Amount}}</output></label><input type="range" id="fAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
         <div class="fld"><label for="fTerm">Kỳ hạn <output id="oTerm">{{.P.Term}} tháng</output></label><input type="range" id="fTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>
@@ -90,7 +88,7 @@
 {{if .Posts}}<section class="sec" id="kien-thuc">
   <div class="in">
     <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h2>Đọc trước khi <span class="or">ký hợp đồng</span></h2></div><a class="btn btn-line btn-sm" href="/kien-thuc">Xem tất cả bài viết</a></div>
-    <div class="posts">{{range .Posts}}{{template "postcard" .}}{{end}}</div>
+    <div class="posts hscroll" tabindex="0" role="region" aria-label="Bài viết, cuộn ngang">{{range .Posts}}{{template "postcard" .}}{{end}}</div>
   </div>
 </section>{{end}}
 
@@ -100,7 +98,7 @@
     <div class="comp">
       <div>
         <span class="eyebrow">Minh bạch dữ liệu</span>
-        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Mỗi con số đều có nguồn</h2>
+        <h2 class="h-sec">Mỗi con số đều có nguồn</h2>
         <p>Chính sách sản phẩm được tổng hợp từ website chính thức và tài liệu công bố của đối tác, kèm ngày kiểm tra. Thông tin chưa xác minh được đánh dấu rõ và không dùng để kết luận bạn đủ điều kiện.</p>
         <div class="legend">
           <div><span class="conf A">A</span> Đọc trực tiếp trên website chính thức của đối tác</div>
@@ -111,7 +109,7 @@
       </div>
       <div>
         <span class="eyebrow">Miễn trừ trách nhiệm</span>
-        <h2 style="margin-top:12px;font-size:clamp(1.6rem,3vw,2.2rem)">Lưu ý quan trọng</h2>
+        <h2 class="h-sec">Lưu ý quan trọng</h2>
         <p>3Credit không phải tổ chức tín dụng, không trực tiếp cho vay và không quyết định phê duyệt. “Đáp ứng điều kiện đã biết” nghĩa là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố, không phải bạn sẽ được duyệt.</p>
         <p>Hạn mức, lãi suất, phí và kỳ hạn cuối cùng do đối tác quyết định theo hồ sơ thực tế. Hãy đọc kỹ hợp đồng, nhất là tổng chi phí (lãi + phí), trước khi ký.</p>
       </div>
@@ -133,9 +131,9 @@
   </div>
 </section>
 
-<section class="sec" style="padding-bottom:20px">
+<section class="sec pb-s">
   <div class="in">
-    <div class="sh" style="justify-content:center;text-align:center"><div class="t" style="justify-items:center"><span class="eyebrow">Hỏi đáp</span><h2>Câu hỏi thường gặp</h2></div></div>
+    <div class="sh center"><div class="t"><span class="eyebrow">Hỏi đáp</span><h2>Câu hỏi thường gặp</h2></div></div>
     <div class="faq">
       <details open><summary>“Đáp ứng điều kiện đã biết” có phải là được duyệt?</summary><p>Không. Đó là hồ sơ bạn tự khai khớp với điều kiện đối tác đã công bố. Đối tác vẫn thẩm định hồ sơ thực tế và quyết định.</p></details>
       <details><summary>Vì sao có sản phẩm ghi “Chính sách chưa xác minh”?</summary><p>Vì 3Credit chưa có nguồn chính thức cho điều kiện của sản phẩm đó. Chúng tôi vẫn hiển thị để bạn tham khảo, nhưng không xếp trên các sản phẩm đã xác minh.</p></details>
