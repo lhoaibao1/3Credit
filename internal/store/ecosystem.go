@@ -48,6 +48,11 @@ func (s *Store) SeedEcosystem() error {
 		"mafc":     "/static/partners/mirae.webp",
 		"sfinance": "/static/partners/sfinance.webp",
 		"tpbank":   "/static/partners/tpbank.webp",
+		"cake":     "/static/partners/cake.webp",
+		"vib":      "/static/partners/vib.webp",
+		"jeff":     "/static/partners/jeff.webp",
+		"vayvnd":   "/static/partners/vayvnd.webp",
+		"evo":      "/static/partners/evo.svg",
 	}
 	for id, p := range logos {
 		if _, err := s.DB.Exec(`UPDATE partners SET logo_path=? WHERE id=? AND logo_path=''`, p, id); err != nil {

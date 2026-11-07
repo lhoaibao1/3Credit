@@ -33,7 +33,7 @@
 
     <section>
       <div class="sh"><div class="t"><h2 style="font-size:1.6rem">Đối tác tài chính trên 3Credit</h2><p>Sản phẩm của các đối tác dưới đây được đối chiếu theo điều kiện công bố. Danh sách không có nghĩa là các đối tác đã xác nhận hợp tác với 3Credit cho từng sản phẩm.</p></div></div>
-      <div class="netlogos">{{range .Partners}}{{if .LogoPath}}<span class="nl" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy"></span>{{else}}<span class="nl"><b>{{.Name}}</b></span>{{end}}{{end}}</div>
+      <div class="netlogos">{{range .Partners}}{{if .LogoPath}}<span class="nl{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="nl"><b>{{.Name}}</b></span>{{end}}{{end}}</div>
     </section>
 
   </div>

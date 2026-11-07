@@ -239,6 +239,8 @@ func (s *Server) funcs() template.FuncMap {
 	return template.FuncMap{
 		"assetv": func() string { return assetVersion },
 		"eco":    func() []store.EcoMember { return store.Ecosystem },
+		// iconlogo: partner logos that are app icons/marks without the brand name, shown with the name beside them
+		"iconlogo": func(p string) bool { return iconLogos[p] },
 		"initials": func(n string) string {
 			var b strings.Builder
 			for _, w := range strings.Fields(n) {
@@ -380,3 +382,5 @@ var assetVersion = func() string {
 	})
 	return hex.EncodeToString(h.Sum(nil))[:10]
 }()
+
+var iconLogos = map[string]bool{"/static/partners/jeff.webp": true, "/static/partners/vayvnd.webp": true, "/static/partners/evo.svg": true}

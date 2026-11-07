@@ -34,7 +34,7 @@
   </div>
   <div class="in partners" id="doi-tac">
     <p style="color:#9FAAD3;font-weight:800;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Sản phẩm đang được đối chiếu từ {{len .Partners}} đối tác</p>
-    <div class="logos">{{range .Partners}}{{if .LogoPath}}<span class="lchip" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy"></span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
+    <div class="logos">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
   </div>
 </header>
 
