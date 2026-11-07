@@ -1,12 +1,12 @@
-{{define "admin_inquiries"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
+{{define "admin_inquiries"}}{{template "cmshead" .}}
 <div class="panel">
   <div class="sh mb-s"><div class="t"><h3 class="m0">Khách để lại số điện thoại</h3><p class="note">Khách đã đồng ý để 3Credit liên hệ tư vấn. Chỉ chuyển cho đối tác khi khách đồng ý thêm (ghi lại trong ghi chú).</p></div>
     <a class="btn btn-pri btn-sm" href="/admin/inquiries.csv{{if .Filter}}?status={{.Filter}}{{end}}">Tải Excel (CSV)</a></div>
-  <div class="pills hscroll row mb-m">
+  <nav class="pills mb-m" aria-label="Lọc theo trạng thái">
     <a href="/admin/inquiries" {{if eq .Filter ""}}aria-current="page"{{end}}>Tất cả</a>
     {{range .Statuses}}<a href="/admin/inquiries?status={{.}}" {{if eq . $.Filter}}aria-current="page"{{end}}>{{index $.StatusLabel .}} · {{index $.Counts .}}</a>{{end}}
-  </div>
-  {{if .List}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng khách để lại số điện thoại, cuộn ngang"><table class="at">
+  </nav>
+  {{if .List}}<div class="tw" tabindex="0" role="region" aria-label="Bảng khách để lại số điện thoại"><table class="at">
     <thead><tr><th>#</th><th>Thời gian</th><th>Khách</th><th>Nhu cầu</th><th>Hồ sơ tự khai</th><th>Lời nhắn / nguồn</th><th>Xử lý</th></tr></thead>
     <tbody>{{range .List}}<tr>
       <td>{{.ID}}</td>
@@ -23,18 +23,18 @@
     </tr>{{end}}</tbody></table></div>
   {{else}}<div class="empty">Chưa có yêu cầu{{if .Filter}} ở trạng thái này{{end}}. Form “Nhờ tư vấn” có ở trang chủ, trang sản phẩm và cuối mỗi bài viết.</div>{{end}}
 </div>
-</div></main>{{template "foot" .}}{{end}}
+{{template "cmsfoot" .}}{{end}}
 
-{{define "admin_posts"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
+{{define "admin_posts"}}{{template "cmshead" .}}
 <div class="panel"><div class="sh mb-s"><div class="t"><h3 class="m0">Bài viết</h3></div><a class="btn btn-pri btn-sm" href="/admin/posts/new">Viết bài mới</a></div>
-{{if .Posts}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng bài viết, cuộn ngang"><table class="at"><thead><tr><th>Tiêu đề</th><th>Chuyên mục</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead>
+{{if .Posts}}<div class="tw" tabindex="0" role="region" aria-label="Bảng bài viết"><table class="at"><thead><tr><th>Tiêu đề</th><th>Chuyên mục</th><th>Trạng thái</th><th>Cập nhật</th><th></th></tr></thead>
 <tbody>{{range .Posts}}<tr><td><b>{{.Title}}</b><br><small>/kien-thuc/{{.Slug}}</small></td><td>{{.Category}}</td><td>{{if .Published}}<span class="pst active">Đã đăng</span>{{else}}<span class="pst draft">Nháp</span>{{end}}</td><td>{{.UpdatedAt.Local.Format "02/01/2006"}}</td>
 <td><div class="qs"><a class="btn btn-line btn-sm" href="/admin/posts/{{.ID}}">Sửa</a>{{if .Published}}<a class="btn btn-line btn-sm" href="/kien-thuc/{{.Slug}}" target="_blank" rel="noopener">Xem</a>{{end}}</div></td></tr>{{end}}</tbody></table></div>
 {{else}}<div class="empty">Chưa có bài viết.</div>{{end}}</div>
-</div></main>{{template "foot" .}}{{end}}
+{{template "cmsfoot" .}}{{end}}
 
-{{define "admin_post_edit"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
-<div class="crumb"><a href="/admin/posts">← Bài viết</a></div>
+{{define "admin_post_edit"}}{{template "cmshead" .}}
+<div class="crumb"><a href="/admin/posts">Bài viết</a> / <span>{{if .P.ID}}Sửa bài{{else}}Bài mới{{end}}</span></div>
 <form class="panel" method="post" action="/admin/posts/{{if .P.ID}}{{.P.ID}}{{else}}new{{end}}" enctype="multipart/form-data">
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="aform">
@@ -46,25 +46,25 @@
     <div class="fld full"><label for="pbody">Nội dung. Định dạng: dòng trống giữa các đoạn · <code>## Tiêu đề mục</code> · <code>- gạch đầu dòng</code> · <code>**chữ đậm**</code> · <code>*chữ nghiêng*</code></label><textarea id="pbody" name="body" class="ta-prose">{{.P.Body}}</textarea></div>
     <label class="cmpchk full"><input type="checkbox" name="published" value="1" {{if .P.Published}}checked{{end}}> Đăng công khai</label>
   </div>
-  <div class="cf mt-m"><button class="btn btn-pri" type="submit">Lưu</button>
+  <div class="fbar"><button class="btn btn-pri" type="submit">Lưu bài viết</button>
   {{if .P.ID}}<button class="btn btn-line" type="submit" name="delete" value="1" formnovalidate>Xóa bài</button>{{end}}</div>
 </form>
-</div></main>{{template "foot" .}}{{end}}
+{{template "cmsfoot" .}}{{end}}
 
-{{define "admin_settings"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
+{{define "admin_settings"}}{{template "cmshead" .}}
 <form class="panel" method="post" action="/admin/settings"><h3>Thông tin công ty</h3>
   <p class="note mb-s">Hiển thị ở chân trang, trang Điều khoản, Chính sách dữ liệu và trong ô đồng ý của khách. Cần điền trước khi chạy quảng cáo.</p>
   <input type="hidden" name="csrf" value="{{.CSRF}}">
   <div class="aform">{{range .Keys}}<div class="fld"><label for="s_{{.Key}}">{{.Label}}</label><input id="s_{{.Key}}" name="{{.Key}}" type="text" value="{{index $.Vals .Key}}" maxlength="300"></div>{{end}}</div>
-  <button class="btn btn-pri mt-s" type="submit">Lưu</button>
+  <div class="fbar"><button class="btn btn-pri" type="submit">Lưu</button></div>
 </form>
 <div class="panel"><h3>Trang pháp lý</h3><p class="note">Nội dung các trang <a href="/dieu-khoan" target="_blank" class="lnk">Điều khoản</a>, <a href="/chinh-sach/chinh-sach-bao-mat" target="_blank" class="lnk">Chính sách dữ liệu</a>, <a href="/tieu-chi-doi-tac" target="_blank" class="lnk">Tiêu chí đối tác</a> là bản mẫu. Nên nhờ luật sư rà soát trước khi chạy quảng cáo.</p></div>
-</div></main>{{template "foot" .}}{{end}}
+{{template "cmsfoot" .}}{{end}}
 
-{{define "admin_deletions"}}{{template "head" .}}<main id="admin"><div class="in">{{template "anav" .}}
+{{define "admin_deletions"}}{{template "cmshead" .}}
 <div class="panel"><h3>Yêu cầu xóa dữ liệu</h3>
-{{if .List}}<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng yêu cầu xóa dữ liệu, cuộn ngang"><table class="at"><thead><tr><th>#</th><th>Thời gian</th><th>Số điện thoại</th><th>Ghi chú</th><th>Trạng thái</th><th></th></tr></thead>
-<tbody>{{range .List}}<tr><td>{{.ID}}</td><td>{{.CreatedAt.Local.Format "02/01 15:04"}}</td><td>{{.PhoneMasked}}</td><td>{{.Note}}</td><td>{{if eq .Status "done"}}<span class="pst active">Đã xóa</span>{{else}}<span class="pst pending">Chờ xử lý</span>{{end}}</td>
+{{if .List}}<div class="tw" tabindex="0" role="region" aria-label="Bảng yêu cầu xóa dữ liệu"><table class="at"><thead><tr><th>#</th><th>Thời gian</th><th>Số điện thoại</th><th>Ghi chú</th><th>Trạng thái</th><th></th></tr></thead>
+<tbody>{{range .List}}<tr><td>{{.ID}}</td><td>{{.CreatedAt.Local.Format "02/01 15:04"}}</td><td>{{.PhoneMasked}}</td><td>{{.Note}}</td><td>{{if eq .Status "done"}}<span class="pst active">Đã xóa</span>{{else}}<span class="pst draft">Chờ xử lý</span>{{end}}</td>
 <td>{{if ne .Status "done"}}<form method="post" action="/admin/deletions/{{.ID}}"><input type="hidden" name="csrf" value="{{$.CSRF}}"><button class="btn btn-pri btn-sm" type="submit">Xóa dữ liệu của số này</button></form>{{end}}</td></tr>{{end}}</tbody></table></div>
 {{else}}<div class="empty">Chưa có yêu cầu. Khách gửi ở trang <a href="/xoa-du-lieu" class="lnk">/xoa-du-lieu</a>.</div>{{end}}</div>
-</div></main>{{template "foot" .}}{{end}}
+{{template "cmsfoot" .}}{{end}}

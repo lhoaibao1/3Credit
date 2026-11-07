@@ -1,7 +1,6 @@
-{{template "head" .}}
-<main id="admin"><div class="in">{{template "anav" .}}
+{{template "cmshead" .}}
 <div class="panel"><h3>Tài khoản CMS</h3>
-<div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng tài khoản CMS, cuộn ngang"><table class="at"><thead><tr><th>Tên đăng nhập</th><th>Tạo lúc</th><th>Đăng nhập gần nhất</th><th></th></tr></thead><tbody>
+<div class="tw" tabindex="0" role="region" aria-label="Bảng tài khoản CMS"><table class="at"><thead><tr><th>Tên đăng nhập</th><th>Tạo lúc</th><th>Đăng nhập gần nhất</th><th></th></tr></thead><tbody>
 {{range .Users}}<tr><td><b>{{.Username}}</b>{{if eq .Username $.User}} <span class="tag">bạn</span>{{end}}</td><td>{{.CreatedAt.Format "02/01/2006 15:04"}}</td><td>{{if .LastLogin.Valid}}{{.LastLogin.Time.Format "02/01/2006 15:04"}}{{else}}—{{end}}</td>
 <td>{{if ne .Username $.User}}<form method="post" action="/admin/users"><input type="hidden" name="csrf" value="{{$.CSRF}}"><input type="hidden" name="action" value="delete"><input type="hidden" name="username" value="{{.Username}}"><button class="btn btn-line btn-sm" type="submit">Xóa</button></form>{{end}}</td></tr>{{end}}
 </tbody></table></div></div>
@@ -18,4 +17,4 @@
 <label>Nhập lại mật khẩu mới<input type="password" name="password2" required minlength="10" autocomplete="new-password"></label>
 <button class="btn btn-pri" type="submit">Đổi mật khẩu</button></form>
 </div>
-</div></main>{{template "foot" .}}
+{{template "cmsfoot" .}}
