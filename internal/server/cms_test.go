@@ -143,3 +143,17 @@ func TestCMSHostRouting(t *testing.T) {
 		t.Fatalf("public home: %d", r.StatusCode)
 	}
 }
+
+func TestVersionEndpointReportsBuild(t *testing.T) {
+	ts, c, _ := cmsSetup(t, Config{BaseURL: "http://test", Version: "abc1234"})
+	r, err := c.Get(ts.URL + "/version")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Body.Close()
+	b := make([]byte, 32)
+	n, _ := r.Body.Read(b)
+	if r.StatusCode != 200 || string(b[:n]) != "abc1234" {
+		t.Fatalf("/version = %d %q", r.StatusCode, b[:n])
+	}
+}

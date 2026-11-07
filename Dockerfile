@@ -4,7 +4,8 @@ WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w" -o /out/3credit ./cmd/server
+ARG GIT_SHA=dev
+RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w -X main.version=${GIT_SHA}" -o /out/3credit ./cmd/server
 
 # ---- run ----
 FROM alpine:3.20

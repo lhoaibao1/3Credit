@@ -38,6 +38,7 @@ type Config struct {
 	AdminPassword string
 	TrustCF       bool   // behind Cloudflare: read the visitor IP from CF-Connecting-IP
 	CMSHost       string // e.g. cms.3credit.asia; empty = CMS on the main host under /admin
+	Version       string // build commit, shown at /version and in the CMS sidebar
 }
 
 type Server struct {
@@ -67,6 +68,10 @@ func (s *Server) routes() {
 	static, _ := fs.Sub(web.FS, "static")
 	s.mux.Handle("GET /static/", http.StripPrefix("/static/", cacheStatic(http.FileServer(http.FS(static)))))
 	s.mux.Handle("GET /uploads/", http.StripPrefix("/uploads/", uploadsHeaders(http.FileServer(http.Dir(filepath.Join(s.cfg.DataDir, "uploads"))))))
+	s.mux.HandleFunc("GET /version", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Write([]byte(s.cfg.Version))
+	})
 	s.mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("ok")) })
 
 	s.mux.HandleFunc("GET /{$}", s.home)

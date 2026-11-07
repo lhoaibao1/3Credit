@@ -19,7 +19,7 @@ import (
 
 func (s *Server) adminData(w http.ResponseWriter, r *http.Request, page, title string) map[string]any {
 	d := s.base(r, title+" – 3Credit Admin")
-	d["Admin"], d["Page"], d["User"], d["SiteURL"] = true, page, s.actor(r), s.cfg.BaseURL
+	d["Admin"], d["Page"], d["User"], d["SiteURL"], d["Build"] = true, page, s.actor(r), s.cfg.BaseURL, s.cfg.Version
 	d["Title"] = title
 	if msg, kind := s.takeFlash(w, r); msg != "" {
 		d["Flash"], d["FlashKind"] = msg, kind

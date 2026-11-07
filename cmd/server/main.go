@@ -30,6 +30,9 @@ import (
 	"github.com/threecredit/platform/internal/tracking"
 )
 
+// version is the commit this binary was built from (set by -ldflags in the Dockerfile).
+var version = "dev"
+
 func env(k, def string) string {
 	if v := os.Getenv(k); v != "" {
 		return v
@@ -77,7 +80,7 @@ func main() {
 		BaseURL: baseURL, DataDir: dataDir, SessionSecret: sess,
 		AdminUser: os.Getenv("ADMIN_USER"), AdminPassword: os.Getenv("ADMIN_PASSWORD"),
 		TrustCF: os.Getenv("TRUST_CF") == "1",
-		CMSHost: cmsHost(baseURL),
+		CMSHost: cmsHost(baseURL), Version: version,
 	}, st, tr, lr)
 	if err != nil {
 		log.Fatal(err)

@@ -58,6 +58,7 @@
     <span class="av" aria-hidden="true">{{initials .User}}</span><span class="side-name" title="{{.User}}">{{.User}}</span>
     <form method="post" action="/logout"><input type="hidden" name="csrf" value="{{.CSRF}}"><button class="side-out" type="submit" title="Đăng xuất"><svg><use href="#ci-out"/></svg><span>Đăng xuất</span></button></form>
   </div>
+  <div class="side-ver" title="Bản đang chạy trên server">Bản dựng {{if .Build}}{{.Build}}{{else}}dev{{end}}</div>
 </aside>
 <div class="scrim" id="scrim" hidden></div>
 <div class="main">

@@ -128,6 +128,8 @@ fi
 
 # 6. Build và chạy
 say "Build và khởi động (lần đầu mất vài phút)…"
+# số phiên bản (commit) in vào binary: xem tại <domain>/version và ở chân menu CMS
+export GIT_SHA="$(git -C "$APP_DIR" rev-parse --short HEAD 2>/dev/null || echo dev)"
 docker compose up -d --build --remove-orphans
 
 say "Chờ server sẵn sàng…"
