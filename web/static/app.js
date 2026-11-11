@@ -10,6 +10,9 @@ function syncTheme(){if(!tg)return;var d=isDark();tg.setAttribute('aria-pressed'
 if(tg){tg.addEventListener('click',function(){root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('3c-theme',root.dataset.theme)}catch(e){}syncTheme()});
   syncTheme();if(mq.addEventListener)mq.addEventListener('change',syncTheme)}
 
+/* nav shadow after scrolling */
+var nv=$('.nav');if(nv){var sc=function(){nv.classList.toggle('scrolled',scrollY>8)};sc();addEventListener('scroll',sc,{passive:true})}
+
 /* mobile menu: Esc, outside click and link click close it */
 var mn=$('details.mnav');
 if(mn){var shut=function(f){if(mn.open){mn.removeAttribute('open');if(f)$('summary',mn).focus()}};
@@ -29,19 +32,22 @@ if(form){
   var labels=function(){$('#oAmount').textContent=money($('#fAmount').value);$('#oTerm').textContent=$('#fTerm').value+' tháng'};
   var need=function(){var c=$('input[name=need]:checked',form);return c?c.value:''};
   var mode=function(){var n=need();form.classList.toggle('card',n==='credit_card');form.classList.toggle('veh',n==='secured'||n==='compare')};
-  var show=function(i,focus){cur=Math.max(0,Math.min(i,steps.length-1));steps.forEach(function(s,k){s.hidden=k!==cur});err.hidden=true;
+  var show=function(i,focus){var to=Math.max(0,Math.min(i,steps.length-1));form.classList.toggle('back',to<cur);cur=to;steps.forEach(function(s,k){s.hidden=k!==cur});err.hidden=true;
     $('#wzN').textContent=cur+1;$('#wzBar').style.width=((cur+1)/steps.length*100)+'%';
     form.classList.toggle('first',cur===0);form.classList.toggle('last',cur===steps.length-1);
     if(focus){var f=$('input:checked,input:not([type=hidden]):not([type=radio]),.cs-btn,input[type=radio]',steps[cur]);if(f)f.focus({preventScroll:true});form.scrollIntoView({block:'start'})}};
   var ok=function(){var bad=$$('[data-req]',steps[cur]).filter(function(g){return !$('input:checked',g)});
     if(cur===0&&!need())bad.push(steps[0]);err.hidden=!bad.length;if(bad.length){var i=$('input',bad[0]);if(i)i.focus()}return !bad.length};
-  var next=function(){if(!ok())return;if(cur===steps.length-1)form.submit();else show(cur+1,true)};
+  var next=function(){if(!ok())return;if(cur===steps.length-1)form.requestSubmit?form.requestSubmit():form.submit();else show(cur+1,true)};
   form.classList.add('js');mode();labels();show(+form.dataset.start-1||0,false);
   form.addEventListener('input',labels);
+  /* picking the need with mouse or touch moves on by itself (keyboard users press Enter) */
+  steps[0].addEventListener('click',function(e){var l=e.target.closest('.opt');if(l&&e.target.tagName==='INPUT'&&e.detail>0&&cur===0)setTimeout(function(){if(cur===0)next()},260)});
   form.addEventListener('change',function(e){if(e.target.name==='need')mode();if(e.target.type==='radio')err.hidden=true});
   $('[data-next]',form).addEventListener('click',next);
   $('[data-back]',form).addEventListener('click',function(){show(cur-1,true)});
-  form.addEventListener('submit',function(e){if(!ok())e.preventDefault()});
+  form.addEventListener('submit',function(e){if(!ok()){e.preventDefault();return}var d=$('[data-done]',form);if(d){d.setAttribute('aria-busy','true');d.textContent='Đang đối chiếu…'}});
+  addEventListener('pageshow',function(){var d=$('[data-done]',form);if(d&&d.getAttribute('aria-busy')){d.removeAttribute('aria-busy');d.textContent='Xem gói vay phù hợp'}});
   form.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.isComposing&&e.target.tagName!=='BUTTON'&&!e.target.closest('.cs')){e.preventDefault();next()}});
   var wzOpen=function(i){var p=$('#psum');if(p)p.hidden=true;var r=$('#results');if(r)r.hidden=true;form.hidden=false;show(i,true)};
   document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-edit],[data-pick-need]');if(!a)return;e.preventDefault();

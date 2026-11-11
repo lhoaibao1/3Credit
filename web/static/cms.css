@@ -303,3 +303,15 @@ form>.fsec:first-of-type,.panel>.fsec:first-child{margin-top:0;padding-top:0;bor
 .copyrow{display:flex;align-items:flex-start;gap:10px;margin:10px 0 14px}.copyrow code{flex:1;min-width:0;padding:10px 12px;border-radius:8px;background:var(--gray-soft);font-size:12.5px;line-height:1.6;overflow-wrap:anywhere}.copyrow code b{color:var(--or-ink,var(--or))}
 table.kv{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}.kv th{width:130px;text-align:left;vertical-align:top;padding:7px 10px 7px 0;font-family:var(--num);font-size:12px;white-space:nowrap}.kv td{padding:7px 0;color:var(--muted);border-top:1px solid var(--line)}.kv th{border-top:1px solid var(--line)}.kv tr:first-child th,.kv tr:first-child td{border-top:0}.kv code{color:var(--ink)}
 @media (max-width:600px){.copyrow{flex-direction:column}.kv th{width:96px;white-space:normal}}
+
+/* ---------- motion & feedback ---------- */
+@keyframes cmsRise{from{opacity:0;transform:translateY(8px)}}
+.btn{transition:transform .15s,background .15s,border-color .15s,box-shadow .2s}.btn:active{transform:scale(.97)}
+
+.at tbody tr{transition:background .12s}.at tbody tr:hover{background:var(--gray-soft)}
+.sw,.sw::after{transition:background .2s,transform .2s}
+.panel,.kpi{animation:cmsRise .3s both}.kpi:nth-child(2){animation-delay:.04s}.kpi:nth-child(3){animation-delay:.08s}.kpi:nth-child(4){animation-delay:.12s}.kpi:nth-child(5){animation-delay:.16s}
+details[open]>*:not(summary){animation:cmsRise .2s both}
+.flash{animation:cmsRise .3s both}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{box-shadow:0 0 0 3px var(--or-soft,rgba(255,100,46,.18))}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}

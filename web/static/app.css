@@ -534,3 +534,58 @@ footer ul a:hover{color:var(--or-ink)}
   .page{padding-top:24px}
 }
 @media (min-width:601px){.posts.hscroll,.logos.hscroll{overflow:visible;-webkit-mask-image:none;mask-image:none}}
+
+/* ---------- motion & feedback pass ---------- */
+:root{--ease:cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes slideR{from{opacity:0;transform:translateX(22px)}}
+@keyframes slideL{from{opacity:0;transform:translateX(-22px)}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes grow{from{transform:scaleX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+/* buttons: press, glow, arrow */
+.btn{transition:transform .18s var(--ease),background .2s,border-color .2s,box-shadow .25s,color .2s}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn-pri:not([disabled]):hover{box-shadow:0 8px 22px -8px var(--or)}
+.btn-line:not([disabled]):hover{background:var(--or-soft)}
+.btn[aria-busy=true]{pointer-events:none;opacity:.9}
+.btn[aria-busy=true]::before{content:"";width:16px;height:16px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
+/* nav gains depth once the page scrolls */
+.nav{transition:box-shadow .3s,background .3s}
+.nav.scrolled{box-shadow:0 10px 30px -12px rgba(0,0,0,.45)}
+/* cards lift */
+.card:hover{transform:translateY(-3px)}
+.post,.step,.em{transition:transform .25s var(--ease),box-shadow .25s,border-color .25s}
+.post:hover,.step:hover,a.em:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+.lchip{transition:transform .2s var(--ease)}.lchip:hover{transform:translateY(-2px)}
+/* question flow: steps slide, choices answer back */
+.wz.js .wz-step:not([hidden]){animation:slideR .32s var(--ease) both}
+.wz.js.back .wz-step:not([hidden]){animation-name:slideL}
+.wz-bar i{transition:width .45s var(--ease)}
+.opt span{transition:border-color .15s,background .15s,transform .15s var(--ease),box-shadow .2s}
+.opt:hover span{transform:translateY(-1px);box-shadow:var(--shadow-1)}
+.opt:active span{transform:scale(.98)}
+.opt input:checked+span::after{content:"";flex:none;margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--or) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.4l3 3 6-6.6' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat;animation:pop .28s var(--ease)}
+.opts.big .opt input:checked+span::after{position:absolute;top:10px;right:10px;margin:0}
+.opts:not(.big) .opt span{gap:10px}
+.wz-err:not([hidden]){animation:shake .35s}
+/* results arrive in sequence; fit bars fill */
+#results .rsum,#psum{animation:rise .4s var(--ease) both}
+#results .card{animation:rise .45s var(--ease) both}
+#results .card:nth-child(2){animation-delay:.07s}#results .card:nth-child(3){animation-delay:.14s}#results .card:nth-child(4){animation-delay:.21s}#results .card:nth-child(n+5){animation-delay:.28s}
+.meter .bar i{transform-origin:left;animation:grow .9s .25s var(--ease) both}
+.st{transition:transform .2s var(--ease)}.card:hover .st{transform:scale(1.04)}
+/* disclosures open softly */
+.faq details[open]>*:not(summary),.whyd[open]>.why,.grp[open]>.grpb,details.nots[open]>.nrow{animation:rise .28s var(--ease) both}
+.faq summary::after,.grp>summary::after,.whyd>summary::after{transition:transform .25s var(--ease)}
+.faq details[open] summary::after,.grp[open]>summary::after,.whyd[open]>summary::after{transform:rotate(180deg)}
+.faq details{transition:border-color .2s,box-shadow .2s}.faq details:hover{border-color:var(--line-strong)}
+/* form fields */
+input,textarea,.cs-btn{transition:border-color .15s,box-shadow .2s,background .15s}
+input:not([type=checkbox]):not([type=radio]):not([type=range]):focus,textarea:focus{box-shadow:0 0 0 4px var(--or-soft)}
+.cs-pop:not([hidden]){animation:rise .16s var(--ease) both}
+.cs-pop.sheet:not([hidden]){animation-duration:.26s}
+.flash,.toast:not([hidden]){animation:rise .3s var(--ease) both}
+.tray:not([hidden]){animation:rise .3s var(--ease) both}
+a.lnk{background:linear-gradient(currentColor,currentColor) 0 100%/0 1.5px no-repeat;transition:background-size .25s var(--ease)}a.lnk:hover{background-size:100% 1.5px}
