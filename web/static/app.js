@@ -13,6 +13,15 @@ if(tg){tg.addEventListener('click',function(){root.dataset.theme=isDark()?'light
 /* nav shadow after scrolling */
 var nv=$('.nav');if(nv){var sc=function(){nv.classList.toggle('scrolled',scrollY>8)};sc();addEventListener('scroll',sc,{passive:true})}
 
+/* banner slider: arrows, dots, auto-advance that pauses on hover/focus and is off for reduced motion */
+var hs=$('#hbSlides');
+if(hs){var sl=$$('.hb-copy',hs),dots=$$('#hbDots button'),hi=0,tm=null,
+  go=function(n){hi=(n+sl.length)%sl.length;sl.forEach(function(x,k){x.classList.toggle('on',k===hi)});dots.forEach(function(d,k){d.classList.toggle('on',k===hi)})},
+  play=function(){if(reduce||tm)return;tm=setInterval(function(){go(hi+1)},6500)},stop=function(){clearInterval(tm);tm=null};
+  $$('[data-hb]').forEach(function(b){b.addEventListener('click',function(){stop();go(hi+ +b.dataset.hb);play()})});
+  dots.forEach(function(d,k){d.addEventListener('click',function(){stop();go(k);play()})});
+  var hbx=hs.closest('.hb');hbx.addEventListener('mouseenter',stop);hbx.addEventListener('mouseleave',play);hbx.addEventListener('focusin',stop);hbx.addEventListener('focusout',play);play()}
+
 /* mobile menu: Esc, outside click and link click close it */
 var mn=$('details.mnav');
 if(mn){var shut=function(f){if(mn.open){mn.removeAttribute('open');if(f)$('summary',mn).focus()}};

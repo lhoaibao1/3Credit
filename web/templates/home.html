@@ -1,11 +1,25 @@
 {{template "head" .}}
 <header class="hb">
   <div class="in">
-    <div class="hb-copy">
-      <p class="hb-tag">So sánh sản phẩm tài chính</p>
-      <h1>Chọn đúng khoản vay, biết rõ vì sao hợp</h1>
-      <p class="hb-lede">3Credit đối chiếu hồ sơ bạn tự khai với điều kiện công bố của ngân hàng và công ty tài chính, rồi chỉ ra sản phẩm hợp với bạn.</p>
-      <div class="hb-cta"><a class="btn btn-white" href="/#tim">Tìm gói vay phù hợp</a><a class="btn btn-ghost" href="/#tu-van">Nhờ tư vấn miễn phí</a></div>
+    <div class="hb-slides" id="hbSlides">
+      <div class="hb-copy on">
+        <p class="hb-tag">So sánh sản phẩm tài chính</p>
+        <h1>Chọn đúng khoản vay, biết rõ vì sao hợp</h1>
+        <p class="hb-lede">3Credit đối chiếu hồ sơ bạn tự khai với điều kiện công bố của ngân hàng và công ty tài chính, rồi chỉ ra sản phẩm hợp với bạn.</p>
+        <div class="hb-cta"><a class="btn btn-white" href="/#tim">Tìm gói vay phù hợp</a></div>
+      </div>
+      <div class="hb-copy">
+        <p class="hb-tag">Vay tiền mặt</p>
+        <p class="hb-h">Khai một lần, so sánh nhiều nơi</p>
+        <p class="hb-lede">Trả lời 6 câu ngắn. 3Credit xếp các khoản vay theo mức hợp với hồ sơ của bạn và ghi rõ từng lý do.</p>
+        <div class="hb-cta"><a class="btn btn-white" href="/?need=cash_loan#tim">Tìm khoản vay</a></div>
+      </div>
+      <div class="hb-copy">
+        <p class="hb-tag">Tư vấn miễn phí</p>
+        <p class="hb-h">Chưa chắc chọn gì? 3Credit gọi lại cho bạn</p>
+        <p class="hb-lede">Để lại tên và số điện thoại, chuyên viên gọi lại trong giờ làm việc để hỏi nhu cầu và gợi ý sản phẩm.</p>
+        <div class="hb-cta"><a class="btn btn-white" href="/#tu-van">Để lại số điện thoại</a></div>
+      </div>
     </div>
     <div class="cardstack" aria-hidden="true">
       <div class="ccard back"><span class="cc-stripe"></span><span class="cc-cvv">CVV ···</span></div>
@@ -22,6 +36,9 @@
       <li><small>Xem đề xuất</small><b>Không cần CCCD</b></li>
     </ul>
   </div>
+  <button class="hb-arrow prev" type="button" data-hb="-1" aria-label="Banner trước"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button class="hb-arrow next" type="button" data-hb="1" aria-label="Banner sau"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  <div class="hb-dots" id="hbDots" role="tablist" aria-label="Chọn banner"><button type="button" class="on" aria-label="Banner 1"></button><button type="button" aria-label="Banner 2"></button><button type="button" aria-label="Banner 3"></button></div>
 </header>
 
 <section class="sec" id="san-pham">
@@ -48,22 +65,10 @@
   </div>
 </section>
 
-<section class="plogos" id="doi-tac" aria-label="Đối tác">
-  <div class="in"><div class="logos hscroll" tabindex="0" role="region" aria-label="Logo đối tác, cuộn ngang">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div></div>
-</section>
 
 
-<section class="sec" id="cach-hoat-dong">
-  <div class="in">
-    <div class="sh"><div class="t"><span class="eyebrow">Cách hoạt động</span><h2>Từ nhu cầu đến <span class="or">đăng ký đúng chỗ</span></h2></div></div>
-    <div class="flow">
-      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-scale"/></svg></i><span class="stepn">Bước 1</span><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
-      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-doc"/></svg></i><span class="stepn">Bước 2</span><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
-      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-gauge"/></svg></i><span class="stepn">Bước 3</span><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
-      <div class="fs reveal"><i><svg width="24" height="24"><use href="#i-hand"/></svg></i><span class="stepn">Bước 4</span><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
-    </div>
-  </div>
-</section>
+
+
 
 <section class="sec" id="tim">
   <div class="in">
@@ -127,14 +132,46 @@
   </div>
 </section>
 
+<section class="split" id="cach-hoat-dong">
+  <div class="in">
+    <div class="split-t"><h2>Cách <span class="or">3Credit</span> hoạt động</h2><p>Bạn khai nhu cầu và vài thông tin cơ bản. 3Credit đối chiếu với điều kiện đối tác công bố, giải thích từng lý do, rồi đưa bạn sang đúng trang đăng ký chính thức của đối tác.</p>
+      <div class="hb-cta"><a class="btn btn-dark" href="/#tim">Bắt đầu tìm</a><a class="btn btn-line" href="/kien-thuc">Đọc kiến thức</a></div></div>
+    <div class="flow">
+<div class="fs reveal"><i><svg width="24" height="24"><use href="#i-scale"/></svg></i><span class="stepn">Bước 1</span><h3>Chọn nhu cầu</h3><p>Vay tiền, thẻ tín dụng, so sánh hay giải pháp khác.</p></div>
+<div class="fs reveal"><i><svg width="24" height="24"><use href="#i-doc"/></svg></i><span class="stepn">Bước 2</span><h3>Khai hồ sơ tối thiểu</h3><p>Tuổi, nghề, thu nhập, số tiền. Không hỏi CCCD hay tài khoản ngân hàng.</p></div>
+<div class="fs reveal"><i><svg width="24" height="24"><use href="#i-gauge"/></svg></i><span class="stepn">Bước 3</span><h3>Xem đề xuất có lý do</h3><p>Sản phẩm chia theo: đáp ứng điều kiện, cần kiểm tra thêm, không phù hợp.</p></div>
+<div class="fs reveal"><i><svg width="24" height="24"><use href="#i-hand"/></svg></i><span class="stepn">Bước 4</span><h3>Đăng ký tại đối tác</h3><p>Bạn đăng ký trên kênh chính thức của đối tác. Đối tác là bên xét duyệt.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="ve-3credit">
+  <div class="in">
+    <div class="about-box on-or">
+      <div class="about-art" aria-hidden="true"><svg width="220" height="140"><use href="#mark"/></svg></div>
+      <div class="about-t">
+        <svg class="logo" width="230" height="60" role="img"><title>3Credit</title><use href="#logo"/></svg>
+        <p>3Credit là nền tảng so sánh và giới thiệu sản phẩm tài chính của Công ty TNHH Công nghệ 3RDVN. 3Credit không cho vay và không quyết định phê duyệt: chúng tôi giúp bạn hiểu điều kiện của từng sản phẩm trước khi đăng ký với đối tác.</p>
+        <ul class="about-f"><li><svg width="22" height="22"><use href="#i-shield"/></svg>Miễn phí</li><li><svg width="22" height="22"><use href="#i-doc"/></svg>Có giải thích</li><li><svg width="22" height="22"><use href="#i-scale"/></svg>Ghi rõ nguồn</li></ul>
+        <a class="btn btn-white" href="/gioi-thieu">Xem thêm về 3Credit</a>
+      </div>
+    </div>
+    <div class="logos hscroll" tabindex="0" role="region" aria-label="Logo đối tác, cuộn ngang">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
+  </div>
+</section>
+
 {{template "consult" .}}
 
 {{if .Posts}}<section class="sec" id="kien-thuc">
   <div class="in">
-    <div class="sh"><div class="t"><span class="eyebrow">Kiến thức</span><h2>Đọc trước khi <span class="or">ký hợp đồng</span></h2></div><a class="btn btn-line btn-sm" href="/kien-thuc">Xem tất cả bài viết</a></div>
+    <div class="sh ctr"><div class="t"><h2><span class="or">Kiến thức</span> mới nhất</h2></div></div>
     <div class="posts hscroll" tabindex="0" role="region" aria-label="Bài viết, cuộn ngang">{{range .Posts}}{{template "postcard" .}}{{end}}</div>
+    <div class="ctr-btn"><a class="btn btn-line" href="/kien-thuc">Xem tất cả</a></div>
   </div>
 </section>{{end}}
+
+
+
 
 
 <section class="sec" id="nguon">

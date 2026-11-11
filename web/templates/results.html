@@ -41,4 +41,4 @@
 </article>
 {{end}}
 
-{{define "postcard"}}<a class="post" href="/kien-thuc/{{.Slug}}"><div class="cv">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="" loading="lazy">{{else}}{{.Category}}{{end}}</div><div class="b"><small>{{.Category}}{{if .PublishedAt}} · {{.PublishedAt.Format "02/01/2006"}}{{end}}</small><h3>{{.Title}}</h3><p>{{.Summary}}</p></div></a>{{end}}
+{{define "postcard"}}<a class="post" href="/kien-thuc/{{.Slug}}"><div class="cv">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="" loading="lazy">{{else}}<svg width="64" height="64" aria-hidden="true"><use href="#i-doc"/></svg>{{end}}</div><div class="b"><span class="ptag">{{.Category}}</span><h3>{{.Title}}</h3><span class="more">Xem thêm <svg width="20" height="14" viewBox="0 0 24 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 7h21M16 1l6 6-6 6"/></svg></span></div></a>{{end}}
