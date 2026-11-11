@@ -15,3 +15,9 @@ function fit(){Array.prototype.forEach.call(document.querySelectorAll('.tw'),fun
   if(ok)t.removeAttribute('tabindex');else t.tabIndex=0})}
 fit();addEventListener('resize',fit);
 })();
+
+/* copy buttons: data-copy="#id" copies that element's text */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-copy]');if(!b)return;var el=document.querySelector(b.dataset.copy);if(!el)return;
+  var t=el.textContent.trim(),done=function(){var o=b.textContent;b.textContent='Đã chép';setTimeout(function(){b.textContent=o},1500)};
+  var sel=function(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,sel);else sel()});

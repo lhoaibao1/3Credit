@@ -68,6 +68,10 @@ func (s *Store) SeedEcosystem() error {
 	if _, err := s.DB.Exec(`DELETE FROM partners WHERE id IN ('tnex','hoangthien') AND id NOT IN (SELECT partner_id FROM products)`); err != nil {
 		return err
 	}
+	// Campaigns that already have a tracking link but no postback secret get one, so the CMS can show a ready postback URL.
+	if _, err := s.DB.Exec(`UPDATE campaigns SET postback_secret=lower(hex(randomblob(16))) WHERE postback_secret='' AND tracking_url<>''`); err != nil {
+		return err
+	}
 	for k, v := range CompanyDefaults {
 		if _, err := s.DB.Exec(`INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value WHERE settings.value=''`, k, v); err != nil {
 			return err

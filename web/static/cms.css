@@ -300,3 +300,6 @@ form>.fsec:first-of-type,.panel>.fsec:first-child{margin-top:0;padding-top:0;bor
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .side-ver{flex:none;padding:0 14px 12px;font-size:11px;letter-spacing:.02em;color:var(--side-g);font-variant-numeric:tabular-nums}
+.copyrow{display:flex;align-items:flex-start;gap:10px;margin:10px 0 14px}.copyrow code{flex:1;min-width:0;padding:10px 12px;border-radius:8px;background:var(--gray-soft);font-size:12.5px;line-height:1.6;overflow-wrap:anywhere}.copyrow code b{color:var(--or-ink,var(--or))}
+table.kv{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}.kv th{width:130px;text-align:left;vertical-align:top;padding:7px 10px 7px 0;font-family:var(--num);font-size:12px;white-space:nowrap}.kv td{padding:7px 0;color:var(--muted);border-top:1px solid var(--line)}.kv th{border-top:1px solid var(--line)}.kv tr:first-child th,.kv tr:first-child td{border-top:0}.kv code{color:var(--ink)}
+@media (max-width:600px){.copyrow{flex-direction:column}.kv th{width:96px;white-space:normal}}

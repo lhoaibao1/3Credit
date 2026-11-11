@@ -109,12 +109,17 @@ func Sign(secret, clickID, conversionID, status, payout string) string {
 	return hex.EncodeToString(m.Sum(nil))
 }
 
-var validConvStatus = map[string]bool{"pending": true, "approved": true, "rejected": true}
+// convStatus maps the status words affiliate networks send to our three states.
+var convStatus = map[string]string{
+	"pending": "pending", "hold": "pending", "new": "pending", "waiting": "pending",
+	"approved": "approved", "approve": "approved", "success": "approved", "successful": "approved", "confirmed": "approved", "paid": "approved",
+	"rejected": "rejected", "reject": "rejected", "cancelled": "rejected", "canceled": "rejected", "declined": "rejected", "failed": "rejected",
+}
 
 type PostbackResult struct {
-	Result  string // created | updated | duplicate
-	Click   string
-	Payout  float64
+	Result string // created | updated | duplicate
+	Click  string
+	Payout float64
 }
 
 // Postback verifies and records a conversion. q holds click_id, conversion_id,
@@ -135,11 +140,13 @@ func (t *Tracker) Postback(network string, q url.Values) (PostbackResult, error)
 }
 
 func (t *Tracker) postback(network string, q url.Values) (PostbackResult, error) {
-	clickID, convID, status, payoutS, sig := q.Get("click_id"), q.Get("conversion_id"), q.Get("status"), q.Get("payout"), q.Get("sig")
-	if network == "" || clickID == "" || convID == "" || sig == "" {
+	clickID, convID, rawStatus, payoutS := q.Get("click_id"), q.Get("conversion_id"), q.Get("status"), q.Get("payout")
+	sig, token := q.Get("sig"), q.Get("token")
+	if network == "" || clickID == "" || convID == "" || (sig == "" && token == "") {
 		return PostbackResult{}, errors.New("missing parameters")
 	}
-	if !validConvStatus[status] {
+	status, ok := convStatus[strings.ToLower(strings.TrimSpace(rawStatus))]
+	if !ok {
 		return PostbackResult{}, errors.New("invalid status")
 	}
 	payout, err := strconv.ParseFloat(payoutS, 64)
@@ -160,8 +167,13 @@ func (t *Tracker) postback(network string, q url.Values) (PostbackResult, error)
 	if secret == "" {
 		return PostbackResult{}, errors.New("campaign has no postback secret")
 	}
-	want := Sign(secret, clickID, convID, status, payoutS)
-	if !hmac.Equal([]byte(want), []byte(strings.ToLower(sig))) {
+	// Two ways to prove the call is genuine: the campaign's secret token in the URL (what affiliate
+	// networks support), or an HMAC signature over the fields (for partners that can compute one).
+	if token != "" {
+		if !hmac.Equal([]byte(token), []byte(secret)) {
+			return PostbackResult{}, errors.New("bad token")
+		}
+	} else if want := Sign(secret, clickID, convID, rawStatus, payoutS); !hmac.Equal([]byte(want), []byte(strings.ToLower(sig))) {
 		return PostbackResult{}, errors.New("bad signature")
 	}
 	var oldStatus, oldClick string

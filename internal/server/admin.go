@@ -2,6 +2,8 @@ package server
 
 import (
 	"bytes"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"net/http"
@@ -158,6 +160,11 @@ func (s *Server) adminCampaignSave(w http.ResponseWriter, r *http.Request) {
 	c.SubIDParam = strings.TrimSpace(r.FormValue("subid_param"))
 	if v := r.FormValue("postback_secret"); v != "" {
 		c.PostbackSecret = v
+	}
+	if c.PostbackSecret == "" && c.TrackingURL != "" { // a link without a secret could never record conversions
+		b := make([]byte, 16)
+		rand.Read(b)
+		c.PostbackSecret = hex.EncodeToString(b)
 	}
 	c.CommissionModel = r.FormValue("commission_model")
 	c.CommissionValue, _ = strconv.ParseFloat(r.FormValue("commission_value"), 64)

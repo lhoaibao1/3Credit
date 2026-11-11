@@ -73,8 +73,8 @@
   <h3 class="fsec" id="link-tracking">Link tracking &amp; đối soát</h3>
   <div class="aform">
     <div class="fld full"><label for="curl">Tracking URL (từ đối tác hoặc affiliate network; có thể chứa {click_id})</label><input id="curl" name="tracking_url" type="url" value="{{$c.TrackingURL}}" placeholder="https://"></div>
-    <div class="fld"><label for="csub">Tham số SubID</label><input id="csub" name="subid_param" type="text" value="{{$c.SubIDParam}}" pattern="[A-Za-z0-9_]{1,32}"></div>
-    <div class="fld"><label for="csec">Postback secret (HMAC){{if $c.PostbackSecret}} · đã đặt{{end}}</label><input id="csec" name="postback_secret" type="password" autocomplete="new-password" placeholder="để trống = giữ nguyên"></div>
+    <div class="fld"><label for="csub">Tham số SubID (tên tham số mạng dùng để nhận mã click, vd. aff_sub, sub1)</label><input id="csub" name="subid_param" type="text" value="{{$c.SubIDParam}}" pattern="[A-Za-z0-9_]{1,32}"></div>
+    <div class="fld"><label for="csec">Postback secret{{if $c.PostbackSecret}} · đã đặt{{else}} · tự tạo khi lưu{{end}}</label><input id="csec" name="postback_secret" type="password" autocomplete="new-password" placeholder="để trống = giữ nguyên"></div>
     <div class="fld full"><label for="clead">Lead endpoint nội bộ (https, để trống = chỉ chuyển hướng)</label><input id="clead" name="lead_endpoint" type="url" value="{{$c.LeadEndpoint}}" placeholder="https://crm.example/api/leads"></div>
     <div class="fld full"><label for="cauth">Header xác thực lead endpoint (Tên: giá trị){{if $c.LeadAuthHeader}} · đã đặt{{end}}</label><input id="cauth" name="lead_auth_header" type="password" autocomplete="new-password" placeholder="để trống = giữ nguyên"></div>
   </div>
@@ -90,7 +90,20 @@
   <div class="fld"><span class="lb">Nhóm khách mục tiêu: chọn ít nhất 1. Chưa chọn thì khách không thấy chiến dịch này</span><div class="seg">{{range .Segments}}<label class="cmpchk"><input type="checkbox" name="segments" value="{{.ID}}" {{if has $c.TargetSegments .ID}}checked{{end}}> {{.ID}} · {{.Name}}</label>{{end}}</div></div>
   <div class="fbar"><button class="btn btn-pri" type="submit">Lưu chiến dịch</button><a class="btn" href="/admin/campaigns">Hủy</a></div>
 </form>
-{{if $c.PostbackSecret}}<section class="panel"><h3>Postback cho đối tác</h3><p class="note">Gửi tới <code>{{.Base}}/api/postback/&lt;network&gt;?click_id=…&amp;conversion_id=…&amp;status=pending|approved|rejected&amp;payout=…&amp;sig=…</code>, với <code>sig = HMAC_SHA256(secret, "click_id|conversion_id|status|payout")</code> dạng hex.</p></section>{{end}}
+<section class="panel" id="postback"><h3>Nhận conversion (postback)</h3>
+{{if $c.PostbackSecret}}
+<p class="note">Dán URL dưới đây vào ô <b>Postback URL</b> (có nơi gọi là S2S / Server postback / Callback) trong trang quản lý của mạng affiliate hoặc đối tác. Mỗi khi có đơn, họ gọi URL này và conversion hiện ở trang <a class="lnk" href="/admin/tracking">Tracking</a>.</p>
+<div class="copyrow"><code id="pbUrl">{{.Base}}/api/postback/<b>TEN_MANG</b>?token={{urlquery $c.PostbackSecret}}&amp;click_id=<b>{MA_CLICK}</b>&amp;conversion_id=<b>{MA_DON}</b>&amp;status=<b>{TRANG_THAI}</b>&amp;payout=<b>{HOA_HONG}</b></code><button class="btn btn-sm" type="button" data-copy="#pbUrl">Sao chép</button></div>
+<table class="kv"><tbody>
+<tr><th>TEN_MANG</th><td>Tên mạng viết liền không dấu, ví dụ <code>accesstrade</code>, <code>dinos</code>. Chỉ để phân biệt nguồn.</td></tr>
+<tr><th>{MA_CLICK}</th><td>Thay bằng macro của mạng trả lại giá trị 3Credit đã gửi ở tham số <code>{{if $c.SubIDParam}}{{$c.SubIDParam}}{{else}}(ô “Tham số SubID” ở trên){{end}}</code>. Thường là <code>{aff_sub}</code>, <code>{sub1}</code>, <code>{click_id}</code> hoặc <code>{utm_content}</code>.</td></tr>
+<tr><th>{MA_DON}</th><td>Macro mã đơn / mã giao dịch của mạng, ví dụ <code>{transaction_id}</code>, <code>{order_id}</code>, <code>{conversion_id}</code>.</td></tr>
+<tr><th>{TRANG_THAI}</th><td>Macro trạng thái. 3Credit hiểu: <code>pending</code>/<code>hold</code>, <code>approved</code>/<code>success</code>/<code>paid</code>, <code>rejected</code>/<code>cancelled</code>. Mạng không có macro thì tạo 3 postback, mỗi cái ghi cứng một trạng thái.</td></tr>
+<tr><th>{HOA_HONG}</th><td>Macro số tiền hoa hồng (VND), ví dụ <code>{commission}</code>, <code>{payout}</code>. Không có thì bỏ tham số này.</td></tr>
+</tbody></table>
+<p class="note">Thử nhanh: bấm “Đăng ký” sản phẩm này ở trang khách một lần, lấy mã click ở trang Tracking, rồi mở URL trên bằng trình duyệt với mã đó. Trả về <code>{"ok":true}</code> là thông. Giữ kín URL này vì nó chứa mã bí mật; lộ thì nhập mã mới ở ô “Postback secret” rồi lưu.</p>
+{{else}}<p class="note">Dán Tracking URL ở trên rồi bấm Lưu, 3Credit sẽ tự tạo mã bí mật và hiện URL postback để bạn dán cho đối tác.</p>{{end}}
+</section>
 {{template "cmsfoot" .}}{{end}}
 
 {{define "admin_partners"}}{{template "cmshead" .}}

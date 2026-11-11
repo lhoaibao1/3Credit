@@ -239,3 +239,47 @@ func TestBadDebtCustomersOnlySeeProductsSetToAcceptIt(t *testing.T) {
 		t.Fatal("campaign list should show the debt types a product accepts")
 	}
 }
+
+func TestPostbackWithTokenAsAffiliateNetworksSendIt(t *testing.T) {
+	e := setup(t)
+	// saving a tracking link creates the postback secret and the CMS shows a ready URL
+	tok := e.csrfFrom(t, "/admin/campaigns/C-SFI-01", true)
+	e.post(t, "/admin/campaigns/C-SFI-01", url.Values{"csrf": {tok}, "name": {"SFinance"}, "status": {"active"}, "priority": {"1"},
+		"segments": {"SEG01", "SEG05"}, "tracking_url": {"https://partner.example/aff?offer=9"}, "subid_param": {"aff_sub"}}, true)
+	var secret string
+	e.st.DB.QueryRow(`SELECT postback_secret FROM campaigns WHERE id='C-SFI-01'`).Scan(&secret)
+	if len(secret) < 16 {
+		t.Fatalf("secret not generated: %q", secret)
+	}
+	if _, page := e.get(t, "/admin/campaigns/C-SFI-01", true); !strings.Contains(page, "/api/postback/") || !strings.Contains(page, "token="+secret) {
+		t.Fatal("CMS should show the postback URL with the token")
+	}
+	resp, _ := e.cli.Get(e.ts.URL + "/go/C-SFI-01")
+	resp.Body.Close()
+	u, _ := url.Parse(resp.Header.Get("Location"))
+	click := u.Query().Get("aff_sub")
+	call := func(q string) int {
+		r, _ := http.Get(e.ts.URL + "/api/postback/accesstrade?click_id=" + click + "&" + q)
+		r.Body.Close()
+		return r.StatusCode
+	}
+	if call("conversion_id=tx1&status=success&payout=120000&token=wrong") != 400 {
+		t.Fatal("wrong token accepted")
+	}
+	if call("conversion_id=tx1&status=hold&payout=120000") != 400 {
+		t.Fatal("postback without token or signature accepted")
+	}
+	if call("conversion_id=tx1&status=hold&payout=120000&token="+secret) != 200 || call("conversion_id=tx1&status=Success&payout=120000&token="+secret) != 200 {
+		t.Fatal("valid token postback rejected")
+	}
+	var st string
+	var n int
+	e.st.DB.QueryRow(`SELECT COUNT(*), MAX(status) FROM conversions WHERE conversion_id='tx1'`).Scan(&n, &st)
+	if n != 1 || st != "approved" {
+		t.Fatalf("conversion rows=%d status=%q, want 1 approved", n, st)
+	}
+	// the token must never be written to the postback log
+	if e.st.Count(`SELECT COUNT(*) FROM postback_logs WHERE query LIKE '%`+secret+`%'`) != 0 {
+		t.Fatal("token leaked into postback log")
+	}
+}

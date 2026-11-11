@@ -153,8 +153,10 @@ docs/research         nghiên cứu Giai đoạn 1
 ## Postback cho đối tác / affiliate network
 
 ```
-GET|POST /api/postback/{network}?click_id=…&conversion_id=…&status=pending|approved|rejected&payout=…&sig=…
-sig = hex(HMAC_SHA256(postback_secret, "click_id|conversion_id|status|payout"))
+GET|POST /api/postback/{network}?token=<postback_secret>&click_id=…&conversion_id=…&status=…&payout=…
+status: pending|hold, approved|success|paid, rejected|cancelled
+Đối tác tự ký được thì thay token bằng sig = hex(HMAC_SHA256(postback_secret, "click_id|conversion_id|status|payout"))
+URL dán sẵn cho từng chiến dịch nằm ở CMS → Chiến dịch → Sửa → "Nhận conversion (postback)".
 ```
 
 Postback secret của từng chiến dịch được đặt trong trang quản trị.
