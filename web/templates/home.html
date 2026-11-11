@@ -1,18 +1,11 @@
 {{template "head" .}}
-<header class="hero">
-  <div class="glow g1"></div>
-  <canvas id="fx" aria-hidden="true"></canvas>
+<header class="hb">
   <div class="in">
-    <div>
-      <h1>Tìm sản phẩm tài chính <span class="or">hợp với bạn</span>, và biết vì sao.</h1>
-      <p class="lede">3Credit đọc điều kiện công bố của từng ngân hàng, công ty tài chính, rồi đối chiếu với hồ sơ bạn tự khai. Bạn thấy rõ điều kiện nào đã khớp, điều kiện nào còn cần kiểm tra.</p>
-      <div class="needs" role="group" aria-label="Bạn cần gì">
-        <a class="need" href="/?need=cash_loan#tim"><i><svg width="22" height="22"><use href="#i-cash"/></svg></i><span>Tôi muốn vay tiền<small>Vay tiêu dùng, vay qua app</small></span></a>
-        <a class="need" href="/?need=credit_card#tim"><i><svg width="22" height="22"><use href="#i-card"/></svg></i><span>Tìm thẻ tín dụng<small>Theo thu nhập, nhu cầu</small></span></a>
-        <a class="need" href="/?need=compare#tim"><i><svg width="22" height="22"><use href="#i-scale"/></svg></i><span>So sánh sản phẩm<small>Lãi, hạn mức, kỳ hạn, phí</small></span></a>
-        <a class="need" href="/?need=secured&amp;vehicle=motorbike#tim"><i><svg width="22" height="22"><use href="#i-key"/></svg></i><span>Giải pháp khác<small>Vay bằng đăng ký xe</small></span></a>
-      </div>
-      <div class="trust"><span>Không cần CCCD để xem đề xuất</span><span>Không ảnh hưởng điểm tín dụng</span><span>Nguồn và ngày cập nhật trên từng sản phẩm</span></div>
+    <div class="hb-copy">
+      <p class="hb-tag">So sánh sản phẩm tài chính</p>
+      <h1>Chọn đúng khoản vay, biết rõ vì sao hợp</h1>
+      <p class="hb-lede">3Credit đối chiếu hồ sơ bạn tự khai với điều kiện công bố của ngân hàng và công ty tài chính, rồi chỉ ra sản phẩm hợp với bạn.</p>
+      <div class="hb-cta"><a class="btn btn-white" href="/#tim">Tìm gói vay phù hợp</a><a class="btn btn-ghost" href="/#tu-van">Nhờ tư vấn miễn phí</a></div>
     </div>
     <div class="cardstack" aria-hidden="true">
       <div class="ccard back"><span class="cc-stripe"></span><span class="cc-cvv">CVV ···</span></div>
@@ -22,18 +15,42 @@
         <div class="cc-num">3368&nbsp;&nbsp;••••&nbsp;&nbsp;••••&nbsp;&nbsp;2026</div>
         <div class="cc-bot"><span><small>CHỦ THẺ</small>KHÁCH HÀNG 3CREDIT</span><span><small>HIỆU LỰC</small>11/30</span></div>
       </div>
-      <div class="fchip f-ok"><svg width="20" height="20"><use href="#i-shield"/></svg>Đáp ứng điều kiện đã biết</div>
-      <div class="ecard fcheck">
-        <small>Vì sao đề xuất</small>
-        <ul class="chk"><li class="y">Hạn mức đủ cho 50 triệu</li><li class="y">Kỳ hạn 24 tháng phù hợp</li><li class="q">CIC: đối tác chưa công bố</li></ul>
-      </div>
     </div>
-  </div>
-  <div class="in partners" id="doi-tac">
-    <p class="hero-kicker">Sản phẩm đang được đối chiếu từ {{len .Partners}} đối tác</p>
-    <div class="logos hscroll" tabindex="0" role="region" aria-label="Logo đối tác, cuộn ngang">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div>
+    <ul class="hb-tiles">
+      <li><small>Chi phí</small><b>Miễn phí</b></li>
+      <li><small>Đối tác</small><b>{{len .Partners}}</b></li>
+      <li><small>Xem đề xuất</small><b>Không cần CCCD</b></li>
+    </ul>
   </div>
 </header>
+
+<section class="sec" id="san-pham">
+  <div class="in">
+    <div class="sh ctr"><div class="t"><h2><span class="or">Bạn đang</span> cần gì?</h2><p>Chọn một nhu cầu, trả lời vài câu ngắn, 3Credit đưa ra các gói phù hợp kèm lý do.</p></div></div>
+    <div class="pgrid">
+      <article class="pcard">
+        <a class="pc-art" href="/?need=cash_loan#tim" tabindex="-1" aria-hidden="true"><span class="pc-shape s1"></span><span class="pc-shape s2"></span><svg class="pc-ico" width="150" height="150"><use href="#i-cash"/></svg></a>
+        <div class="pc-body"><div class="pc-head"><h3>Vay tiền mặt</h3><a class="btn btn-pri" href="/?need=cash_loan#tim">Tìm khoản vay</a></div><ul class="pc-list"><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>So sánh nhiều công ty tài chính, ngân hàng cùng lúc</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Thấy rõ điều kiện nào đã khớp</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Lãi suất, hạn mức ghi kèm nguồn</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Không cần CCCD để xem đề xuất</span></li></ul></div>
+      </article>
+      <article class="pcard">
+        <a class="pc-art" href="/?need=credit_card#tim" tabindex="-1" aria-hidden="true"><span class="pc-shape s1"></span><span class="pc-shape s2"></span><svg class="pc-ico" width="150" height="150"><use href="#i-card"/></svg></a>
+        <div class="pc-body"><div class="pc-head"><h3>Thẻ tín dụng</h3><a class="btn btn-pri" href="/?need=credit_card#tim">Tìm thẻ</a></div><ul class="pc-list"><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Đối chiếu theo thu nhập của bạn</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>So sánh hạn mức và phí</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Giải thích điều kiện mở thẻ</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Miễn phí, không ảnh hưởng điểm tín dụng</span></li></ul></div>
+      </article>
+      <article class="pcard">
+        <a class="pc-art" href="/?need=secured&amp;vehicle=motorbike#tim" tabindex="-1" aria-hidden="true"><span class="pc-shape s1"></span><span class="pc-shape s2"></span><svg class="pc-ico" width="150" height="150"><use href="#i-key"/></svg></a>
+        <div class="pc-body"><div class="pc-head"><h3>Vay bằng đăng ký xe</h3><a class="btn btn-pri" href="/?need=secured&amp;vehicle=motorbike#tim">Tìm gói vay</a></div><ul class="pc-list"><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Dành cho người có xe máy, ô tô</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Dùng giấy đăng ký xe làm tài sản bảo đảm</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>So sánh hạn mức theo giá trị xe</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Chỉ hiển thị đối tác có pháp nhân rõ ràng</span></li></ul></div>
+      </article>
+      <article class="pcard">
+        <a class="pc-art" href="/?need=compare#tim" tabindex="-1" aria-hidden="true"><span class="pc-shape s1"></span><span class="pc-shape s2"></span><svg class="pc-ico" width="150" height="150"><use href="#i-scale"/></svg></a>
+        <div class="pc-body"><div class="pc-head"><h3>Chưa rõ, muốn so sánh</h3><a class="btn btn-pri" href="/?need=compare#tim">So sánh tất cả</a></div><ul class="pc-list"><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Xem mọi loại sản phẩm trong một lần</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Xếp theo mức phù hợp với hồ sơ</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Chọn tối đa 3 sản phẩm để đặt cạnh nhau</span></li><li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg><span>Có chuyên viên gọi lại nếu bạn cần</span></li></ul></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="plogos" id="doi-tac" aria-label="Đối tác">
+  <div class="in"><div class="logos hscroll" tabindex="0" role="region" aria-label="Logo đối tác, cuộn ngang">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div></div>
+</section>
 
 
 <section class="sec" id="cach-hoat-dong">
