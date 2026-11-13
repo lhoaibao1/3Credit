@@ -2,7 +2,7 @@
 <main class="sec page">
   <div class="in stack">
     <div class="crumb"><a href="/?{{.Query}}&amp;xem=1#tim">← Quay lại kết quả</a></div>
-    <div class="sh"><div class="t"><span class="eyebrow">So sánh</span><h2>So sánh {{len .Items}} sản phẩm</h2><p>Mỗi giá trị kèm mức tin cậy nguồn. “Chưa xác minh” nghĩa là đối tác chưa công bố hoặc 3Credit chưa kiểm tra được.</p></div></div>
+    <div class="sh"><div class="t"><span class="eyebrow">So sánh</span><h2>So sánh {{len .Items}} sản phẩm</h2><p>Đặt các sản phẩm cạnh nhau để chọn nhanh hơn. Điều kiện cuối cùng do đối tác quyết định.</p></div></div>
     <div class="card"><div class="tw hscroll" tabindex="0" role="region" aria-label="Bảng so sánh, cuộn ngang"><table class="ct">
       <thead><tr><th></th>{{range .Items}}<th><div class="ch">{{template "logo" .Offer.Partner}}<div>{{.Offer.Product.Name}}<br><small>{{.Offer.Partner.Name}}</small></div></div></th>{{end}}</tr></thead>
       <tbody>
@@ -14,9 +14,7 @@
         <tr><th scope="row">Phí</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Fee}}</td>{{end}}</tr>
         <tr><th scope="row">Điều kiện khác</th>{{range .Items}}<td>{{template "fact" .Offer.Policy.Info.Docs}}</td>{{end}}</tr>
         <tr><th scope="row">Mức phù hợp</th>{{range .Items}}<td>{{.Fit}}/100</td>{{end}}</tr>
-        <tr><th scope="row">Độ tin cậy dữ liệu</th>{{range .Items}}<td>{{pct .Confidence}}%</td>{{end}}</tr>
         <tr><th scope="row">Cảnh báo</th>{{range .Items}}<td>{{range .Offer.Policy.Flags}}{{.}}<br>{{else}}—{{end}}</td>{{end}}</tr>
-        <tr><th scope="row">Nguồn, cập nhật</th>{{range .Items}}<td>{{.Offer.Policy.Source}}<br><small>{{.Offer.Policy.VerifiedOn}} · v{{.Offer.Policy.Version}}</small></td>{{end}}</tr>
         <tr><th scope="row"></th>{{range .Items}}<td>{{if .Live}}<a class="btn btn-pri btn-sm" href="/go/{{.CampaignID}}" rel="nofollow">Đăng ký</a>{{else}}<span class="note">Chưa mở đăng ký</span>{{end}}</td>{{end}}</tr>
       </tbody>
     </table></div></div>

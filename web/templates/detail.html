@@ -6,7 +6,7 @@
     <div class="card">
       <div class="ch">{{template "logo" $o.Partner}}<div><h1 class="h-detail">{{$o.Product.Name}}</h1><small>{{$o.Partner.Name}} · {{$o.Partner.OrgType}}</small></div><span class="st {{$r.Status}}">{{$r.Status.Label}}</span></div>
       <div class="kv">
-        <div>Pháp nhân</div><div>{{$o.Partner.LegalName}}{{template "conf" $o.Partner.LegalConf}}</div>
+        <div>Pháp nhân</div><div>{{$o.Partner.LegalName}}</div>
         <div>Lãi suất / chi phí</div><div>{{template "fact" $o.Policy.Info.Rate}}</div>
         <div>Hạn mức</div><div>{{template "fact" $o.Policy.Info.Amount}}</div>
         <div>Kỳ hạn</div><div>{{template "fact" $o.Policy.Info.Term}}</div>
@@ -14,12 +14,11 @@
         <div>Hồ sơ, điều kiện khác</div><div>{{template "fact" $o.Policy.Info.Docs}}</div>
         <div>Thời gian xử lý</div><div>{{template "fact" $o.Policy.Info.Speed}}</div>
         <div>Cảnh báo</div><div>{{range $o.Policy.Flags}}{{.}}<br>{{else}}—{{end}}</div>
-        <div>Nguồn</div><div>{{$o.Policy.Source}} · kiểm tra {{$o.Policy.VerifiedOn}} · chính sách v{{$o.Policy.Version}}</div>
         <div>Mã chiến dịch</div><div>{{$o.Campaign.ID}}</div>
       </div>
       <div class="why">
         <div><h5>Khớp với hồ sơ của bạn</h5><ul class="chk">{{range $r.Pass}}<li class="y">{{.}}</li>{{end}}{{range $r.Reference}}<li class="y">{{.}}</li>{{end}}{{if and (not $r.Pass) (not $r.Reference)}}<li class="q">Chưa có</li>{{end}}</ul></div>
-        <div><h5>Cần kiểm tra / không đạt</h5><ul class="chk">{{range $r.Fails}}<li class="n">{{.}}</li>{{end}}{{range $r.Gaps}}<li class="q">{{.}}</li>{{end}}</ul></div>
+        {{if $r.Fails}}<div><h5>Chưa đạt</h5><ul class="chk">{{range $r.Fails}}<li class="n">{{.}}</li>{{end}}</ul></div>{{end}}
       </div>
       <div class="cf">
         {{if $r.Live}}<a class="btn btn-pri" href="/go/{{$o.Campaign.ID}}" rel="nofollow">Đăng ký tại {{$o.Partner.Name}}</a>{{else}}<button class="btn btn-line" type="button" disabled>Chưa mở đăng ký</button>{{end}}

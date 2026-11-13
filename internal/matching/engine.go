@@ -30,11 +30,11 @@ var statusOrder = map[Status]int{Eligible: 0, Potential: 1, Unverified: 2, NotEl
 func (s Status) Label() string {
 	switch s {
 	case Eligible:
-		return "Đáp ứng điều kiện đã biết"
+		return "Phù hợp"
 	case Potential:
-		return "Có thể phù hợp, cần kiểm tra"
+		return "Có thể phù hợp"
 	case Unverified:
-		return "Chính sách chưa xác minh"
+		return "Có thể phù hợp"
 	}
 	return "Không phù hợp"
 }

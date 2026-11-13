@@ -41,7 +41,7 @@
     <rect x="270" y="388" width="166" height="74" rx="18" fill="#fff"/>
     <circle cx="300" cy="425" r="16" fill="#16A06D"/>
     <path d="M292.5 425l5 5 10-10.5" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="326" y="419" font-size="12" font-weight="500" fill="#58627F">Đáp ứng điều kiện</text>
+    <text x="326" y="419" font-size="12" font-weight="500" fill="#58627F">Phù hợp với bạn</text>
     <text x="326" y="441" font-size="17" font-weight="800" fill="#101B4D">3 gói</text>
   </g>
 

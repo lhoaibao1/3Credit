@@ -57,7 +57,7 @@
 {{end}}
 
 {{define "conf"}}<span class="conf {{if .}}{{.}}{{else}}U{{end}}">{{if .}}{{.}}{{else}}?{{end}}</span>{{end}}
-{{define "fact"}}{{if .}}{{.Text}}{{template "conf" .Conf}}{{else}}<span class="c-muted">Chưa xác minh</span>{{end}}{{end}}
+{{define "fact"}}{{if .}}{{.Text}}{{else}}<span class="c-muted">Theo đối tác</span>{{end}}{{end}}
 {{define "logo"}}{{if .LogoPath}}<div class="lg img{{if not (iconlogo .LogoPath)}} wide{{end}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy"></div>{{else}}<div class="lg">{{initials .Name}}</div>{{end}}{{end}}
 
 {{define "consult"}}

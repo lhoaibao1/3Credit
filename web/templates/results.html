@@ -2,16 +2,16 @@
 <div class="rsum">
   <h3>{{len .Results}} sản phẩm được đối chiếu với hồ sơ của bạn</h3>
   <div class="segs">{{range .Segments}}<span>{{.ID}} · {{.Name}}</span>{{else}}<span>Chưa xếp nhóm</span>{{end}}</div>
-  <div class="counts"><span><b>{{index .Counts "eligible"}}</b>đáp ứng điều kiện đã biết</span><span><b>{{index .Counts "potential"}}</b>cần kiểm tra thêm</span><span><b>{{index .Counts "unverified"}}</b>chưa xác minh</span><span><b>{{index .Counts "not"}}</b>không phù hợp</span></div>
+  <div class="counts"><span><b>{{index .Counts "eligible"}}</b>phù hợp</span><span><b>{{add (index .Counts "potential") (index .Counts "unverified")}}</b>có thể phù hợp</span><span><b>{{index .Counts "not"}}</b>không phù hợp</span></div>
   <p>Đánh giá theo điều kiện đối tác công bố, không phải kết quả phê duyệt.</p>
 </div>
 {{if .Adverse}}<div class="alert"><b>Về hồ sơ {{.CreditText}}</b>{{if .Results}}Chỉ hiển thị những sản phẩm 3Credit ghi nhận là có nhận hồ sơ {{.CreditText}}. Việc duyệt và hạn mức vẫn do đối tác quyết định. {{else}}Hiện chưa có sản phẩm nào được ghi nhận là nhận hồ sơ {{.CreditText}}. {{end}}Bạn nên tự tra cứu thông tin tín dụng tại CIC trước, và tránh các app hứa “duyệt 100% nợ xấu”.</div>{{end}}
 {{if not .Results}}<div class="empty empty-rich" role="status">
-  {{if eq .P.Need "credit_card"}}<b>Chưa có thẻ tín dụng nào đang được đối chiếu</b><p>3Credit chỉ đưa một thẻ lên khi đã có chính sách được xác minh từ ngân hàng. Danh mục thẻ sẽ được bổ sung khi có chính sách thẻ được xác minh.</p>{{else if .Adverse}}<b>Chưa có sản phẩm nhận hồ sơ {{.CreditText}}</b><p>3Credit chỉ đề xuất sản phẩm đã được ghi nhận là nhận loại hồ sơ này. Bạn có thể để lại số điện thoại để chuyên viên tư vấn hướng khác.</p>{{else}}<b>Chưa tìm thấy sản phẩm cho nhu cầu này</b><p>Danh mục sẽ được bổ sung khi có chính sách đối tác được xác minh.</p>{{end}}
+  {{if eq .P.Need "credit_card"}}<b>Chưa có thẻ tín dụng nào đang được đối chiếu</b><p>Danh mục thẻ đang được bổ sung. Bạn có thể để lại số điện thoại để chuyên viên tư vấn.</p>{{else if .Adverse}}<b>Chưa có sản phẩm nhận hồ sơ {{.CreditText}}</b><p>3Credit chỉ đề xuất sản phẩm đã được ghi nhận là nhận loại hồ sơ này. Bạn có thể để lại số điện thoại để chuyên viên tư vấn hướng khác.</p>{{else}}<b>Chưa tìm thấy sản phẩm cho nhu cầu này</b><p>Danh mục đang được bổ sung. Bạn có thể để lại số điện thoại để chuyên viên tư vấn.</p>{{end}}
   <div class="empty-act"><a class="btn btn-pri btn-sm" href="#tu-van">Nhờ 3Credit tư vấn</a></div>
   <p class="note">Hoặc chọn nhu cầu khác: {{range $i, $n := .Needs}}{{if ne $n.V $.P.Need}}<a class="lnk" href="{{ppath $n.V}}">{{$n.L}}</a> {{end}}{{end}}</p>
 </div>
-{{else if and (eq (index .Counts "eligible") 0) (not .Adverse)}}<div class="alert"><b>Chưa có sản phẩm “đáp ứng điều kiện đã biết”</b>Với hồ sơ hiện tại, các sản phẩm còn thiếu dữ liệu chính sách đã xác minh hoặc có điều kiện cần bạn kiểm tra thêm.</div>{{end}}
+{{end}}
 {{$q := .Query}}
 {{range .Groups}}{{if .Items}}
 <details class="grp"{{if or (eq .Key "eligible") (eq (index $.Counts "eligible") 0)}} open{{end}}><summary><h4><span class="st {{.Key}}">{{.Title}}</span> {{len .Items}}</h4></summary>
@@ -28,16 +28,15 @@
   <div class="specs"><div><small>Lãi suất / chi phí</small><b>{{template "fact" $o.Policy.Info.Rate}}</b></div><div><small>Hạn mức</small><b>{{template "fact" $o.Policy.Info.Amount}}</b></div><div><small>Kỳ hạn</small><b>{{template "fact" $o.Policy.Info.Term}}</b></div><div><small>Phí</small><b>{{template "fact" $o.Policy.Info.Fee}}</b></div></div>
   {{with $r.Pass}}<p class="why1">{{index . 0}}</p>{{end}}
   <details class="whyd"><summary>Xem lý do</summary><div class="why">
-    <div><h5>Vì sao đề xuất</h5><ul class="chk">{{range $r.Pass}}<li class="y">{{.}}</li>{{end}}{{range $r.Reference}}<li class="y">{{.}}</li>{{end}}{{if and (not $r.Pass) (not $r.Reference)}}<li class="q">Chưa có điều kiện đã xác minh để đối chiếu</li>{{end}}</ul></div>
-    <div><h5>Cần kiểm tra{{if $r.Fails}} / không đạt{{end}}</h5><ul class="chk">{{range $r.Fails}}<li class="n">{{.}}</li>{{end}}{{range first $r.Gaps 4}}<li class="q">{{.}}</li>{{end}}{{if gt (len $r.Gaps) 4}}<li class="q">và {{sub (len $r.Gaps) 4}} mục khác (xem chi tiết)</li>{{end}}</ul></div>
+    <div><h5>Vì sao đề xuất</h5><ul class="chk">{{range $r.Pass}}<li class="y">{{.}}</li>{{end}}{{range $r.Reference}}<li class="y">{{.}}</li>{{end}}</ul></div>
+    {{if $r.Fails}}<div><h5>Chưa đạt</h5><ul class="chk">{{range $r.Fails}}<li class="n">{{.}}</li>{{end}}</ul></div>{{end}}
   </div></details>
   <div class="cf">
-    <div class="meter">Mức phù hợp {{$r.Fit}}/100 · Độ tin cậy dữ liệu {{pct $r.Confidence}}%<span class="bar"><i style="width:{{barw $r}}%"></i></span></div>
+    <div class="meter">Mức phù hợp {{$r.Fit}}/100<span class="bar"><i style="width:{{barw $r}}%"></i></span></div>
     <label class="cmpchk"><input type="checkbox" data-cmp="{{$r.CampaignID}}"> So sánh</label>
     <a class="btn btn-line btn-sm" href="/san-pham/{{$r.CampaignID}}?{{.Q}}">Chi tiết</a>
     {{if $r.Live}}<a class="btn btn-pri btn-sm" href="/go/{{$r.CampaignID}}" rel="nofollow">Đăng ký tại {{$o.Partner.Name}}</a>{{else}}<button class="btn btn-line btn-sm" type="button" disabled title="Chiến dịch chưa kích hoạt hoặc chưa gắn link">Chưa mở đăng ký</button>{{end}}
   </div>
-  <div class="src">Nguồn: {{$o.Policy.Source}} · kiểm tra {{$o.Policy.VerifiedOn}} · chính sách v{{$o.Policy.Version}} · {{$r.CampaignID}}</div>
 </article>
 {{end}}
 

@@ -166,7 +166,7 @@ func (s *Server) results(r *http.Request, p model.Profile, logIt bool) (map[stri
 	for k, v := range cnt {
 		counts[string(k)] = v
 	}
-	gs := []group{{Key: "eligible", Title: "Phù hợp nhất"}, {Key: "potential", Title: "Cần kiểm tra thêm"}, {Key: "unverified", Title: "Chưa đủ dữ liệu"}}
+	gs := []group{{Key: "eligible", Title: "Phù hợp nhất"}, {Key: "potential", Title: "Có thể phù hợp"}, {Key: "unverified", Title: "Sản phẩm khác"}}
 	var nots []matching.Result
 	for _, x := range rs {
 		switch x.Status {

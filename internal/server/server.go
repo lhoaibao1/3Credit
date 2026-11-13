@@ -265,6 +265,7 @@ func (s *Server) funcs() template.FuncMap {
 			return xs
 		},
 		"sub":      func(a, b int) int { return a - b },
+		"add":      func(a, b int) int { return a + b },
 		"card":     func(r matching.Result, q template.URL) cardData { return cardData{R: r, Q: q} },
 		"verified": func(o model.Offer) int { return verifiedPct(o) },
 		"vnd":      func(v float64) string { return vnd(v) },
