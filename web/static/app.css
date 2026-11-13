@@ -905,3 +905,10 @@ html{overflow-x:clip}
 .nav .act{margin-left:auto}
 .nav .nlinks~.act{margin-left:0}
 @media (max-width:1000px){.nav .nlinks~.act{margin-left:auto}}
+/* product illustrations */
+.pc-art{background:#FF8A55}
+.pc-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.pc-art::after{z-index:1}
+.pcard:hover .pc-art img{transform:scale(1.04)}
+.pcard.rv.pre .pc-art img{transform:scale(1.12)}
+.pc-art::after{height:9%}
