@@ -79,10 +79,21 @@ func (s *Server) productForm(pp productPage) http.HandlerFunc {
 		}
 		data["Regions"], data["Jobs"], data["Incomes"] = regions, jobs, incomes
 		data["Channels"], data["Credits"], data["Urgencies"] = channels, credits, urgencies
+		data["Amounts"], data["Terms"] = []int{10, 20, 30, 50, 70, 100, 200, 300}, []int{6, 12, 18, 24, 36, 48, 60}
+		if pp.Need == "credit_card" {
+			data["Amounts"] = []int{10, 20, 30, 50, 100, 200}
+		}
 		data["Vehicles"] = vehicles
 		if pp.Need == "secured" {
 			data["Vehicles"] = vehicles[1:] // this form only lists vehicles you can pledge
 		}
 		s.render(w, "product.html", data)
 	}
+}
+
+// chooser asks "what do you need?" for visitors who have not picked a product yet.
+func (s *Server) chooser(w http.ResponseWriter, r *http.Request) {
+	data := s.base(r, "Bạn cần gì? – 3Credit")
+	data["Pages"], data["Source"] = productPages, "tim-san-pham"
+	s.render(w, "chooser.html", data)
 }

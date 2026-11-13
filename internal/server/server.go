@@ -76,6 +76,7 @@ func (s *Server) routes() {
 
 	s.mux.HandleFunc("GET /{$}", s.home)
 	s.mux.HandleFunc("GET /api/match", s.apiMatch)
+	s.mux.HandleFunc("GET /tim-san-pham", s.chooser)
 	for _, pp := range productPages {
 		s.mux.HandleFunc("GET /"+pp.Slug, s.productForm(pp))
 	}

@@ -98,6 +98,17 @@ func TestProductFormsAreSeparate(t *testing.T) {
 	if loc := resp.Header.Get("Location"); resp.StatusCode != http.StatusFound || !strings.HasPrefix(loc, "/vay-dang-ky-xe?") {
 		t.Fatalf("old link: %d %q", resp.StatusCode, loc)
 	}
+	// no sliders: amount is typed (with quick picks), term is a set of buttons
+	if _, body := e.get(t, "/vay-tien-mat", false); strings.Contains(body, `type="range"`) || !strings.Contains(body, `data-amt="50"`) || !strings.Contains(body, `name="term" value="24" checked`) {
+		t.Error("loan form must use an amount box and term buttons")
+	}
+	// visitors who have not picked a product are asked first
+	if code, body := e.get(t, "/tim-san-pham", false); code != 200 || strings.Count(body, `class="ch-card"`) != 4 {
+		t.Fatalf("chooser: %d", code)
+	}
+	if _, body := e.get(t, "/", false); !strings.Contains(body, `href="/vay-tien-mat">Tìm gói vay phù hợp`) || !strings.Contains(body, `href="/tim-san-pham">Đăng ký ngay`) {
+		t.Error("home buttons must open a form or the chooser, not scroll")
+	}
 	// the home page itself has no step-by-step form any more
 	if _, body := e.get(t, "/", false); strings.Contains(body, `id="pf"`) || !strings.Contains(body, `href="/vay-tien-mat"`) {
 		t.Fatal("home must link products to their own forms")

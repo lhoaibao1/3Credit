@@ -71,6 +71,15 @@ if(pform){
   var mny=function(m){m=+m;return m>=1000?(m/1000).toLocaleString('vi-VN')+' tỷ':m+' triệu'};
   var lab=function(){$$('output[for]',pform).forEach(function(o){var i=document.getElementById(o.getAttribute('for'));if(i)o.textContent=o.hasAttribute('data-money')?mny(i.value):i.value+' tháng'})};
   pform.addEventListener('input',lab);lab();
+  /* amount: digits only, quick-pick buttons fill it, 1–500 million checked before sending */
+  var amt=$('#pAmount'),hint=$('#amtHint'),hint0=hint?hint.textContent:'';
+  if(amt){
+    var mark=function(){$$('.chip[data-amt]',pform).forEach(function(c){c.classList.toggle('on',c.dataset.amt===amt.value)})};
+    amt.addEventListener('input',function(){var v=amt.value.replace(/\D/g,'').replace(/^0+/,'').slice(0,3);if(v!==amt.value)amt.value=v;mark();if(hint){hint.classList.remove('err');hint.textContent=hint0}});
+    pform.addEventListener('click',function(e){var c=e.target.closest('.chip[data-amt]');if(!c)return;amt.value=c.dataset.amt;mark();if(hint){hint.classList.remove('err');hint.textContent=hint0}});
+    pform.addEventListener('submit',function(e){var n=+amt.value;if(n>=1&&n<=500)return;e.preventDefault();e.stopImmediatePropagation();
+      if(hint){hint.textContent='Vui lòng nhập số tiền từ 1 đến 500 triệu.';hint.classList.add('err')}amt.focus()},true);
+  }
   var sb=$('[type=submit]',pform),sbt=sb?sb.textContent:'';
   pform.addEventListener('submit',function(){if(sb){sb.setAttribute('aria-busy','true');sb.textContent='Đang đối chiếu…'}});
   addEventListener('pageshow',function(){if(sb&&sb.hasAttribute('aria-busy')){sb.removeAttribute('aria-busy');sb.textContent=sbt}});

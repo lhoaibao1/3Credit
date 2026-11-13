@@ -1,0 +1,14 @@
+{{template "head" .}}
+<section class="sec choose">
+  <div class="in">
+    <div class="sh ctr"><div class="t"><span class="eyebrow">Đăng ký</span><h1><span class="or">Bạn đang</span> cần gì?</h1><p>Chọn một sản phẩm, 3Credit mở đúng mẫu đăng ký của sản phẩm đó.</p></div></div>
+    <div class="ch-grid">{{range .Pages}}
+      <a class="ch-card" href="/{{.Slug}}">
+        <span class="ch-art"><img src="/static/img/{{.Art}}.svg" width="580" height="320" alt="" loading="lazy" decoding="async"></span>
+        <span class="ch-body"><b>{{.Title}}</b><small>{{.Lede}}</small><span class="ch-go">Đăng ký<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span>
+      </a>{{end}}
+    </div>
+  </div>
+</section>
+{{template "consult" .}}
+{{template "foot" .}}

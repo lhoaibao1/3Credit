@@ -967,3 +967,29 @@ html{overflow-x:clip}
 @media (max-width:600px){.pf-go .btn{width:100%}}
 .pf-other{text-align:center;margin-top:22px;color:var(--muted)}.pf-other a{color:#F25A20;font-weight:600}
 .phero .crumb,.phero .crumb span{color:#FFE9DE}.phero .crumb a{font-weight:600}
+
+/* ---- layer7: amount input, term buttons, product chooser ---- */
+.amt{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);padding:6px 18px;transition:border-color .2s,box-shadow .2s}
+.amt:focus-within{border-color:#FF642E;box-shadow:0 0 0 4px rgba(255,100,46,.15)}
+.amt input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:1.7rem;font-weight:700;color:var(--ink);padding:6px 0;font-variant-numeric:tabular-nums}
+.amt span{color:var(--muted);font-weight:600;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.chip:hover{border-color:#FF642E;color:#F25A20}
+.chip.on{background:#FF642E;border-color:#FF642E;color:#fff}
+.pform .hint{color:var(--muted);font-size:.85rem}
+.pform .hint.err{color:var(--low);font-weight:600}
+.choose h1{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.ch-grid{display:grid;gap:20px;max-width:1080px;margin:0 auto}
+@media (min-width:700px){.ch-grid{grid-template-columns:1fr 1fr}}
+.ch-card{display:grid;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--surface);color:inherit;text-decoration:none;box-shadow:var(--shadow-1);transition:transform .25s var(--ease),box-shadow .25s}
+.ch-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.ch-card:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.ch-art{aspect-ratio:580/260;overflow:hidden;display:block}.ch-art img{width:100%;height:100%;object-fit:cover;display:block}
+.ch-body{display:grid;gap:8px;padding:20px 22px 22px}
+.ch-body b{font-size:1.3rem;font-weight:700;color:var(--ink)}
+.ch-body small{color:var(--muted);font-size:.95rem;line-height:1.55}
+.ch-go{display:inline-flex;align-items:center;gap:6px;color:#F25A20;font-weight:700;margin-top:4px}
+.ch-card:hover .ch-go svg{transform:translateX(4px)}.ch-go svg{transition:transform .2s}
+.amt input:focus,.amt input:focus-visible{outline:0;box-shadow:none;border:0;background:transparent}
+.choose .sh{margin-bottom:36px}

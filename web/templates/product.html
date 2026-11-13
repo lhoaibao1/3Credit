@@ -29,8 +29,11 @@
       </fieldset>{{end}}
 
       <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}2{{else}}1{{end}}</span>{{if $loan}}Khoản vay bạn cần{{else}}Hạn mức thẻ mong muốn{{end}}</legend>
-        <div class="fld"><label for="pAmount">{{if $loan}}Số tiền{{else}}Hạn mức{{end}} <output data-money for="pAmount">{{money .P.Amount}}</output></label><input type="range" id="pAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
-        {{if $loan}}<div class="fld"><label for="pTerm">Kỳ hạn <output data-month for="pTerm">{{.P.Term}} tháng</output></label><input type="range" id="pTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>{{end}}
+        {{$m := millions .P.Amount}}<div class="fld wide"><label for="pAmount">{{if $loan}}Số tiền cần vay{{else}}Hạn mức mong muốn{{end}}</label>
+          <div class="amt"><input type="text" id="pAmount" name="amount" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" value="{{$m}}" aria-describedby="amtHint"><span>triệu đồng</span></div>
+          <div class="chips" role="group" aria-label="Chọn nhanh số tiền">{{range .Amounts}}<button type="button" class="chip{{if eq . $m}} on{{end}}" data-amt="{{.}}">{{.}} triệu</button>{{end}}</div>
+          <small class="hint" id="amtHint">Từ 1 đến 500 triệu. Gõ số hoặc bấm chọn nhanh.</small></div>
+        {{if $loan}}<div class="fld wide"><span class="lb" id="lbTerm">Kỳ hạn vay</span><div class="opts" role="radiogroup" aria-labelledby="lbTerm">{{range .Terms}}<label class="opt"><input type="radio" name="term" value="{{.}}" {{if eq . $.P.Term}}checked{{end}}><span>{{.}} tháng</span></label>{{end}}</div></div>{{end}}
       </fieldset>
 
       <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}3{{else}}2{{end}}</span>Về bạn</legend>
@@ -57,7 +60,7 @@
     <aside class="wz-art" aria-hidden="true"><img src="/static/img/profile.svg" width="460" height="560" alt="" loading="lazy" decoding="async"><ul><li><b>1 phút</b>một trang, không qua nhiều bước</li><li><b>Không CCCD</b>chỉ để xem đề xuất</li><li><b>Có lý do</b>vì sao khớp hoặc chưa</li></ul></aside>
     </div>
     {{if .Done}}<div class="res" id="results" aria-live="polite">{{template "results" .}}</div>{{end}}
-    <p class="pf-other">Chưa chắc sản phẩm này? <a href="/#tim">Trả lời vài câu để 3Credit gợi ý</a></p>
+    <p class="pf-other">Không phải sản phẩm bạn cần? <a href="/tim-san-pham">Chọn sản phẩm khác</a></p>
   </div>
 </section>
 <div class="tray" id="tray" hidden><span id="trayTxt"></span><button class="btn btn-pri btn-sm" type="button" id="trayGo">So sánh</button><button class="btn btn-ghost btn-sm" type="button" id="trayClr">Bỏ chọn</button></div>
