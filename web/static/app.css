@@ -901,3 +901,7 @@ html{overflow-x:clip}
   .totop{display:none}
   .hb-tiles li{min-width:0}
 }
+/* menu buttons sit on the right whenever the links are folded into the burger */
+.nav .act{margin-left:auto}
+.nav .nlinks~.act{margin-left:0}
+@media (max-width:1000px){.nav .nlinks~.act{margin-left:auto}}
