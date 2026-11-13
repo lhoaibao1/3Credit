@@ -212,10 +212,14 @@ func targets(campaignSegs, profileSegs []string) bool {
 
 func (s *Server) home(w http.ResponseWriter, r *http.Request) {
 	qv := r.URL.Query()
+	// Each product has its own form page now; old links such as /?need=cash_loan#tim
+	// (or a saved results link with xem=1) land on that product's page with the same answers.
+	if path := ProductPath(qv.Get("need")); path != "" {
+		http.Redirect(w, r, path+"?"+r.URL.RawQuery+"#tim", http.StatusFound)
+		return
+	}
 	p := ParseProfile(qv)
-	// Results appear only once the visitor finished the question flow (xem=1);
-	// links such as /?need=cash_loan#tim just preselect the first answer.
-	done := qv.Get("xem") == "1"
+	done := false
 	data, err := s.results(r, p, done)
 	if err != nil {
 		s.fail(w, err)

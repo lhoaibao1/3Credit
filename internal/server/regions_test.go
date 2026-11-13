@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net/http"
 	"net/url"
 	"strings"
 	"testing"
@@ -54,17 +55,51 @@ func TestInsuranceProfile(t *testing.T) {
 	}
 }
 
-func TestHomeShowsResultsOnlyAfterFlow(t *testing.T) {
+func TestProductFormsAreSeparate(t *testing.T) {
 	e := setup(t)
-	_, body := e.get(t, "/?need=cash_loan&amount=50&term=24", false)
-	if strings.Contains(body, `class="rsum"`) || strings.Contains(body, `class="card"`) || !strings.Contains(body, `data-start="2"`) {
-		t.Fatal("results must not show before the question flow is finished")
+	// each product has its own one-page form; nothing is matched before it is sent
+	for path, must := range map[string][]string{
+		"/vay-tien-mat":   {"Vay tiền mặt", `name="term"`, `name="social_ins"`},
+		"/the-tin-dung":   {"Mở thẻ tín dụng", `name="social_ins"`},
+		"/vay-dang-ky-xe": {"Vay bằng đăng ký xe", `name="vehicle"`, `name="term"`},
+		"/so-sanh-tat-ca": {"So sánh tất cả", `name="vehicle"`, `name="term"`},
+	} {
+		code, body := e.get(t, path, false)
+		if code != 200 || strings.Contains(body, `class="rsum"`) || strings.Contains(body, "Bước ") {
+			t.Fatalf("%s: want a plain form, got %d", path, code)
+		}
+		for _, m := range must {
+			if !strings.Contains(body, m) {
+				t.Errorf("%s: missing %s", path, m)
+			}
+		}
 	}
-	_, body = e.get(t, "/?need=cash_loan&amount=50&term=24&social_ins=gt12&xem=1", false)
-	if !strings.Contains(body, `class="rsum"`) || !strings.Contains(body, "BHXH trên 12 tháng") {
-		t.Fatal("finished flow must show results and the profile summary")
+	if _, body := e.get(t, "/the-tin-dung", false); strings.Contains(body, `name="term"`) || strings.Contains(body, `name="vehicle"`) {
+		t.Error("card form must not ask loan term or vehicle")
+	}
+	if _, body := e.get(t, "/vay-dang-ky-xe", false); strings.Contains(body, `value="none"`+" checked") || strings.Contains(body, `name="social_ins"`) {
+		t.Error("vehicle form: no 'no vehicle' option, no insurance questions")
+	}
+	// the page decides the product even if the query says otherwise
+	_, body := e.get(t, "/vay-tien-mat?need=credit_card&amount=50&term=24&social_ins=gt12&xem=1", false)
+	if !strings.Contains(body, `class="rsum"`) || !strings.Contains(body, "24 tháng") {
+		t.Fatal("sent form must show results and the profile summary")
 	}
 	if strings.Contains(body, "100% duyệt") || strings.Contains(body, "duyệt 100%\"") {
 		t.Fatal("forbidden promise found")
+	}
+	// old links keep working
+	req, _ := http.NewRequest("GET", e.ts.URL+"/?need=secured&amount=50&xem=1", nil)
+	resp, err := e.cli.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if loc := resp.Header.Get("Location"); resp.StatusCode != http.StatusFound || !strings.HasPrefix(loc, "/vay-dang-ky-xe?") {
+		t.Fatalf("old link: %d %q", resp.StatusCode, loc)
+	}
+	// the home page itself has no step-by-step form any more
+	if _, body := e.get(t, "/", false); strings.Contains(body, `id="pf"`) || !strings.Contains(body, `href="/vay-tien-mat"`) {
+		t.Fatal("home must link products to their own forms")
 	}
 }

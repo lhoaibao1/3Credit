@@ -1,0 +1,65 @@
+{{template "head" .}}
+{{$n := .PP.Need}}{{$loan := ne $n "credit_card"}}
+<header class="phero on-or">
+  <div class="in">
+    <div class="phero-t">
+      <nav class="crumb" aria-label="Đường dẫn"><a href="/">Trang chủ</a><span aria-hidden="true">/</span><span>{{.PP.Title}}</span></nav>
+      <h1>{{.PP.Title}}</h1>
+      <p>{{.PP.Lede}}</p>
+      <ul class="phero-f">{{range .PP.Points}}<li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M8 12.3l2.7 2.7 5.3-5.6"/></svg>{{.}}</li>{{end}}</ul>
+    </div>
+    <div class="phero-art" aria-hidden="true"><img src="/static/img/{{.PP.Art}}.svg" width="580" height="320" alt=""></div>
+  </div>
+</header>
+
+<section class="sec" id="tim">
+  <div class="in">
+    {{if .Done}}<div class="psum" id="psum">
+      <div><b>Hồ sơ bạn đã khai</b>
+        <p>{{if eq $n "credit_card"}}Hạn mức {{money .P.Amount}}{{else}}{{money .P.Amount}} · {{.P.Term}} tháng{{end}}{{if eq $n "secured"}} · {{vi .P.Vehicle}}{{end}} · {{.P.Age}} tuổi · {{vi .P.Region}} · {{vi .P.Job}}</p></div>
+      <button class="btn btn-line btn-sm" type="button" data-pf-edit>Sửa thông tin</button>
+    </div>{{end}}
+    <div class="wz-wrap">
+    <form class="wz pform" id="pform" method="get" action="/{{.PP.Slug}}#tim"{{if .Done}} hidden{{end}}>
+      <input type="hidden" name="xem" value="1">
+      <div class="pf-head"><h2>Thông tin đăng ký</h2><p>Mất khoảng 1 phút. Không cần CCCD, không cần số điện thoại để xem đề xuất.</p></div>
+
+      {{if eq $n "secured"}}<fieldset class="pf-sec"><legend><span class="pf-n">1</span>Xe dùng làm tài sản bảo đảm</legend>
+        <div class="fld wide"><span class="lb" id="lbVeh">Giấy đăng ký xe đứng tên bạn</span><div class="opts" role="radiogroup" aria-labelledby="lbVeh">{{range .Vehicles}}<label class="opt"><input type="radio" name="vehicle" value="{{.V}}" {{if eq .V $.P.Vehicle}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+      </fieldset>{{end}}
+
+      <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}2{{else}}1{{end}}</span>{{if $loan}}Khoản vay bạn cần{{else}}Hạn mức thẻ mong muốn{{end}}</legend>
+        <div class="fld"><label for="pAmount">{{if $loan}}Số tiền{{else}}Hạn mức{{end}} <output data-money for="pAmount">{{money .P.Amount}}</output></label><input type="range" id="pAmount" name="amount" min="1" max="500" step="1" value="{{millions .P.Amount}}"></div>
+        {{if $loan}}<div class="fld"><label for="pTerm">Kỳ hạn <output data-month for="pTerm">{{.P.Term}} tháng</output></label><input type="range" id="pTerm" name="term" min="1" max="60" step="1" value="{{.P.Term}}"></div>{{end}}
+      </fieldset>
+
+      <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}3{{else}}2{{end}}</span>Về bạn</legend>
+        <div class="fld"><label for="pAge">Tuổi</label><input type="number" id="pAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
+        <div class="fld"><label for="pRegion">Nơi sống (tỉnh/thành)</label><select id="pRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        <div class="fld"><label for="pJob">Công việc</label><select id="pJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        <div class="fld"><label for="pIncome">Thu nhập mỗi tháng</label><select id="pIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        <div class="fld wide"><span class="lb" id="lbCh">Bạn nhận lương bằng</span><div class="opts" role="radiogroup" aria-labelledby="lbCh">{{range .Channels}}<label class="opt"><input type="radio" name="channel" value="{{.V}}" {{if eq .V $.P.Channel}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+      </fieldset>
+
+      {{if ne $n "secured"}}<fieldset class="pf-sec"><legend><span class="pf-n">3</span>Bảo hiểm</legend>
+        <div class="fld"><label for="pSoc">Bảo hiểm xã hội (BHXH) đã đóng</label><select id="pSoc" name="social_ins"><option value="none" {{if eq .P.SocialIns "none"}}selected{{end}}>Không tham gia</option><option value="lt6" {{if eq .P.SocialIns "lt6"}}selected{{end}}>Dưới 6 tháng</option><option value="6to12" {{if eq .P.SocialIns "6to12"}}selected{{end}}>6–12 tháng</option><option value="gt12" {{if eq .P.SocialIns "gt12"}}selected{{end}}>Trên 12 tháng</option></select></div>
+        <div class="fld"><label for="pLife">Bảo hiểm nhân thọ (BHNT)</label><select id="pLife" name="life_ins"><option value="none" {{if eq .P.LifeIns "none"}}selected{{end}}>Không có</option><option value="lt1y" {{if eq .P.LifeIns "lt1y"}}selected{{end}}>Có, đã đóng phí dưới 1 năm</option><option value="ge1y" {{if eq .P.LifeIns "ge1y"}}selected{{end}}>Có, đã đóng phí từ 1 năm</option></select></div>
+      </fieldset>{{end}}
+
+      <fieldset class="pf-sec"><legend><span class="pf-n">4</span>Lịch sử tín dụng{{if $loan}} và mức gấp{{end}}</legend>
+        <div class="fld"><label for="pCredit">Lịch sử tín dụng (tự khai)</label><select id="pCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        {{if $loan}}<div class="fld"><label for="pUrg">Bạn cần tiền gấp đến mức nào?</label><select id="pUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+        {{if eq $n "compare"}}<div class="fld"><label for="pVeh">Giấy đăng ký xe đứng tên bạn</label><select id="pVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+      </fieldset>
+
+      <div class="pf-go"><p class="note">Hồ sơ không gồm thông tin định danh. Đây là đối chiếu theo điều kiện đối tác công bố, không phải kết quả phê duyệt.</p><button class="btn btn-pri" type="submit">{{.PP.Submit}}</button></div>
+    </form>
+    <aside class="wz-art" aria-hidden="true"><img src="/static/img/profile.svg" width="460" height="560" alt="" loading="lazy" decoding="async"><ul><li><b>1 phút</b>một trang, không qua nhiều bước</li><li><b>Không CCCD</b>chỉ để xem đề xuất</li><li><b>Có lý do</b>vì sao khớp hoặc chưa</li></ul></aside>
+    </div>
+    {{if .Done}}<div class="res" id="results" aria-live="polite">{{template "results" .}}</div>{{end}}
+    <p class="pf-other">Chưa chắc sản phẩm này? <a href="/#tim">Trả lời vài câu để 3Credit gợi ý</a></p>
+  </div>
+</section>
+<div class="tray" id="tray" hidden><span id="trayTxt"></span><button class="btn btn-pri btn-sm" type="button" id="trayGo">So sánh</button><button class="btn btn-ghost btn-sm" type="button" id="trayClr">Bỏ chọn</button></div>
+{{template "consult" .}}
+{{template "foot" .}}

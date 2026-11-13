@@ -940,3 +940,30 @@ html{overflow-x:clip}
 @keyframes mq{to{transform:translateX(-50%)}}
 @media (max-width:600px){.marq{padding:16px 0}.mq-set{gap:36px;padding-right:36px}.marq .lchip img{max-height:32px;max-width:120px}.mq-track{animation-duration:28s}}
 @media (prefers-reduced-motion:reduce){.marq{overflow-x:auto;-webkit-mask-image:none;mask-image:none}.mq-track{animation:none}.mq-set[aria-hidden]{display:none}}
+
+/* ---- layer6: one form per product ---- */
+.anc{display:block;position:relative;top:-90px;visibility:hidden;height:0}
+.phero{background:linear-gradient(120deg,#FF8A55,#F25A20 60%,#E24E14);color:#fff;padding:clamp(28px,5vw,56px) 0 clamp(36px,6vw,72px);overflow:hidden}
+.phero .in{display:grid;gap:28px;align-items:center}
+.phero .crumb{font-size:.88rem;opacity:.9;display:flex;gap:8px;margin-bottom:14px}.phero .crumb a{color:#fff}
+.phero h1{font-size:clamp(2rem,4.4vw,3.2rem);line-height:1.1;letter-spacing:-.02em;font-weight:800;color:#fff;margin:0 0 14px}
+.phero p{font-size:1.05rem;line-height:1.6;max-width:560px;color:#FFF3EC}
+.phero-f{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px}
+.phero-f li{display:flex;gap:10px;align-items:center;font-weight:600}
+.phero-art img{width:100%;height:auto;border-radius:24px;box-shadow:0 30px 60px -30px rgba(80,20,0,.6)}
+@media (min-width:901px){.phero .in{grid-template-columns:1.05fr .95fr;gap:56px}}
+@media (min-width:1001px){.wz-wrap:has(.pform){grid-template-columns:minmax(0,1fr) minmax(0,380px)}}
+.pform{gap:22px}
+.pf-head h2{font-size:1.5rem;font-weight:700;margin:0 0 4px}.pf-head p{color:var(--muted);margin:0}
+.pf-sec{border:0;border-top:1px solid var(--line);margin:0;padding:20px 0 0;display:grid;gap:16px;min-width:0}
+.pf-sec legend{float:left;width:100%;display:flex;align-items:center;gap:10px;font-size:1.08rem;font-weight:700;color:var(--ink);padding:0;margin-bottom:2px}
+.pf-n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--_l,#FFE7DA) var(--_d,rgba(255,100,46,.18));color:#F25A20;font-size:.85rem;font-weight:800;flex:none}
+@media (min-width:640px){.pf-sec{grid-template-columns:1fr 1fr;column-gap:18px}.pf-sec legend,.pf-sec .wide{grid-column:1/-1}}
+.pform .fld{display:grid;gap:8px;min-width:0}
+.pform .fld label output{float:right;color:#F25A20;font-weight:700}
+.pf-go{border-top:1px solid var(--line);padding-top:20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.pf-go .note{flex:1 1 260px;margin:0}
+.pf-go .btn{min-height:52px;padding-inline:30px;flex:none}
+@media (max-width:600px){.pf-go .btn{width:100%}}
+.pf-other{text-align:center;margin-top:22px;color:var(--muted)}.pf-other a{color:#F25A20;font-weight:600}
+.phero .crumb,.phero .crumb span{color:#FFE9DE}.phero .crumb a{font-weight:600}

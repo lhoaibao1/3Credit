@@ -14,7 +14,7 @@
     <rect x="118" y="70" width="224" height="440" rx="36" fill="#101B4D"/>
     <rect x="130" y="82" width="200" height="416" rx="27" fill="#F6F7FB"/>
     <rect x="200" y="92" width="60" height="10" rx="5" fill="#101B4D"/>
-    <text x="148" y="136" font-size="12" font-weight="600" fill="#58627F">Bước 3/6</text>
+    <text x="148" y="136" font-size="12" font-weight="600" fill="#58627F">Thông tin đăng ký</text>
     <rect x="148" y="144" width="164" height="6" rx="3" fill="#E4E7F0"/>
     <rect x="148" y="144" width="82" height="6" rx="3" fill="#FF642E"/>
     <text x="148" y="178" font-size="15" font-weight="700" fill="#101B4D">Thu nhập mỗi tháng?</text>
@@ -33,7 +33,7 @@
     <rect x="182" y="354" width="90" height="8" rx="4" fill="#B9C0D6"/>
     <!-- button -->
     <rect x="146" y="446" width="168" height="38" rx="19" fill="#FF642E"/>
-    <text x="230" y="470" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Tiếp tục</text>
+    <text x="230" y="470" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Xem gói phù hợp</text>
   </g>
 
   <!-- match chip -->

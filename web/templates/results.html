@@ -9,7 +9,7 @@
 {{if not .Results}}<div class="empty empty-rich" role="status">
   {{if eq .P.Need "credit_card"}}<b>Chưa có thẻ tín dụng nào đang được đối chiếu</b><p>3Credit chỉ đưa một thẻ lên khi đã có chính sách được xác minh từ ngân hàng. Danh mục thẻ sẽ được bổ sung khi có chính sách thẻ được xác minh.</p>{{else if .Adverse}}<b>Chưa có sản phẩm nhận hồ sơ {{.CreditText}}</b><p>3Credit chỉ đề xuất sản phẩm đã được ghi nhận là nhận loại hồ sơ này. Bạn có thể để lại số điện thoại để chuyên viên tư vấn hướng khác.</p>{{else}}<b>Chưa tìm thấy sản phẩm cho nhu cầu này</b><p>Danh mục sẽ được bổ sung khi có chính sách đối tác được xác minh.</p>{{end}}
   <div class="empty-act"><a class="btn btn-pri btn-sm" href="#tu-van">Nhờ 3Credit tư vấn</a></div>
-  <p class="note">Hoặc chọn nhu cầu khác: {{range $i, $n := .Needs}}{{if ne $n.V $.P.Need}}<a class="lnk" href="/?need={{$n.V}}#tim" data-pick-need="{{$n.V}}">{{$n.L}}</a> {{end}}{{end}}</p>
+  <p class="note">Hoặc chọn nhu cầu khác: {{range $i, $n := .Needs}}{{if ne $n.V $.P.Need}}<a class="lnk" href="{{ppath $n.V}}">{{$n.L}}</a> {{end}}{{end}}</p>
 </div>
 {{else if and (eq (index .Counts "eligible") 0) (not .Adverse)}}<div class="alert"><b>Chưa có sản phẩm “đáp ứng điều kiện đã biết”</b>Với hồ sơ hiện tại, các sản phẩm còn thiếu dữ liệu chính sách đã xác minh hoặc có điều kiện cần bạn kiểm tra thêm.</div>{{end}}
 {{$q := .Query}}

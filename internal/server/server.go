@@ -76,6 +76,9 @@ func (s *Server) routes() {
 
 	s.mux.HandleFunc("GET /{$}", s.home)
 	s.mux.HandleFunc("GET /api/match", s.apiMatch)
+	for _, pp := range productPages {
+		s.mux.HandleFunc("GET /"+pp.Slug, s.productForm(pp))
+	}
 	s.mux.HandleFunc("GET /san-pham/{id}", s.detail)
 	s.mux.HandleFunc("GET /so-sanh", s.compare)
 	s.mux.HandleFunc("GET /go/{id}", s.goClick)
@@ -270,9 +273,10 @@ func (s *Server) funcs() template.FuncMap {
 			}
 			return t.Local().Format("2006-01-02T15:04")
 		},
-		"vi":   Label,
-		"seq":  func(n int) []int { return make([]int, n) },
-		"pair": func(a, b string) struct{ A, B string } { return struct{ A, B string }{a, b} },
+		"vi":    Label,
+		"ppath": ProductPath,
+		"seq":   func(n int) []int { return make([]int, n) },
+		"pair":  func(a, b string) struct{ A, B string } { return struct{ A, B string }{a, b} },
 		"has": func(xs []string, v string) bool {
 			for _, x := range xs {
 				if x == v {

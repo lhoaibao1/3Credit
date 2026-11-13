@@ -65,6 +65,18 @@ if(form){
       wzOpen(1)}else wzOpen(0)});
 }
 
+/* product form page: live range labels; the edit button shows the form again */
+var pform=$('#pform');
+if(pform){
+  var mny=function(m){m=+m;return m>=1000?(m/1000).toLocaleString('vi-VN')+' tỷ':m+' triệu'};
+  var lab=function(){$$('output[for]',pform).forEach(function(o){var i=document.getElementById(o.getAttribute('for'));if(i)o.textContent=o.hasAttribute('data-money')?mny(i.value):i.value+' tháng'})};
+  pform.addEventListener('input',lab);lab();
+  var sb=$('[type=submit]',pform),sbt=sb?sb.textContent:'';
+  pform.addEventListener('submit',function(){if(sb){sb.setAttribute('aria-busy','true');sb.textContent='Đang đối chiếu…'}});
+  addEventListener('pageshow',function(){if(sb&&sb.hasAttribute('aria-busy')){sb.removeAttribute('aria-busy');sb.textContent=sbt}});
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('[data-pf-edit]'))return;pform.hidden=false;var ps=$('#psum');if(ps)ps.hidden=true;var rs=$('#results');if(rs)rs.hidden=true;pform.scrollIntoView({block:'start'})});
+}
+
 /* compare tray */
 var cmp=[];
 function tray(){var t=$('#tray');if(!t)return;t.hidden=cmp.length===0;$('#trayTxt').textContent='Đã chọn '+cmp.length+'/3';$('#trayGo').disabled=cmp.length<2}
