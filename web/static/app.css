@@ -993,3 +993,9 @@ html{overflow-x:clip}
 .ch-card:hover .ch-go svg{transform:translateX(4px)}.ch-go svg{transition:transform .2s}
 .amt input:focus,.amt input:focus-visible{outline:0;box-shadow:none;border:0;background:transparent}
 .choose .sh{margin-bottom:36px}
+
+/* ---- layer8: inner pages clear the floating nav; quiet back links ---- */
+main.page,.page{padding-top:clamp(36px,5vw,64px)}
+.page .crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:18px;color:var(--muted)}
+.page .crumb a{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-size:.86rem;font-weight:600;color:var(--_l,#3B4A5A) var(--_d,#C9D6DE);background:var(--_l,#F1F4F6) var(--_d,rgba(255,255,255,.07));border:1px solid var(--_l,#E3E8EC) var(--_d,rgba(255,255,255,.1));transition:background .15s,color .15s,border-color .15s}
+.page .crumb a:hover{color:#0B7F58;border-color:#0E9F6E;background:var(--_l,#EAF6F1) var(--_d,rgba(14,159,110,.15))}
