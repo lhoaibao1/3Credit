@@ -912,3 +912,31 @@ html{overflow-x:clip}
 .pcard:hover .pc-art img{transform:scale(1.04)}
 .pcard.rv.pre .pc-art img{transform:scale(1.12)}
 .pc-art::after{height:9%}
+
+/* ---- layer5: wizard illustration + partner marquee ---- */
+.wz{scroll-margin-top:96px}
+.wz-wrap{display:grid;gap:28px;align-items:start}
+.wz-wrap:has(> .wz[hidden]){display:none}
+.wz-art{display:none}
+@media (min-width:1001px){
+  .wz-wrap{grid-template-columns:minmax(0,420px) minmax(0,1fr);max-width:1180px;margin-inline:auto;gap:40px}
+  .wz-wrap .wz{max-width:none;margin:0}
+  .wz-art{display:grid;gap:18px;position:sticky;top:96px}
+  .wz-art img{width:100%;height:auto;border-radius:28px;box-shadow:0 24px 50px -24px rgba(138,44,5,.45)}
+  .wz-art ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .wz-art li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:.8rem;color:var(--muted);line-height:1.35}
+  .wz-art li b{display:block;color:var(--ink);font-size:.95rem;font-weight:700;margin-bottom:2px}
+}
+.marq{position:relative;overflow:hidden;background:var(--_l,#FFF4EE) var(--_d,#111938);padding:22px 0;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.mq-track{display:flex;width:max-content;animation:mq 40s linear infinite}
+.marq:hover .mq-track,.marq:focus-within .mq-track{animation-play-state:paused}
+.mq-set{display:flex;flex:none;align-items:center;gap:56px;padding-right:56px}
+.marq .lchip{flex:none;height:56px;min-width:0;padding:0;background:transparent;border:0;box-shadow:none;border-radius:0}
+.marq .lchip img{max-height:40px;max-width:150px;object-fit:contain}
+.marq .lchip.ico{padding:0 14px;background:var(--_l,transparent) var(--_d,#F4F5F9);border-radius:12px}
+.marq .lchip.ico b{color:#101B4D}
+.marq .lchip.txt{color:var(--_l,#0C1640) var(--_d,#fff);font-weight:700;font-size:1rem;white-space:nowrap}
+@keyframes mq{to{transform:translateX(-50%)}}
+@media (max-width:600px){.marq{padding:16px 0}.mq-set{gap:36px;padding-right:36px}.marq .lchip img{max-height:32px;max-width:120px}.mq-track{animation-duration:28s}}
+@media (prefers-reduced-motion:reduce){.marq{overflow-x:auto;-webkit-mask-image:none;mask-image:none}.mq-track{animation:none}.mq-set[aria-hidden]{display:none}}

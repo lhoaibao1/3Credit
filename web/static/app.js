@@ -60,7 +60,9 @@ if(form){
   form.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.isComposing&&e.target.tagName!=='BUTTON'&&!e.target.closest('.cs')){e.preventDefault();next()}});
   var wzOpen=function(i){var p=$('#psum');if(p)p.hidden=true;var r=$('#results');if(r)r.hidden=true;form.hidden=false;show(i,true)};
   document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-edit],[data-pick-need]');if(!a)return;e.preventDefault();
-    if(a.dataset.pickNeed){var r=$('input[name=need][value="'+a.dataset.pickNeed+'"]',form);if(r){r.checked=true;mode()}wzOpen(1)}else wzOpen(0)});
+    if(a.dataset.pickNeed){var r=$('input[name=need][value="'+a.dataset.pickNeed+'"]',form);if(r){r.checked=true;mode()}
+      var v=a.dataset.pickVeh&&$('input[name=vehicle][value="'+a.dataset.pickVeh+'"]',form);if(v)v.checked=true;
+      wzOpen(1)}else wzOpen(0)});
 }
 
 /* compare tray */
@@ -78,8 +80,8 @@ if(!reduce&&'IntersectionObserver' in window){
   var arm=function(el,kind,delay){if(el.classList.contains('rv'))return;el.classList.add('rv');if(kind)el.classList.add(kind);
     if(el.getBoundingClientRect().top>innerHeight*.92){if(delay)el.style.transitionDelay=delay+'ms';el.classList.add('pre');io.observe(el)}};
   $$('.reveal').forEach(function(el){el.classList.remove('reveal');});
-  [['.sh',''],['.split-t','fromL'],['.about-t','fromR'],['.about-art','zoom'],['.wz',''],['#psum',''],['.consult',''],['.ctr-btn',''],['.cta-card',''],['.alert',''],['footer .in > div','']].forEach(function(r){$$(r[0]).forEach(function(el){arm(el,r[1],0)})});
-  [['.pgrid','.pcard',140],['.pc-list','li',90],['.flow','.fs',110],['.posts','.post',110],['.faq','details',80],['.about-f','li',100],['.about .logos','.lchip',45],['.hb-tiles','li',120],['.warn-grid, .wgrid','> *',90]].forEach(function(g){
+  [['.sh',''],['.split-t','fromL'],['.about-t','fromR'],['.about-art','zoom'],['.wz',''],['.wz-art','fromL'],['#psum',''],['.consult',''],['.ctr-btn',''],['.cta-card',''],['.alert',''],['footer .in > div','']].forEach(function(r){$$(r[0]).forEach(function(el){arm(el,r[1],0)})});
+  [['.pgrid','.pcard',140],['.pc-list','li',90],['.flow','.fs',110],['.posts','.post',110],['.faq','details',80],['.about-f','li',100],['.hb-tiles','li',120],['.warn-grid, .wgrid','> *',90]].forEach(function(g){
     $$(g[0]).forEach(function(box){$$(g[1].charAt(0)==='>'?':scope '+g[1]:g[1],box).forEach(function(el,i){arm(el,'',Math.min(i,7)*g[2])})})});
 }
 var bar=document.createElement('div');bar.id='topbar';document.body.appendChild(bar);
