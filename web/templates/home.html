@@ -86,13 +86,13 @@
 
 <section class="about" id="ve-3credit">
   <div class="in">
-    <div class="about-box on-or">
+    <div class="about-box lite">
       <div class="about-art" aria-hidden="true"><svg width="220" height="140"><use href="#mark"/></svg></div>
       <div class="about-t">
         <svg class="logo" width="230" height="60" role="img"><title>3Credit</title><use href="#logo"/></svg>
         <p>3Credit là nền tảng so sánh và giới thiệu sản phẩm tài chính của Công ty TNHH Công nghệ 3RDVN. 3Credit không cho vay và không quyết định phê duyệt: chúng tôi giúp bạn hiểu điều kiện của từng sản phẩm trước khi đăng ký với đối tác.</p>
         <ul class="about-f"><li><svg width="22" height="22"><use href="#i-shield"/></svg>Miễn phí</li><li><svg width="22" height="22"><use href="#i-doc"/></svg>Có giải thích</li><li><svg width="22" height="22"><use href="#i-scale"/></svg>Ghi rõ nguồn</li></ul>
-        <a class="btn btn-white" href="/gioi-thieu">Xem thêm về 3Credit</a>
+        <a class="btn btn-pri" href="/gioi-thieu">Xem thêm về 3Credit</a>
       </div>
     </div>
     <div class="marq" role="region" aria-label="Đối tác trên 3Credit"><div class="mq-track"><div class="mq-set">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="{{.Name}}" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div><div class="mq-set" aria-hidden="true">{{range .Partners}}{{if .LogoPath}}<span class="lchip{{if iconlogo .LogoPath}} ico{{end}}" title="{{.Name}}"><img src="{{.LogoPath}}" alt="" loading="lazy">{{if iconlogo .LogoPath}}<b>{{.Name}}</b>{{end}}</span>{{else}}<span class="lchip txt">{{.Name}}</span>{{end}}{{end}}</div></div></div>

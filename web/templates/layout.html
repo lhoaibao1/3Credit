@@ -40,7 +40,7 @@
 
 {{define "foot"}}
 {{if not .Admin}}<aside class="dock" aria-label="Lối tắt"><a href="/vay-tien-mat"><svg width="24" height="24"><use href="#i-doc"/></svg>Tìm<br>gói vay</a><a href="/#tu-van"><svg width="24" height="24"><use href="#i-hand"/></svg>Tư vấn</a></aside>{{end}}
-{{if not .Admin}}<footer class="on-or">
+{{if not .Admin}}<footer class="lite">
   <div class="in">
     <div><span class="fbrand"><a class="brand" href="/" aria-label="3Credit"><svg class="logo" width="154" height="40" role="img"><title>3Credit</title><use href="#logo"/></svg></a><a class="pwr" href="https://3rdvn.io.vn" target="_blank" rel="noopener">Powered by <span class="rbt" role="img" aria-label="3RDVN"></span></a></span><p class="fnote">Find Your Financial Fit. Nền tảng so sánh và giới thiệu sản phẩm tài chính thuộc hệ sinh thái 3RDVN, không trực tiếp cho vay.</p>
       {{with .S}}<p class="faddr">{{if .company_name}}{{.company_name}}{{if .tax_id}} · MST {{.tax_id}}{{end}}<br>{{end}}{{if .address}}{{.address}}<br>{{end}}{{if .hotline}}Hotline: {{.hotline}}{{end}}{{if .email}}{{if .hotline}} · {{end}}{{.email}}{{end}}</p>{{end}}
