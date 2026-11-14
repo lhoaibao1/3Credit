@@ -1037,3 +1037,7 @@ footer.lite .pwr{color:#58627F}footer.lite .rbt{color:#101B4D}
 .phero-art.photo img{aspect-ratio:3/2;object-fit:cover;border:6px solid rgba(255,255,255,.18)}
 @media (max-width:900px){.hb .cardstack.hb-visual{display:block;height:330px;max-width:420px;margin:8px auto 0}.hb-visual .hb-person{right:2%;height:108%}.hb-visual .ccard.front.mini{left:0;bottom:6%}}
 @media (max-width:600px){.hb .cardstack.hb-visual{height:290px}.hb-visual .ccard.front.mini{width:165px;padding:10px 12px}.hb-visual .ccard.mini .cc-num{font-size:.7rem}.hb-visual .ccard.mini .cc-bot{display:none}}
+/* chip never covers the person; person drawn no larger than the photo allows */
+.hb-visual .hb-person{height:100%;right:6%}
+.hb-chip{right:auto;left:4%;top:14%}
+@media (max-width:900px){.hb-visual .hb-person{height:100%;right:2%}.hb-chip{left:0;top:6%}}
