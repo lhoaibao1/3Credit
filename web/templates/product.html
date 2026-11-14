@@ -16,44 +16,68 @@
   <div class="in">
     {{if .Done}}<div class="psum" id="psum">
       <div><b>Hồ sơ bạn đã khai</b>
-        <p>{{if eq $n "credit_card"}}Hạn mức {{money .P.Amount}}{{else}}{{money .P.Amount}} · {{.P.Term}} tháng{{end}}{{if eq $n "secured"}} · {{vi .P.Vehicle}}{{end}} · {{.P.Age}} tuổi · {{vi .P.Region}} · {{vi .P.Job}}</p></div>
+        <p>{{if eq $n "credit_card"}}Hạn mức {{money .P.Amount}}{{else}}{{money .P.Amount}} · {{.P.Term}} tháng{{end}}{{if eq $n "secured"}} · {{vi .P.Vehicle}}{{end}}{{range .XLabels}} · {{.}}{{end}} · {{.P.Age}} tuổi · {{vi .P.Region}} · {{vi .P.Job}}</p></div>
       <button class="btn btn-line btn-sm" type="button" data-pf-edit>Sửa thông tin</button>
     </div>{{end}}
     <div class="wz-wrap">
-    <form class="wz pform" id="pform" method="get" action="/{{.PP.Slug}}#tim"{{if .Done}} hidden{{end}}>
+    <form class="wz pform pf-{{$n}}" id="pform" method="get" action="/{{.PP.Slug}}#tim"{{if .Done}} hidden{{end}}>
       <input type="hidden" name="xem" value="1">
-      <div class="pf-head"><h2>Thông tin đăng ký</h2><p>Mất khoảng 1 phút. Không cần CCCD, không cần số điện thoại để xem đề xuất.</p></div>
+      <div class="pf-head"><h2>{{.PP.FormTitle}}</h2><p>{{.PP.FormNote}} Không cần CCCD hay số điện thoại để xem đề xuất.</p></div>
 
-      {{if eq $n "secured"}}<fieldset class="pf-sec"><legend><span class="pf-n">1</span>Xe dùng làm tài sản bảo đảm</legend>
-        <div class="fld wide"><span class="lb" id="lbVeh">Giấy đăng ký xe đứng tên bạn</span><div class="opts" role="radiogroup" aria-labelledby="lbVeh">{{range .Vehicles}}<label class="opt"><input type="radio" name="vehicle" value="{{.V}}" {{if eq .V $.P.Vehicle}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
-      </fieldset>{{end}}
-
-      <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}2{{else}}1{{end}}</span>{{if $loan}}Khoản vay bạn cần{{else}}Hạn mức thẻ mong muốn{{end}}</legend>
-        {{$m := millions .P.Amount}}<div class="fld wide"><label for="pAmount">{{if $loan}}Số tiền cần vay{{else}}Hạn mức mong muốn{{end}}</label>
-          <div class="amt"><input type="text" id="pAmount" name="amount" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" value="{{$m}}" aria-describedby="amtHint"><span>triệu đồng</span></div>
-          <div class="chips" role="group" aria-label="Chọn nhanh số tiền">{{range .Amounts}}<button type="button" class="chip{{if eq . $m}} on{{end}}" data-amt="{{.}}">{{.}} triệu</button>{{end}}</div>
-          <small class="hint" id="amtHint">Từ 1 đến 500 triệu. Gõ số hoặc bấm chọn nhanh.</small></div>
-        {{if $loan}}<div class="fld wide"><span class="lb" id="lbTerm">Kỳ hạn vay</span><div class="opts" role="radiogroup" aria-labelledby="lbTerm">{{range .Terms}}<label class="opt"><input type="radio" name="term" value="{{.}}" {{if eq . $.P.Term}}checked{{end}}><span>{{.}} tháng</span></label>{{end}}</div></div>{{end}}
+      {{if eq $n "cash_loan"}}
+      <fieldset class="pf-sec"><legend><span class="pf-n">1</span>Khoản vay bạn cần</legend>
+        {{template "pf-amount" .}}{{template "pf-term" .}}
+        {{template "pf-x" (index .XF "purpose")}}
+        {{template "pf-urgency" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">2</span>Thu nhập để trả nợ</legend>
+        {{template "pf-job" .}}{{template "pf-income" .}}{{template "pf-channel" .}}{{template "pf-social" .}}{{template "pf-life" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">3</span>Về bạn</legend>
+        {{template "pf-age" .}}{{template "pf-region" .}}{{template "pf-credit" .}}
       </fieldset>
 
-      <fieldset class="pf-sec"><legend><span class="pf-n">{{if eq $n "secured"}}3{{else}}2{{end}}</span>Về bạn</legend>
-        <div class="fld"><label for="pAge">Tuổi</label><input type="number" id="pAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>
-        <div class="fld"><label for="pRegion">Nơi sống (tỉnh/thành)</label><select id="pRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="fld"><label for="pJob">Công việc</label><select id="pJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="fld"><label for="pIncome">Thu nhập mỗi tháng</label><select id="pIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        <div class="fld wide"><span class="lb" id="lbCh">Bạn nhận lương bằng</span><div class="opts" role="radiogroup" aria-labelledby="lbCh">{{range .Channels}}<label class="opt"><input type="radio" name="channel" value="{{.V}}" {{if eq .V $.P.Channel}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+      {{else if eq $n "credit_card"}}
+      <fieldset class="pf-sec"><legend><span class="pf-n">1</span>Chiếc thẻ bạn muốn</legend>
+        {{template "pf-amount" .}}
+        {{template "pf-x" (index .XF "card_use")}}
+        {{template "pf-x" (index .XF "has_card")}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">2</span>Thu nhập để xét hạn mức</legend>
+        {{template "pf-job" .}}{{template "pf-income" .}}{{template "pf-channel" .}}{{template "pf-social" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">3</span>Về bạn</legend>
+        {{template "pf-age" .}}{{template "pf-region" .}}{{template "pf-credit" .}}
       </fieldset>
 
-      {{if ne $n "secured"}}<fieldset class="pf-sec"><legend><span class="pf-n">3</span>Bảo hiểm</legend>
-        <div class="fld"><label for="pSoc">Bảo hiểm xã hội (BHXH) đã đóng</label><select id="pSoc" name="social_ins"><option value="none" {{if eq .P.SocialIns "none"}}selected{{end}}>Không tham gia</option><option value="lt6" {{if eq .P.SocialIns "lt6"}}selected{{end}}>Dưới 6 tháng</option><option value="6to12" {{if eq .P.SocialIns "6to12"}}selected{{end}}>6–12 tháng</option><option value="gt12" {{if eq .P.SocialIns "gt12"}}selected{{end}}>Trên 12 tháng</option></select></div>
-        <div class="fld"><label for="pLife">Bảo hiểm nhân thọ (BHNT)</label><select id="pLife" name="life_ins"><option value="none" {{if eq .P.LifeIns "none"}}selected{{end}}>Không có</option><option value="lt1y" {{if eq .P.LifeIns "lt1y"}}selected{{end}}>Có, đã đóng phí dưới 1 năm</option><option value="ge1y" {{if eq .P.LifeIns "ge1y"}}selected{{end}}>Có, đã đóng phí từ 1 năm</option></select></div>
-      </fieldset>{{end}}
-
-      <fieldset class="pf-sec"><legend><span class="pf-n">4</span>Lịch sử tín dụng{{if $loan}} và mức gấp{{end}}</legend>
-        <div class="fld"><label for="pCredit">Lịch sử tín dụng (tự khai)</label><select id="pCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
-        {{if $loan}}<div class="fld"><label for="pUrg">Bạn cần tiền gấp đến mức nào?</label><select id="pUrg" name="urgency">{{range .Urgencies}}<option value="{{.V}}" {{if eq .V $.P.Urgency}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
-        {{if eq $n "compare"}}<div class="fld"><label for="pVeh">Giấy đăng ký xe đứng tên bạn</label><select id="pVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+      {{else if eq $n "secured"}}
+      <fieldset class="pf-sec"><legend><span class="pf-n">1</span>Chiếc xe dùng để vay</legend>
+        <div class="fld wide"><span class="lb" id="lbVeh">Loại xe</span><div class="opts big2" role="radiogroup" aria-labelledby="lbVeh">{{range .Vehicles}}<label class="opt"><input type="radio" name="vehicle" value="{{.V}}" {{if eq .V $.P.Vehicle}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>
+        {{template "pf-x" (index .XF "veh_year")}}
+        {{template "pf-x" (index .XF "veh_owner")}}
+        {{template "pf-x" (index .XF "veh_loan")}}
+        <p class="note wide">Bạn vẫn giữ xe để đi lại. Đối tác chỉ giữ giấy đăng ký trong thời gian vay.</p>
       </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">2</span>Khoản vay bạn cần</legend>
+        {{template "pf-amount" .}}{{template "pf-term" .}}{{template "pf-urgency" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">3</span>Về bạn</legend>
+        {{template "pf-age" .}}{{template "pf-region" .}}{{template "pf-job" .}}{{template "pf-income" .}}{{template "pf-credit" .}}
+      </fieldset>
+
+      {{else}}
+      <fieldset class="pf-sec"><legend><span class="pf-n">1</span>Bạn cần khoảng bao nhiêu?</legend>
+        {{template "pf-amount" .}}{{template "pf-term" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">2</span>Hồ sơ của bạn</legend>
+        {{template "pf-age" .}}{{template "pf-region" .}}{{template "pf-job" .}}{{template "pf-income" .}}{{template "pf-channel" .}}
+      </fieldset>
+      <fieldset class="pf-sec"><legend><span class="pf-n">3</span>Điểm cộng khi xét hồ sơ</legend>
+        {{template "pf-social" .}}{{template "pf-life" .}}
+        <div class="fld"><label for="pVeh">Giấy đăng ký xe đứng tên bạn</label><select id="pVeh" name="vehicle">{{range .Vehicles}}<option value="{{.V}}" {{if eq .V $.P.Vehicle}}selected{{end}}>{{.L}}</option>{{end}}</select></div>
+        {{template "pf-credit" .}}
+      </fieldset>
+      {{end}}
 
       <div class="pf-go"><p class="note">Hồ sơ không gồm thông tin định danh. Đây là đối chiếu theo điều kiện đối tác công bố, không phải kết quả phê duyệt.</p><button class="btn btn-pri" type="submit">{{.PP.Submit}}</button></div>
     </form>
@@ -66,3 +90,19 @@
 <div class="tray" id="tray" hidden><span id="trayTxt"></span><button class="btn btn-pri btn-sm" type="button" id="trayGo">So sánh</button><button class="btn btn-ghost btn-sm" type="button" id="trayClr">Bỏ chọn</button></div>
 {{template "consult" .}}
 {{template "foot" .}}
+
+{{define "pf-amount"}}{{$m := millions .P.Amount}}{{$card := eq .PP.Need "credit_card"}}<div class="fld wide"><label for="pAmount">{{if $card}}Hạn mức mong muốn{{else}}Số tiền cần vay{{end}}</label>
+  <div class="amt"><input type="text" id="pAmount" name="amount" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" value="{{$m}}" aria-describedby="amtHint"><span>triệu đồng</span></div>
+  <div class="chips" role="group" aria-label="Chọn nhanh số tiền">{{range .Amounts}}<button type="button" class="chip{{if eq . $m}} on{{end}}" data-amt="{{.}}">{{.}} triệu</button>{{end}}</div>
+  <small class="hint" id="amtHint">Từ 1 đến 500 triệu. Gõ số hoặc bấm chọn nhanh.</small></div>{{end}}
+{{define "pf-term"}}<div class="fld wide"><span class="lb" id="lbTerm">Kỳ hạn vay</span><div class="opts" role="radiogroup" aria-labelledby="lbTerm">{{range .Terms}}<label class="opt"><input type="radio" name="term" value="{{.}}" {{if eq . $.P.Term}}checked{{end}}><span>{{.}} tháng</span></label>{{end}}</div></div>{{end}}
+{{define "pf-urgency"}}<div class="fld wide"><span class="lb" id="lbUrg">Bạn cần tiền gấp đến mức nào?</span><div class="opts" role="radiogroup" aria-labelledby="lbUrg">{{range .Urgencies}}<label class="opt"><input type="radio" name="urgency" value="{{.V}}" {{if eq .V $.P.Urgency}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>{{end}}
+{{define "pf-x"}}<div class="fld wide"><span class="lb" id="lb-{{.Key}}">{{.Label}}</span><div class="opts" role="radiogroup" aria-labelledby="lb-{{.Key}}">{{$v := .Val}}{{$k := .Key}}{{range .Opts}}<label class="opt"><input type="radio" name="{{$k}}" value="{{.V}}" {{if eq .V $v}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>{{end}}
+{{define "pf-age"}}<div class="fld"><label for="pAge">Tuổi</label><input type="number" id="pAge" name="age" min="16" max="90" value="{{.P.Age}}" inputmode="numeric"></div>{{end}}
+{{define "pf-region"}}<div class="fld"><label for="pRegion">Nơi sống (tỉnh/thành)</label><select id="pRegion" name="region">{{range .Regions}}<option value="{{.V}}" {{if eq .V $.P.Region}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+{{define "pf-job"}}<div class="fld"><label for="pJob">Công việc</label><select id="pJob" name="job">{{range .Jobs}}<option value="{{.V}}" {{if eq .V $.P.Job}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+{{define "pf-income"}}<div class="fld"><label for="pIncome">Thu nhập mỗi tháng</label><select id="pIncome" name="income">{{range .Incomes}}<option value="{{.V}}" {{if eq .V (printf "%g" $.P.Income)}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}
+{{define "pf-channel"}}<div class="fld wide"><span class="lb" id="lbCh">Bạn nhận lương bằng</span><div class="opts" role="radiogroup" aria-labelledby="lbCh">{{range .Channels}}<label class="opt"><input type="radio" name="channel" value="{{.V}}" {{if eq .V $.P.Channel}}checked{{end}}><span>{{.L}}</span></label>{{end}}</div></div>{{end}}
+{{define "pf-social"}}<div class="fld"><label for="pSoc">Bảo hiểm xã hội (BHXH) đã đóng</label><select id="pSoc" name="social_ins"><option value="none" {{if eq .P.SocialIns "none"}}selected{{end}}>Không tham gia</option><option value="lt6" {{if eq .P.SocialIns "lt6"}}selected{{end}}>Dưới 6 tháng</option><option value="6to12" {{if eq .P.SocialIns "6to12"}}selected{{end}}>6–12 tháng</option><option value="gt12" {{if eq .P.SocialIns "gt12"}}selected{{end}}>Trên 12 tháng</option></select></div>{{end}}
+{{define "pf-life"}}<div class="fld"><label for="pLife">Bảo hiểm nhân thọ (BHNT)</label><select id="pLife" name="life_ins"><option value="none" {{if eq .P.LifeIns "none"}}selected{{end}}>Không có</option><option value="lt1y" {{if eq .P.LifeIns "lt1y"}}selected{{end}}>Có, đã đóng phí dưới 1 năm</option><option value="ge1y" {{if eq .P.LifeIns "ge1y"}}selected{{end}}>Có, đã đóng phí từ 1 năm</option></select></div>{{end}}
+{{define "pf-credit"}}<div class="fld wide"><label for="pCredit">Lịch sử tín dụng (tự khai)</label><select id="pCredit" name="credit">{{range .Credits}}<option value="{{.V}}" {{if eq .V $.P.Credit}}selected{{end}}>{{.L}}</option>{{end}}</select></div>{{end}}

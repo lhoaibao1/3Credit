@@ -80,6 +80,35 @@ func TestProductFormsAreSeparate(t *testing.T) {
 	if _, body := e.get(t, "/vay-dang-ky-xe", false); strings.Contains(body, `value="none"`+" checked") || strings.Contains(body, `name="social_ins"`) {
 		t.Error("vehicle form: no 'no vehicle' option, no insurance questions")
 	}
+	// every product asks its own questions, and no other product's
+	own := map[string][]string{
+		"/vay-tien-mat":   {`name="purpose"`, "Đăng ký vay tiền mặt"},
+		"/the-tin-dung":   {`name="card_use"`, `name="has_card"`, "Đăng ký mở thẻ tín dụng"},
+		"/vay-dang-ky-xe": {`name="veh_year"`, `name="veh_owner"`, `name="veh_loan"`, "Đăng ký vay bằng đăng ký xe"},
+		"/so-sanh-tat-ca": {"Khai hồ sơ để so sánh"},
+	}
+	for path, must := range own {
+		_, body := e.get(t, path, false)
+		for _, m := range must {
+			if !strings.Contains(body, m) {
+				t.Errorf("%s: missing its own question %s", path, m)
+			}
+		}
+		for other, qs := range own {
+			if other == path {
+				continue
+			}
+			for _, q := range qs {
+				if strings.HasPrefix(q, `name=`) && strings.Contains(body, q) {
+					t.Errorf("%s must not ask %s (belongs to %s)", path, q, other)
+				}
+			}
+		}
+	}
+	// a product's own answers are kept with the result and shown in the summary
+	if _, body := e.get(t, "/vay-dang-ky-xe?vehicle=car&veh_year=y2018&veh_owner=other&veh_loan=paying&amount=30&term=12&xem=1", false); !strings.Contains(body, "2018 – 2021") || !strings.Contains(body, "Chưa sang tên") || !strings.Contains(body, "veh_loan=paying") {
+		t.Error("vehicle answers must survive into the summary and links")
+	}
 	// the page decides the product even if the query says otherwise
 	_, body := e.get(t, "/vay-tien-mat?need=credit_card&amount=50&term=24&social_ins=gt12&xem=1", false)
 	if !strings.Contains(body, `class="rsum"`) || !strings.Contains(body, "24 tháng") {

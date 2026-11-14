@@ -1041,3 +1041,8 @@ footer.lite .pwr{color:#58627F}footer.lite .rbt{color:#101B4D}
 .hb-visual .hb-person{height:100%;right:6%}
 .hb-chip{right:auto;left:4%;top:14%}
 @media (max-width:900px){.hb-visual .hb-person{height:100%;right:2%}.hb-chip{left:0;top:6%}}
+
+/* ---- layer11: each product form has its own questions ---- */
+.pform .opts.big2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pform .opts.big2 .opt span{justify-content:center;padding-block:18px;font-size:1.05rem;font-weight:700}
+.pform .note.wide{margin:0}
