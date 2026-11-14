@@ -233,6 +233,18 @@ func TestBadDebtCustomersOnlySeeProductsSetToAcceptIt(t *testing.T) {
 	if has("group2") || has("bad_settled") {
 		t.Fatal("only the ticked debt type is accepted, not the others")
 	}
+	// ticking a debt type WITHOUT choosing a source must still count: the ticks used to be dropped silently
+	tok = e.csrfFrom(t, "/admin/policies/P-SFI-01", true)
+	e.post(t, "/admin/policies/P-SFI-01", url.Values{"csrf": {tok},
+		"amount_min": {"10"}, "amount_max": {"100"}, "amount_conf": {"A"},
+		"credit": {"bad_unsettled", "group2"},
+		"source": {"Hợp đồng"}, "verified_on": {"2026-11-05"}, "change_note": {"tick không chọn nguồn"}}, true)
+	if !has("bad_unsettled") || !has("group2") {
+		t.Fatal("ticked debt types without a source must be accepted")
+	}
+	if has("bad_settled") {
+		t.Fatal("unticked debt type must stay hidden")
+	}
 	// the CMS list says which debt types each product accepts
 	_, list := e.get(t, "/admin/campaigns", true)
 	if !strings.Contains(list, "Đang có nợ xấu chưa tất toán") {

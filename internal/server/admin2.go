@@ -405,12 +405,13 @@ func fromForm(r *http.Request) (model.Rules, model.Info, error) {
 	if c, used := pconf(r.FormValue("vehicle_conf")); used {
 		R.Vehicle = &model.FlagRule{Required: true, Conf: c}
 	}
-	if c, used := pconf(r.FormValue("credit_conf")); used {
-		cs := r.Form["credit"]
-		if len(cs) == 0 {
-			return R, model.Info{}, fmt.Errorf("Lịch sử tín dụng: chọn ít nhất một trường hợp được nhận")
-		}
+	// Ticking a credit history is enough: the product then accepts it. Choosing a source only
+	// records how sure we are; leaving it empty must never drop the ticks.
+	if cs := r.Form["credit"]; len(cs) > 0 {
+		c, _ := pconf(r.FormValue("credit_conf"))
 		R.Credit = &model.ListRule{Values: cs, Conf: c}
+	} else if _, used := pconf(r.FormValue("credit_conf")); used {
+		return R, model.Info{}, fmt.Errorf("Lịch sử tín dụng: chọn ít nhất một trường hợp được nhận")
 	}
 	if c, used := pconf(r.FormValue("social_conf")); used {
 		mn, ok := pf(r, "social_min")

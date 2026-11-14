@@ -166,7 +166,7 @@
     <div class="fld"><label>Cách áp dụng nghề nghiệp</label><select name="jobs_mode"><option value="allow" {{if eq $f.JobsMode "allow"}}selected{{end}}>Chỉ nhận các nghề đã chọn</option><option value="boost" {{if eq $f.JobsMode "boost"}}selected{{end}}>Nhận mọi nghề, ưu tiên nghề đã chọn</option></select></div>
     <div class="fld"><label>Lý do hiển thị cho khách</label><input name="jobs_why" type="text" value="{{$f.JobsWhy}}" placeholder="Dành cho khách hàng có thu nhập từ lương"></div>
     <div class="fld"><label>Nguồn – nghề nghiệp</label>{{template "confsel" (pair "jobs_conf" $f.JobsConf)}}</div>
-    <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận). Khách có nợ nhóm 2 hoặc nợ xấu chỉ thấy sản phẩm đã tick đúng loại của họ và chọn nguồn bên dưới</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
+    <div class="fld full"><span class="lb">Lịch sử tín dụng được nhận (chỉ tick khi đối tác xác nhận). Khách có nợ nhóm 2 hoặc nợ xấu chỉ thấy sản phẩm đã tick đúng loại của họ. Tick là đủ, ô “Nguồn” bên cạnh không bắt buộc</span><div class="seg">{{range .Credits}}<label class="cmpchk"><input type="checkbox" name="credit" value="{{.V}}" {{if has $f.Credit .V}}checked{{end}}> {{.L}}</label>{{end}}</div></div>
     <div class="fld"><label>Nguồn – lịch sử tín dụng</label>{{template "confsel" (pair "credit_conf" $f.CreditConf)}}</div>
   </div>
   <h3 class="fsec">Bảo hiểm (không bắt buộc)</h3>
