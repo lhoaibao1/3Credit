@@ -243,10 +243,16 @@ func Evaluate(o model.Offer, p model.Profile, live bool) Result {
 			"Hợp đồng bảo hiểm nhân thọ đạt yêu cầu", want, "Cần kiểm tra hợp đồng bảo hiểm nhân thọ ("+strings.ToLower(want[:1])+want[1:]+")")
 	}
 	adverse := AdverseCredit(p.Credit)
-	if R.Credit != nil && R.Credit.Conf.Verified() {
+	if R.Credit != nil && p.Credit != "" && contains(R.Credit.Values, p.Credit) {
+		// the admin ticked this credit history in the CMS: that is the decision, with or without a source
+		if adverse {
+			e.pass = append(e.pass, "Sản phẩm nhận hồ sơ "+creditText[p.Credit])
+		} else {
+			e.pass = append(e.pass, "Chính sách nhận lịch sử tín dụng của bạn")
+		}
+	} else if R.Credit != nil && R.Credit.Conf.Verified() {
 		if p.Credit != "" {
-			e.check(contains(R.Credit.Values, p.Credit), R.Credit.Conf,
-				"Chính sách nhận lịch sử tín dụng của bạn", "Chính sách không nhận lịch sử tín dụng của bạn")
+			e.fails = append(e.fails, "Chính sách không nhận lịch sử tín dụng của bạn")
 		}
 	} else if adverse {
 		e.gaps = append(e.gaps, "Chưa xác minh đối tác có nhận hồ sơ "+creditText[p.Credit]+" hay không")
