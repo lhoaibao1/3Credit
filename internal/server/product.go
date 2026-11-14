@@ -9,16 +9,16 @@ import (
 // product goes straight to its form; only visitors who have not chosen yet get the
 // step-by-step "what do you need?" flow on the home page.
 type productPage struct {
-	Need, Slug, Title, Lede, Art, Submit string
-	Points                               []string
+	Need, Slug, Title, Lede, Art, Photo, Submit string
+	Points                                      []string
 }
 
 var productPages = []productPage{
-	{Need: "cash_loan", Slug: "vay-tien-mat", Title: "Vay tiền mặt", Art: "cash",
+	{Need: "cash_loan", Slug: "vay-tien-mat", Photo: "vay-tien-mat", Title: "Vay tiền mặt", Art: "cash",
 		Lede:   "Khai số tiền cần vay và vài thông tin cơ bản, 3Credit đối chiếu với điều kiện các công ty tài chính, ngân hàng công bố.",
 		Submit: "Xem khoản vay phù hợp",
 		Points: []string{"So sánh nhiều đối tác cùng lúc", "Thấy rõ điều kiện nào đã khớp", "Không cần CCCD để xem đề xuất"}},
-	{Need: "credit_card", Slug: "the-tin-dung", Title: "Mở thẻ tín dụng", Art: "card",
+	{Need: "credit_card", Slug: "the-tin-dung", Photo: "the-tin-dung", Title: "Mở thẻ tín dụng", Art: "card",
 		Lede:   "Chọn hạn mức mong muốn và khai thu nhập, 3Credit gợi ý những thẻ bạn có khả năng mở được.",
 		Submit: "Xem thẻ phù hợp",
 		Points: []string{"Đối chiếu theo thu nhập của bạn", "So sánh hạn mức và phí", "Không ảnh hưởng điểm tín dụng"}},
@@ -26,7 +26,7 @@ var productPages = []productPage{
 		Lede:   "Dùng giấy đăng ký xe máy hoặc ô tô đứng tên bạn làm tài sản bảo đảm. Khai loại xe và số tiền cần vay để xem các gói phù hợp.",
 		Submit: "Xem gói vay phù hợp",
 		Points: []string{"Dành cho người có xe máy, ô tô", "Hạn mức theo giá trị xe", "Chỉ đối tác có pháp nhân rõ ràng"}},
-	{Need: "compare", Slug: "so-sanh-tat-ca", Title: "So sánh tất cả sản phẩm", Art: "compare",
+	{Need: "compare", Slug: "so-sanh-tat-ca", Photo: "so-sanh", Title: "So sánh tất cả sản phẩm", Art: "compare",
 		Lede:   "Chưa rõ nên chọn vay hay mở thẻ? Khai hồ sơ một lần, 3Credit xếp mọi sản phẩm theo mức phù hợp với bạn.",
 		Submit: "So sánh ngay",
 		Points: []string{"Mọi loại sản phẩm trong một lần", "Xếp theo mức phù hợp", "Chọn tối đa 3 sản phẩm đặt cạnh nhau"}},
