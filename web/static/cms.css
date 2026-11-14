@@ -3,7 +3,7 @@
   --_l:initial; --_d: ;
   color-scheme:var(--_l,light) var(--_d,dark);
   /* brand-fixed */
-  --or:#FF642E; --or-hover:#E2501C; --or-strong:#C9440F; --white:#FFFFFF; --navy:#101B4D;
+  --or:#1F63E6; --or-hover:#2A58B3; --or-strong:#1D499E; --white:#FFFFFF; --navy:#101B4D;
   --side-txt:#C3CBE6; --side-g:#8792B8; --side-hi:#FFFFFF; --side-line:rgba(255,255,255,.08);
   /* themed:        LIGHT                         DARK */
   --bg:          var(--_l,#F5F6F8) var(--_d,#0F1424);
@@ -15,15 +15,15 @@
   --ink:         var(--_l,#141B2D) var(--_d,#E8EBF4);
   --muted:       var(--_l,#5E687C) var(--_d,#97A1BA);
   --side:        var(--_l,#101B4D) var(--_d,#0B1130);
-  --side-act:    var(--_l,rgba(255,100,46,.18)) var(--_d,rgba(255,100,46,.20));
-  --or-ink:      var(--_l,#B8410E) var(--_d,#FF8A5C);
-  --or-soft:     var(--_l,#FFEDE5) var(--_d,#3A2420);
+  --side-act:    var(--_l,rgba(31,99,230,.18)) var(--_d,rgba(31,99,230,.20));
+  --or-ink:      var(--_l,#1B4391) var(--_d,#6F8FCC);
+  --or-soft:     var(--_l,#E8EDF7) var(--_d,#3A2420);
   --ok:   var(--_l,#0B7A5A) var(--_d,#2BD49E);  --ok-soft:  var(--_l,#E3F3EC) var(--_d,#143A3A);
   --mid:  var(--_l,#8F5E00) var(--_d,#F5B73B);  --mid-soft: var(--_l,#FBF0DA) var(--_d,#3A3220);
   --low:  var(--_l,#B4262E) var(--_d,#FF7A7F);  --low-soft: var(--_l,#FBE6E6) var(--_d,#3E2230);
   --info: var(--_l,#2F5FD0) var(--_d,#7EA6FF);  --info-soft:var(--_l,#E6EDFC) var(--_d,#1D2A55);
   --gray-soft:   var(--_l,#ECEEF2) var(--_d,#252D47);
-  --focus:       var(--_l,#E2501C) var(--_d,#FFC24B);
+  --focus:       var(--_l,#2A58B3) var(--_d,#FFC24B);
   --scrim:rgba(8,12,32,.5);
   --shadow-1:var(--_l,0 1px 2px rgba(16,24,40,.05)) var(--_d,0 1px 2px rgba(0,0,0,.3));
   --shadow-2:var(--_l,0 12px 32px -12px rgba(16,24,40,.25)) var(--_d,0 12px 32px -12px rgba(0,0,0,.7));
@@ -313,5 +313,5 @@ table.kv{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}.
 .panel,.kpi{animation:cmsRise .3s both}.kpi:nth-child(2){animation-delay:.04s}.kpi:nth-child(3){animation-delay:.08s}.kpi:nth-child(4){animation-delay:.12s}.kpi:nth-child(5){animation-delay:.16s}
 details[open]>*:not(summary){animation:cmsRise .2s both}
 .flash{animation:cmsRise .3s both}
-input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{box-shadow:0 0 0 3px var(--or-soft,rgba(255,100,46,.18))}
+input:not([type=checkbox]):not([type=radio]):focus,select:focus,textarea:focus{box-shadow:0 0 0 3px var(--or-soft,rgba(31,99,230,.18))}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
